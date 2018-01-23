@@ -28,5 +28,11 @@
 
 # Executables
 *.exe
+*.bin
+*.hex
+*.elf
 *.out
 *.app
+
+# Vim
+*.swp
