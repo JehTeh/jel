@@ -24,6 +24,9 @@
 ####################################################################################################
 #
 ############ TEMPLATE RECIPE VARIABLES ############
+#These recipe variables must be defined by each target. Object files should include the appropriate
+#path to allow for organized out-of-directory builds. Targets must then $(eval) each of the template
+#recipes to force expansion with the variable definitions.
 TARGET_NAME =
 AFLAGS =
 CFLAGS =
@@ -37,6 +40,14 @@ TARGET_ASOURCE =
 TARGET_CSOURCE =
 TARGET_CXXSOURCE =
 
+OUTPUT_BINARY_FILE =
+OUTPUT_ELF_FILE =
+OUTPUT_LIBRARY_FILE =
+OUTPUT_DIRECTORY_BASE =
+OUTPUT_DIRECTORY_OBJECTS =
+OUTPUT_DIRECTORY_EXEC =
+OUTPUT_DIRECTORY_INFO =
+
 ############ TEMPLATE RECIPES ############
 # The template recipes are instantiated by each individual target as it is added to the build
 # process. Each template recipe requires that a target define the template recipe variables
@@ -47,11 +58,11 @@ TARGET_CXXSOURCE =
 # individual section composition.
 #
 define TEMPLRECIPE_INFO
-info_$(TOP_NAME) : $(BINOUTFILE)
+info_$(TARGET_NAME) : $(OUTPUT_BINARY_FILE)
 	@echo "Info: \r\n"
-	@arm-none-eabi-size -d $(ELFOUTFILE)
+	@arm-none-eabi-size -d $(OUTPUT_ELF_FILE)
 	@echo ================================================================================
-	@arm-none-eabi-readelf -h -l -S $(ELFOUTFILE)
+	@arm-none-eabi-readelf -h -l -S $(OUTPUT_ELF_FILE)
 endef
 
 # TEMPLRECIPE_SEGGER_JFLASH
@@ -59,9 +70,9 @@ endef
 # jlink toolchain to be available and configured.
 #
 define TEMPLRECIPE_SEGGER_JFLASH
-flash_$(TOP_NAME): $(BINOUTFILE) jlink\$(TARGET_NAME)_flash.jflash force
+flash_$(TARGET_NAME): $(OUTPUT_BINARY_FILE) jlink\$(TARGET_NAME)_flash.jflash force
 		@echo "Flashing binary..."
-		@$$(JLINK_EXE) -openprj./jlink/$(TARGET_NAME)_flash.jflash -open./$(BINOUTFILE) -connect -erasechip -program -startapp -disconnect -exit
+		@$$(JLINK_EXE) -openprj./jlink/$(TARGET_NAME)_flash.jflash -open./$(OUTPUT_BINARY_FILE) -connect -erasechip -program -startapp -disconnect -exit
 		@echo "Binary flashed successfully."
 endef
 
@@ -71,11 +82,11 @@ endef
 # 'make [TARGET_NAME]' command.
 #
 define TEMPLRECIPE_TARGET_LIBRARY
-$(TOP_NAME) : $(BINOUTFILE)
-		@echo "$(BINOUTFILE) built successfully."
-		@echo "Generating CSYS libfile..."
-		@$$(AR) -M < "$(AR_SCRIPTFILE)" 
-		@echo "CSYS libfile generated sucessfully."
+$(TARGET_NAME) : $(OUTPUT_BINARY_FILE)
+		@echo "$(OUTPUT_BINARY_FILE) built successfully."
+		@echo "Archiving into static library..."
+		@$$(AR) -M < "$(ARCHIVER_SCRIPT)" 
+		@echo "Library created successfully."
 endef
 
 # TEMPLRECIPE_BINARY
@@ -84,14 +95,14 @@ endef
 # stand-alone on a target.
 #
 define TEMPLRECIPE_BINARY
-$(BINOUTFILE) : $(LIBOUTFILE) 
-		@if not exist $(BUILDOUT_DIRECTORY_INF) mkdir $(BUILDOUT_DIRECTORY_INF)
-		@echo "Linking into .ELF..."
-		@$$(LD) -o $(ELFOUTFILE) $(ALLOBJECTS) -L$(BUILDOUT_DIRECTORY_BIN) -T $(LD_SCRIPTFILE) $(LDFLAGS)
-		@echo "ELF generated successfully. Stripping down to .hex..."
+$(OUTPUT_BINARY_FILE) : $(OUTPUT_LIBRARY_FILE) 
+		@if not exist $(OUTPUT_DIRECTORY_INFO) mkdir $(OUTPUT_DIRECTORY_INFO)
+		@echo "Linking elf..."
+		@$$(LD) -o $(OUTPUT_ELF_FILE) $(ALL_OBJECT_FILES) -L$(OUTPUT_DIRECTORY_EXEC) -T $(LINKER_SCRIPT) $(LDFLAGS)
+		@echo "elf linked. Creating flashable binary from elf..."
 		@$$(OBJCOPY) $(OBJCOPYFLAGS) --strip-debug --remove-section .bss \
-			-O ihex $(ELFOUTFILE) $(BINOUTFILE)
-		@echo ".hex file generated successfully."
+			-O ihex $(OUTPUT_ELF_FILE) $(OUTPUT_BINARY_FILE)
+		@echo "binary file generated successfully."
 endef
 
 # TEMPLRECIPE_LIB_ARCHIVE_FILE
@@ -99,11 +110,11 @@ endef
 # be added to an external application as desired.
 #
 define TEMPLRECIPE_LIB_ARCHIVE_FILE
-$(LIBOUTFILE) : $(ALLOBJECTS)
+$(OUTPUT_LIBRARY_FILE) : $(ALL_OBJECT_FILES)
 		@echo "Archiving files to library..."
-		@if not exist $(BUILDOUT_DIRECTORY_TOP) mkdir $(BUILDOUT_DIRECTORY_TOP)
-		@if not exist $(BUILDOUT_DIRECTORY_BIN) mkdir $(BUILDOUT_DIRECTORY_BIN)
-		@$$(AR) -r --target=elf32-littlearm $$@ $(ALLOBJECTS) 
+		@if not exist $(OUTPUT_DIRECTORY_BASE) mkdir $(OUTPUT_DIRECTORY_BASE)
+		@if not exist $(OUTPUT_DIRECTORY_EXEC) mkdir $(OUTPUT_DIRECTORY_EXEC)
+		@$$(AR) -r --target=elf32-littlearm $$@ $(ALL_OBJECT_FILES) 
 		@echo "Archiving complete."
 endef
 
@@ -111,10 +122,10 @@ endef
 # Recipe template used for assembling assembly files.
 #
 define TEMPLRECIPE_AFILE
-$(BUILDOUT_DIRECTORY_OBJ)\\%.o : %.s
-		@echo "Assembling file:    $$<"
-		@if not exist $(BUILDOUT_DIRECTORY_TOP) mkdir $(BUILDOUT_DIRECTORY_TOP)
-		@if not exist $(BUILDOUT_DIRECTORY_OBJ) mkdir $(BUILDOUT_DIRECTORY_OBJ)
+$(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.s
+		@echo "Assembling:      $$<"
+		@if not exist $(OUTPUT_DIRECTORY_BASE) mkdir $(OUTPUT_DIRECTORY_BASE)
+		@if not exist $(OUTPUT_DIRECTORY_OBJECTS) mkdir $(OUTPUT_DIRECTORY_OBJECTS)
 		@if not exist "$$(dir $$@)" mkdir $$(dir $$@)
 		@$$(CC) $(AFLAGS) -o $$@ $$<
 endef
@@ -123,10 +134,10 @@ endef
 # Recipe template used for compiling C files.
 #
 define TEMPLRECIPE_CFILE
-$(BUILDOUT_DIRECTORY_OBJ)\\%.o : %.c
-		@echo "Compiling C file:   $$<"
-		@if not exist $(BUILDOUT_DIRECTORY_TOP) mkdir $(BUILDOUT_DIRECTORY_TOP)
-		@if not exist $(BUILDOUT_DIRECTORY_OBJ) mkdir $(BUILDOUT_DIRECTORY_OBJ)
+$(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.c
+		@echo "Compiling (C):   $$<"
+		@if not exist $(OUTPUT_DIRECTORY_BASE) mkdir $(OUTPUT_DIRECTORY_BASE)
+		@if not exist $(OUTPUT_DIRECTORY_OBJECTS) mkdir $(OUTPUT_DIRECTORY_OBJECTS)
 		@if not exist "$$(dir $$@)" mkdir $$(dir $$@)
 		@$$(CC) $(CFLAGS) -o $$@ $$<
 endef
@@ -135,10 +146,10 @@ endef
 # Recipe template used for compiling c++ files.
 #
 define TEMPLRECIPE_CXXFILE
-$(BUILDOUT_DIRECTORY_OBJ)\\%.o : %.cpp
-		@echo "Compiling C++ file: $$<"
-		@if not exist $(BUILDOUT_DIRECTORY_TOP) mkdir $(BUILDOUT_DIRECTORY_TOP)
-		@if not exist $(BUILDOUT_DIRECTORY_OBJ) mkdir $(BUILDOUT_DIRECTORY_OBJ)
+$(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.cpp
+		@echo "Compiling (C++): $$<"
+		@if not exist $(OUTPUT_DIRECTORY_BASE) mkdir $(OUTPUT_DIRECTORY_BASE)
+		@if not exist $(OUTPUT_DIRECTORY_OBJECTS) mkdir $(OUTPUT_DIRECTORY_OBJECTS)
 		@if not exist "$$(dir $$@)" mkdir $$(dir $$@)
 		@$$(CXX) $(CXXFLAGS) -o $$@ $$<
 endef

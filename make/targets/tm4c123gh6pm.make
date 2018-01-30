@@ -1,4 +1,4 @@
-# Top level makefile for the jel - JT's Embedded Libraries.
+# Target definitions for the Texas Instruments Tiva TM4C123GH6PM ARM M4F Processor.
 # 
 #	Written By Jonathan Thomson
 #
@@ -23,30 +23,30 @@
 # OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ####################################################################################################
 #
-# To reduce clutter, this makefile is broken into multiple components. Most of these components can 
-# be found inside the ./make subdirectory.
 
-#Include toolchain definitions, such as compilers, linkers, standard lib locations, etc.
-include ./make/toolchain.make
-#Include RTOS/Cpputest/fatfs etc related definitions common across all targets.
-include ./make/thirdparty.make
-#Include common make definitions, such as compiler warning flags and directory name templates.
-include ./make/common.make
-#Include CPU target flags
-include ./make/processors.make
-#Include filetype definitions
-include ./make/filetypes.make
-#Include template recipe rules. These templates are expanded by each individual target.
-include ./make/rules.make
-############################
-#   Source File Includes   #
-############################
-#All source files should be included from their respective directories sub .make files here.
-#This includes any target specific source definitions, which will be used in the included targets
-#section below.
+#Target specific flags, including -DHW_TARGET_[XXX] flag.
+TM4C123GH6PM_CUSTOM_FLAGS = -DHW_TARGET_TM4C123GH6PM
 
+#Definition of target specific rules found in the ./make/rules.make file.
+TARGET_NAME = tm4c123gh6pm_dbg
+AFLAGS = $(AFLAGS_BASE_DEBUG) $(TM4C123GH6PM_CUSTOM_FLAGS)
+CFLAGS = $(CFLAGS_BASE_DEBUG) $(TM4C123GH6PM_CUSTOM_FLAGS)
+CXXFLAGS = $(CXXFLAGS_BASE_DEBUG) $(TM4C123GH6PM_CUSTOM_FLAGS)
+LDFLAGS = $(LDFLAGS_BASE_DEBUG)
+LINKER_SCRIPT =
+ARCHIVER_SCRIPT = 
 
-############################
-#       Target Rules       #
-############################
-include ./make/targets/tm4c123gh6pm.make
+ALL_OBJECT_FILES =
+TARGET_ASOURCE =
+TARGET_CSOURCE =
+TARGET_CXXSOURCE =
+
+OUTPUT_BINARY_FILE =
+OUTPUT_ELF_FILE =
+OUTPUT_LIBRARY_FILE =
+OUTPUT_DIRECTORY_BASE =
+OUTPUT_DIRECTORY_OBJECTS =
+OUTPUT_DIRECTORY_EXEC =
+OUTPUT_DIRECTORY_INFO =
+
+#Evaluation of template recipe rules found in the ./make/rules.make file.
