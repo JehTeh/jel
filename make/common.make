@@ -27,7 +27,7 @@
 #Generic compiler warning flags, used for all builds
 COMPILER_FLAGS_WARNING = -Wall -Wextra -Wno-unused-parameter -fmax-errors=25
 #Generic compiler include flags, used for all builds
-COMPILER_FLAGS_INCLUDE_GENERIC = -I . -I $(RTOS_INCLUDE_PATH_BASE)
+COMPILER_FLAGS_INCLUDE_GENERIC = -I . -I $(RTOS_INCLUDE_PATH_BASE) -I $(RTOS_PRIVATE_INCLUDE_PATH_BASE) -I $(RTOS_CONFIGURATION_INCLUDE_PATH_BASE)
 #Special compiler flags used for debug builds (Cpputest and regular debug builds).
 COMPILER_FLAGS_DEBUGBUILD = -gdwarf-2 -g 
 #Special compiler flags for optimized builds.

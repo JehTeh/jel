@@ -39,15 +39,10 @@ FILEEXTENSION_DUMP = .dump
 #Text file output extension.
 FILEEXTENSION_TXT = .txt
 ############ DIRECTORIES ############
-#Binary and other flashable output files are stored in this subdirectory.
-OUTPUTDIRECTORY_NAME_BINARIES = bin
 #Information files such as linker map and size info is output here.
-OUTPUTDIRECTORY_NAME_INFO = inf
+OUTPUT_DIRECTORY_NAME_INFO = inf
 #Compiled object files are stored here.
-OUTPUTDIRECTORY_NAME_OBJECTS = obj
-#Top level prefix affixed to release builds.
-OUTPUTDIRECTORY_NAME_RELEASE = release
-#Top level prefix affixed to debug builds.
-OUTPUTDIRECTORY_NAME_RELEASE = debug 
-#Top level prefix affixed to debug builds that include Cpputest functionality.
-OUTPUTDIRECTORY_NAME_RELEASE = debug_cpputest
+OUTPUT_DIRECTORY_NAME_OBJECTS = obj
+#Executable code output, such as binaries, is placed here. Currently library files (*.a) are also
+#stored here.
+OUTPUT_DIRECTORY_NAME_EXECUTABLES = bin

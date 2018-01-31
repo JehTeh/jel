@@ -96,7 +96,7 @@ endef
 #
 define TEMPLRECIPE_BINARY
 $(OUTPUT_BINARY_FILE) : $(OUTPUT_LIBRARY_FILE) 
-		@if not exist $(OUTPUT_DIRECTORY_INFO) mkdir $(OUTPUT_DIRECTORY_INFO)
+		@if not exist "$(OUTPUT_DIRECTORY_INFO)" mkdir "$(OUTPUT_DIRECTORY_INFO)"
 		@echo "Linking elf..."
 		@$$(LD) -o $(OUTPUT_ELF_FILE) $(ALL_OBJECT_FILES) -L$(OUTPUT_DIRECTORY_EXEC) -T $(LINKER_SCRIPT) $(LDFLAGS)
 		@echo "elf linked. Creating flashable binary from elf..."
@@ -112,8 +112,8 @@ endef
 define TEMPLRECIPE_LIB_ARCHIVE_FILE
 $(OUTPUT_LIBRARY_FILE) : $(ALL_OBJECT_FILES)
 		@echo "Archiving files to library..."
-		@if not exist $(OUTPUT_DIRECTORY_BASE) mkdir $(OUTPUT_DIRECTORY_BASE)
-		@if not exist $(OUTPUT_DIRECTORY_EXEC) mkdir $(OUTPUT_DIRECTORY_EXEC)
+		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
+		@if not exist "$(OUTPUT_DIRECTORY_EXEC)" mkdir "$(OUTPUT_DIRECTORY_EXEC)"
 		@$$(AR) -r --target=elf32-littlearm $$@ $(ALL_OBJECT_FILES) 
 		@echo "Archiving complete."
 endef
@@ -124,9 +124,9 @@ endef
 define TEMPLRECIPE_AFILE
 $(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.s
 		@echo "Assembling:      $$<"
-		@if not exist $(OUTPUT_DIRECTORY_BASE) mkdir $(OUTPUT_DIRECTORY_BASE)
-		@if not exist $(OUTPUT_DIRECTORY_OBJECTS) mkdir $(OUTPUT_DIRECTORY_OBJECTS)
-		@if not exist "$$(dir $$@)" mkdir $$(dir $$@)
+		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
+		@if not exist "$(OUTPUT_DIRECTORY_OBJECTS)" mkdir "$(OUTPUT_DIRECTORY_OBJECTS)"
+		@if not exist "$$(dir $$@)" mkdir "$$(dir $$@)"
 		@$$(CC) $(AFLAGS) -o $$@ $$<
 endef
 
@@ -136,9 +136,9 @@ endef
 define TEMPLRECIPE_CFILE
 $(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.c
 		@echo "Compiling (C):   $$<"
-		@if not exist $(OUTPUT_DIRECTORY_BASE) mkdir $(OUTPUT_DIRECTORY_BASE)
-		@if not exist $(OUTPUT_DIRECTORY_OBJECTS) mkdir $(OUTPUT_DIRECTORY_OBJECTS)
-		@if not exist "$$(dir $$@)" mkdir $$(dir $$@)
+		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
+		@if not exist "$(OUTPUT_DIRECTORY_OBJECTS)" mkdir "$(OUTPUT_DIRECTORY_OBJECTS)"
+		@if not exist "$$(dir $$@)" mkdir "$$(dir $$@)"
 		@$$(CC) $(CFLAGS) -o $$@ $$<
 endef
 
@@ -148,8 +148,8 @@ endef
 define TEMPLRECIPE_CXXFILE
 $(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.cpp
 		@echo "Compiling (C++): $$<"
-		@if not exist $(OUTPUT_DIRECTORY_BASE) mkdir $(OUTPUT_DIRECTORY_BASE)
-		@if not exist $(OUTPUT_DIRECTORY_OBJECTS) mkdir $(OUTPUT_DIRECTORY_OBJECTS)
-		@if not exist "$$(dir $$@)" mkdir $$(dir $$@)
+		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
+		@if not exist "$(OUTPUT_DIRECTORY_OBJECTS)" mkdir "$(OUTPUT_DIRECTORY_OBJECTS)"
+		@if not exist "$$(dir $$@)" mkdir "$$(dir $$@)"
 		@$$(CXX) $(CXXFLAGS) -o $$@ $$<
 endef

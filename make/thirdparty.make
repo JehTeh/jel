@@ -26,7 +26,9 @@
 
 #Include paths for RTOS functionality. The freeRTOS core files are always built, but depending on
 #the target CPU or freeRTOS+TCP requirements, a variation in porting files may be needed.
+RTOS_CONFIGURATION_INCLUDE_PATH_BASE = "./os/freertos"
 RTOS_INCLUDE_PATH_BASE = ".\ThirdParty\amazon-freertos\lib\include"
+RTOS_PRIVATE_INCLUDE_PATH_BASE = ".\ThirdParty\amazon-freertos\lib\include\private"
 RTOS_INCLUDE_PATH_ARM_R5 = ".\ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CR5"
 RTOS_INCLUDE_PATH_ARM_M4F = ".\ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F"
 #Cpputest include directory. Note: cpputest is not built by the master project makefile. It must be

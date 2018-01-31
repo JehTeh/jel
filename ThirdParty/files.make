@@ -1,4 +1,4 @@
-# Top level makefile for the jel - JT's Embedded Libraries.
+# Source includes for third party files.
 # 
 #	Written By Jonathan Thomson
 #
@@ -23,30 +23,26 @@
 # OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ####################################################################################################
 #
-# To reduce clutter, this makefile is broken into multiple components. Most of these components can 
-# be found inside the ./make subdirectory.
 
-#Include toolchain definitions, such as compilers, linkers, standard lib locations, etc.
-include ./make/toolchain.make
-#Include RTOS/Cpputest/fatfs etc related definitions common across all targets.
-include ./make/thirdparty.make
-#Include common make definitions, such as compiler warning flags and directory name templates.
-include ./make/common.make
-#Include CPU target flags
-include ./make/processors.make
-#Include filetype definitions
-include ./make/filetypes.make
-#Include template recipe rules. These templates are expanded by each individual target.
-include ./make/rules.make
-############################
-#   Source File Includes   #
-############################
-#All source files should be included from their respective directories sub .make files here.
-#This includes any target specific source definitions, which will be used in the included targets
-#section below.
+#FreeRTOS files
+ASOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
+		\
+		)
 
-include ./ThirdParty/files.make
-############################
-#       Target Rules       #
-############################
-include ./make/targets/tm4c123gh6pm.make
+CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
+   	event_groups.c \
+   	list.c \
+   	queue.c \
+   	stream_buffer.c \
+   	tasks.c \
+   	timers.c \
+		)
+
+CXXSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
+		\
+		)
+
+#FreeRTOS files - Target specific porting files
+TM4C123GH6PM_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\
+   	port.c \
+		)
