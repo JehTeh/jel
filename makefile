@@ -45,6 +45,7 @@ include ./make/rules.make
 #This includes any target specific source definitions, which will be used in the included targets
 #section below.
 
+include ./os/files.make
 include ./ThirdParty/files.make
 ############################
 #       Target Rules       #
