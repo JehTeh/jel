@@ -11,8 +11,18 @@
  *
  *    The typical boot process is as follows:
  *      -MCU Reset vector called, _resetVector().
- *      -
- *
+ *      -CPU clocks and the FPU (if present) are enabled and initialized.
+ *      -The .bss and .data sections are initialized.
+ *      -The interrupt controller is configured and interrupts are enabled.
+ *      -Minimal hardware peripherals are enabled and initialized, such as the system clock and GPIO
+ *      drivers (including pinmuxing).
+ *      -A maximum priority thread is created (the BOOT thread) and the OS is started.
+ *      -----
+ *      -The BOOT thread performs various common system component setup, including stdio, any
+ *      filesystems, external RAM, MPU, etc.
+ *      -C++ constructors are called and libc/newlib initialization is performed.
+ *      -The startup thread tags itself for deletion and control is handed over to any threads
+ *      instantiated in a static constructor.
  *
  *  @author Jonathan Thomson 
  */
