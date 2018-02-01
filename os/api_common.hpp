@@ -102,6 +102,16 @@ public:
 private:
   const T* ptr;
 };
+
+namespace os
+{
+  enum class Status
+  {
+    success = 0,
+    failure
+  };
+}
+
 }
 
 

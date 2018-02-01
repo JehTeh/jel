@@ -41,14 +41,15 @@
 namespace jel
 {
 
-/** \class SteadyClock
- *  \brief Provides a constantly increasing microsecond or greater resolution clock.
+/** @class SteadyClock
+ *  @brief Provides a constantly increasing microsecond or greater resolution clock.
  *
  *  The SteadyClock static class is built around the std::chrono library duration and time_point
  *  types. It provides a continuously upwards counting clock source with a guaranteed resolution of
  *  at least 1 microsecond. As per the C++ standard, is_steady is always true for this clock source
  *  (i.e. it will never be adjusted to match network time or similar, it instead reflects the time
  *  since the last system boot).
+ *  See the Timestamp class for an example of the SteadyClock usage.
  * */
 struct SteadyClock
 {
@@ -67,6 +68,24 @@ public:
 private:
 };
 
+/** @class Duration
+ *  @brief Wraps the std::chrono::duration type built into SteadyClock to provide additional
+ *  functionality.
+ *
+ *  The Duration class is designed to extend the functionality of std::chrono::duration. It provides
+ *  an interface based solely around the systems SteadyClock while still being compatible with all
+ *  std::chrono features. Some useful elements of the Duration class include:
+ *    -Built in, rounding conversion to seconds/milliseconds/microseconds.
+ *    -Simplified construction of duration spans from integer types.
+ *  Example of usage:
+ *  @code
+ *  systemIo.scan(buffr, buffer_len, Duration::milliseconds{250}); //Pend on input for up to 250ms.
+ *  //...
+ *  auto d = Duration::microseconds{1234567)};
+ *  log->print("Dur. length is %lu seconds, or %lu milliseconds", d.toSeconds(), d.toMilliseconds());
+ *  @endcode
+ *
+ * */
 class Duration : public SteadyClock::duration
 {
 public:
@@ -103,16 +122,32 @@ public:
       return count() + ((p / ratio) / 2) / ratio;
     }
   /** Create a duration that is t microseconds in span. */
-  static constexpr Duration microsecond(const int64_t t) 
+  static constexpr Duration microseconds(const int64_t t) 
     { return Duration{std::chrono::microseconds{t}}; }
   /** Create a duration that is t milliseconds in span. */
-  static constexpr Duration millisecond(const int64_t t)
+  static constexpr Duration milliseconds(const int64_t t)
     { return Duration{std::chrono::milliseconds{t}}; }
   /** Create a duration that is t seconds in span. */
-  static constexpr Duration second(const int64_t t)
+  static constexpr Duration seconds(const int64_t t)
     { return Duration{std::chrono::seconds{t}}; }
 };
 
+/** @class Timestamp
+ *  @brief Extends std::chrono::time_point functionality based on the system SteadyClock.
+ *
+ *  Timestamps can be used for storing points in time, which is useful when deltaT calculations need
+ *  to be performed or for identifying when during system operation a specific event took place.
+ *  Timestamps are essentially composed of a duration and a reference point, for the Timestamp class
+ *  this reference point is the '0' time of the SteadyClock (last system boot).
+ *  Example usage:
+ *  @code
+ *  Timestamp start = SteadyClock::now(); //Snapshot current time.
+ *  runBenchmarkCode(); //Perform some action.
+ *  Timestamp end = SteadyClock::now(); //Snapshot completion time.
+ *  Duration deltaT = end - start; //We now know how long the 'runBenchmarkCode()' operation took.
+ *  @endcode
+ *
+ * */
 class Timestamp : public SteadyClock::time_point
 {
 public:
@@ -130,6 +165,7 @@ public:
   inline constexpr Timestamp(const SteadyClock::duration& d) : time_point{d} { }
   /** Move construct from a duration. */
   inline constexpr Timestamp(SteadyClock::duration&& d) : time_point{std::move(d)} { }
+  /** Move and copy assignment from Timestamps and time_points */
   inline Timestamp& operator=(const Timestamp& rhs) 
     { time_point::operator= (rhs); return *this; }
   inline Timestamp& operator=(Timestamp&& rhs) 

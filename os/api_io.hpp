@@ -50,9 +50,11 @@
 #pragma once
 
 /** C/C++ Standard Library Headers */
+#include <memory>
 
 /** jel Library Headers */
 #include "os/api_common.hpp"
+#include "os/api_time.hpp"
 
 namespace jel
 {
@@ -60,13 +62,54 @@ namespace jel
 namespace os
 {
 
+/** @class SerialWriterInterface
+ *  @brief The SerialWriterInterface is implemented by drivers that support serial transmission of
+ *  data.
+ *  @note The SerialWriteInterface does not support multi-threaded operation. Simultaneous calls to
+ *  Writer functions from multiple threads have undefined behavior.
+ * */
 class SerialWriterInterface
 {
 public:
-  virtual void print(const char* cStr, const size_t length_chars);
-  virtual void print(const char c);
-  virtual bool pendUntilFree();
+  /** Write a string of length_chars to the output. If the output is busy, transmission will be
+   * overridden as soon as possible. */
+  virtual void write(const char* cStr, const size_t length_chars) const = 0;
+  /** Write a single character to the output. If the output is busy, transmission will be overridden
+   * as soon as possible. */
+  virtual void write(const char c) const = 0;
+  /** Check if the transmitter is currently busy. If a nonzero timeout parameter is specified, this
+   * call will block until the transmitter is no longer busy or the timeout expires. */
+  virtual bool isBusy(const Duration& timeout) const = 0;
 };
 
-}
-}
+/** @class SerialReaderInterface
+ *  @brief The SerialReaderInterface is implemented by drivers that support serial reception of
+ *  data.
+ *  @note The SerialReaderInterface does not support multi-threaded operation. Simultaneous calls to
+ *  Reader functions from multiple threads have undefined behavior.
+ * */
+class SerialReaderInterface
+{
+public:
+  /** Reads incoming data into the pointed to buffer, up to a maximum length (not including a null
+   * terminator) of bufferLength_chars. Data is not null terminated, and is returned exactly as is
+   * read from the input stream. A timeout must also be specified, if the timeout is exceeded then
+   * the call will return regardless of the number of characters received.
+   * @returns The number of characters received. */
+  virtual size_t read(char* buffer, const size_t bufferLength_chars, 
+    const Duration& timeout) const = 0;
+};
+
+class AsyncWriter
+{
+  AsyncWriter(const std::unique_ptr<SerialWriterInterface> writer);
+  Status write(const char* data, const size_t len) const;
+};
+
+class AsyncReader
+{
+  AsyncReader(const std::unique_ptr<SerialReaderInterface> reader);
+};
+
+} /** namespace os */
+} /** namespace jel */
