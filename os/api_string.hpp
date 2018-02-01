@@ -54,9 +54,6 @@
 namespace jel
 {
 
-
-
-
 /** String
  *  The jel String class provides a custom, embedded friendly C++ std::string style string object.
  * */

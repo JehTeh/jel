@@ -60,5 +60,13 @@ namespace jel
 namespace os
 {
 
+class SerialWriterInterface
+{
+public:
+  virtual void print(const char* cStr, const size_t length_chars);
+  virtual void print(const char c);
+  virtual bool pendUntilFree();
+};
+
 }
 }
