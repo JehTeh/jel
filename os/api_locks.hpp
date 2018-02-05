@@ -4,8 +4,8 @@
  *  @detail
  *    Multiple locking primitives are provided. These are typically directly backed by the
  *    underlying RTOS primitives. The following primitives are available:
- *      -A base implementation class. This should not be instantiated in the application directly.
- *      -A generic lock class. This can be instantiated, but is typically not preferred.
+ *      -A generic lock class. This can be instantiated, but is typically not preferred over
+ *      explicit lock types.
  *      -Specalized lock classes, including:
  *        -A basic semaphore. This is ISR safe.
  *        -A counting semaphore. This is also ISR safe.
@@ -40,7 +40,6 @@
 #pragma once
 
 /** C/C++ Standard Library Headers */
-#include <memory>
 
 /** jel Library Headers */
 #include "os/api_common.hpp"
@@ -50,8 +49,16 @@ namespace jel
 {
 namespace os
 {
-
-class Lock_Base
+/** @class Lock
+*  @brief Provides a thread-safe locking primitive.
+*
+*  Lock implements a generic lock object. Typically it is recommended to use one of the specialized
+*  child variants instead, such as Mutex or Semaphore. 
+*  @note Lock objects do not support copy construction, but may be moved.
+*  @note Locks may be instantiated either on the stack or via an allocator. A lock requires ~88B of
+*  memory under full optimization.
+*  */
+class Lock
 {
 public:
 /** The supported different types of locks. */
@@ -69,69 +76,34 @@ public:
      * given resource. NOTE: Not usable in ISRs. */
     recursiveMutex,
   };
-  Lock_Base() { } /**< The Lock_Base parent constructor performs no actions. The lock must 
-                             be created via the Lock classes. */
-  ~Lock_Base() noexcept; /**< Parent destructor will destroy the lock via the OS when the child lock
-                           type is destroyed. */
-  Lock_Base(Lock_Base& other) = delete; /**< Locks cannot be copy constructed. */
-  Lock_Base(Lock_Base&& other) noexcept; /**< Locks may be move constructed. */
-  Lock_Base& operator=(Lock_Base& rhs) = delete; /**< Locks cannot be copy assigned. */
-  Lock_Base& operator=(Lock_Base&& rhs) noexcept; /**< Locks may be moved. */
+  /**< The Lock_Base parent constructor performs no actions. The lock must be created via the Lock
+   * classes. */
+  Lock(const Type type, const size_t maxCount = 1, const size_t initialCount = 1); 
+  ~Lock() noexcept;
+  Lock(Lock& other) = delete; /**< Locks cannot be copy constructed. */
+  Lock(Lock&& other)  = delete; /**< Locks may not be move constructed. */
+  Lock& operator=(Lock& rhs) = delete; /**< Locks cannot be copy assigned. */
+  Lock& operator=(Lock&& rhs)  = delete; /**< Locks may not be moved. */
   /** The calling thread will attempt to acquire the lock within the specified timeout. This is the 
    * same as attempting to decrement the count for a counting semaphore, which will only succeed if 
    * the count is greater than zero. By default, the timeout is specified to be the maximum possible
    * in the system. */
-  Status lock(const Duration& timeout = Duration::max());
+  Status lock(const Duration& timeout = Duration::max()) noexcept;
   /** The calling thread will release the lock if it currently holds it. This is the same as 
    * increasing the count for a counting semaphore. If the lock is
   * currently free or at its maximum count, this function will have no effect. */
-  Status unlock();
+  void unlock() noexcept;
   /** Returns true if two locks are identical. */
-  bool operator==(const Lock_Base& other)
-  {
-    if(this->handle == other.handle)
-    {
-      return true;
-    }
-    return false;
-  }
+  bool operator==(const Lock& other) const noexcept { return handle_ == other.handle_; }
   /** Returns true if two locks are not identical. */
-  bool operator!=(const Lock_Base& other)
-  {
-    if(*this == other)
-    {
-      return false;
-    }
-    return true;
-  }
+  bool operator!=(const Lock& other) const noexcept { return !(*this == other); }
 protected:
-  using Handle = void*; 
-  Handle handle; 
-  Type type;
-  Status initializeLock() noexcept;
-};
-
-/** @class Lock
- *  @brief Provides a thread-safe locking primitive.
- *
- *  Lock implements a generic lock object. Typically it is recommended to use one of the specialized
- *  child variants instead, such as Mutex or Semaphore. 
- *  @note Lock objects do not support copy construction, but may be moved.
- *  */
-class Lock : public Lock_Base
-{
-public:
-  Lock(const Type type) : Lock(type, 1, 1) {}
-  Lock(const Type, const size_t maxSemaphoreCount, const size_t initialSemaphoreCount); 
-  Lock(Lock& other) = delete;
-  Lock(Lock&& other) noexcept : Lock_Base(std::move(other)) { }
-  Lock& operator=(Lock& rhs) = delete; 
-  Lock& operator=(Lock&& rhs) noexcept 
-    { Lock::operator=(std::move(rhs)); return *this; } 
-private:
   static constexpr size_t LockMemorySize_Bytes = 80;
-  using Storage = uint8_t[LockMemorySize_Bytes]; 
-  Storage lockData __attribute__((aligned(4))); 
+  using Handle = void*; 
+  using StaticMemoryBlock = uint8_t[LockMemorySize_Bytes]; 
+  Type type_;
+  Handle handle_; 
+  StaticMemoryBlock staticMemory_ __attribute__((aligned(4))); 
 };
 
 class Semaphore : public Lock
@@ -139,10 +111,9 @@ class Semaphore : public Lock
 public:
   Semaphore() : Lock(Type::semaphore) { } 
   Semaphore(Semaphore& other) = delete; 
-  Semaphore(Semaphore&& other) noexcept : Lock(std::move(other)) { } 
+  Semaphore(Semaphore&& other)  = delete; 
   Semaphore& operator=(Semaphore& rhs) = delete; 
-  Semaphore& operator=(Semaphore&& rhs) noexcept 
-    { Lock::operator=(std::move(rhs)); return *this; } 
+  Semaphore& operator=(Semaphore&& rhs)  = delete;
 };
 
 class CountingSemaphore : public Lock
@@ -151,10 +122,9 @@ public:
   CountingSemaphore(const size_t maxSemaphoreCount, const size_t initialSemaphoreCount) : 
     Lock(Type::countingSemaphore, maxSemaphoreCount, initialSemaphoreCount) { }
   CountingSemaphore(CountingSemaphore& other) = delete; 
-  CountingSemaphore(CountingSemaphore&& other) noexcept : Lock(std::move(other)) { } 
+  CountingSemaphore(CountingSemaphore&& other)  = delete;
   CountingSemaphore& operator=(CountingSemaphore& rhs) = delete; 
-  CountingSemaphore& operator=(CountingSemaphore&& rhs) noexcept 
-    { Lock::operator=(std::move(rhs)); return *this; } 
+  CountingSemaphore& operator=(CountingSemaphore&& rhs)  = delete;
   size_t getCount() noexcept;
 };
 
@@ -163,9 +133,9 @@ class Mutex : public Lock
 public:
   Mutex() : Lock(Type::mutex) { }
   Mutex(Mutex& other) = delete; 
-  Mutex(Mutex&& other) noexcept : Lock(std::move(other)) { } 
+  Mutex(Mutex&& other)  = delete;
   Mutex& operator=(Mutex& rhs) = delete; 
-  Mutex& operator=(Mutex&& rhs) noexcept { Lock::operator=(std::move(rhs)); return *this; } 
+  Mutex& operator=(Mutex&& rhs)  = delete;
   bool isLocked() noexcept;
 protected:
   Mutex(const Type recursiveMutex) noexcept : Lock(Type::recursiveMutex) 
@@ -177,48 +147,61 @@ class RecursiveMutex : public Mutex
 public:
   RecursiveMutex() : Mutex(Type::recursiveMutex) { } 
   RecursiveMutex(RecursiveMutex& other) = delete; 
-  RecursiveMutex(RecursiveMutex&& other) noexcept : Mutex(std::move(other)) { } 
+  RecursiveMutex(RecursiveMutex&& other) = delete;
   RecursiveMutex& operator=(RecursiveMutex& rhs) = delete; 
-  RecursiveMutex& operator=(RecursiveMutex&& rhs) noexcept 
-    { Mutex::operator=(std::move(rhs)); return *this; } 
+  RecursiveMutex& operator=(RecursiveMutex&& rhs) = delete;
 };
 
 class LockGuard
 {
 public:
-  LockGuard(Lock_Base* lockPtr, const Duration& timeout = Duration::max()) noexcept;
-  LockGuard(Lock_Base& lockRef, const Duration& timeout = Duration::max()) noexcept : 
+  LockGuard(Lock* lockPtr, const Duration& timeout = Duration::max()) noexcept : lock_(lockPtr)
+  {
+    if(lockPtr == nullptr) { locked_ = false; return; }
+    if(lock_->lock(timeout) == Status::success) { locked_ = true; }
+    else { locked_ = false; }
+  }
+  LockGuard(Lock& lockRef, const Duration& timeout = Duration::max()) noexcept : 
     LockGuard(&lockRef, timeout) {}
-  ~LockGuard() noexcept; 
+  ~LockGuard() noexcept 
+  {
+    if(lock_ && locked_) { lock_->unlock(); }
+  }
   LockGuard(const LockGuard& other) = delete;  
   LockGuard(LockGuard&& other) 
-    { 
-      this->lock = other.lock; this->locked = other.locked; 
-      other.lock = nullptr; other.locked = false; 
-    }  
+  { 
+    lock_ = other.lock_; locked_ = other.locked_; 
+    other.lock_ = nullptr; other.locked_ = false; 
+  }  
   LockGuard& operator=(const LockGuard& rhs) = delete;  
   LockGuard& operator=(LockGuard&& other) 
   {
-    this->lock = other.lock; this->locked = other.locked;
-    other.lock = nullptr; other.locked = false;
+    lock_ = other.lock_; locked_ = other.locked_;
+    other.lock_ = nullptr; other.locked_ = false;
     return *this;
   }
   /** Determines whether the held lock is the same as another lock object. */
-  bool operator==(const Lock_Base& comp)
-  {
-    if(lock == &comp) { return true; } else { return false; }
-  }
+  bool operator==(const Lock& other) const { return *lock_ == other; }
   /** If the LockGaurd acquired the lock successfully, this will return true. */
-  bool isLocked() noexcept; 
+  bool isLocked() const noexcept { return locked_; }
   /** If a lock was not acquired on instantiation, calling this will attempt to capture it. Caution:
    * When used with a CountingSemaphore or RecursiveMutex, this can succeed multiple times. The
    * Guard will only perform a single RAII release() operation, however. */
-  Status retryLock(const Duration& timeout) noexcept; 
+  Status retryLock(const Duration& timeout) noexcept 
+  {
+    if(lock_ == nullptr) { locked_ = false; return Status::failure; }
+    if(lock_->lock(timeout) == Status::success) { locked_ = true; return Status::success; }
+    else { locked_ = false; return Status::failure; }
+  }
   /** Manually release the underlying lock. */
-  Status release() noexcept; 
+  Status release() noexcept 
+  {
+    if(lock_ && locked_) { lock_->unlock(); return Status::success; }
+    else { return Status::failure; }
+  }
 protected:
-  Lock_Base* lock; 
-  bool locked;
+  Lock* lock_; 
+  bool locked_;
 };
 
 } /** namespace os */

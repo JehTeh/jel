@@ -67,7 +67,16 @@ flags = [
 '-I',
 '.',
 '-I',
+'./ThirdParty/amazon-freertos/lib/include',
+'-I',
+'./ThirdParty/amazon-freertos/lib/include/private',
+'-I',
+'./ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F',
+'-I',
+'./os/freertos',
+'-I',
 './../',
+'-DHW_TARGET_TM4C123GH6PM',
 ]
 # Set this to the absolute path to the folder (NOT the file!) containing the
 # compile_commands.json file to use that instead of 'flags'. See here for
