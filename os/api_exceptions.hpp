@@ -96,8 +96,8 @@ public:
 #ifndef JEL_DISABLE_EXCEPTION_PRINTF_SUPPORT
     va_list args; va_start(args, message);
     int bufSize = std::vsnprintf(nullptr, 0, message, args); 
-    errorString = new char[bufSize]; 
-    std::vsnprintf(errorString, bufSize, message, args);
+    errorString_ = new char[bufSize]; 
+    std::vsnprintf(errorString_, bufSize, message, args);
     va_end(args); 
 #else
     (void)message;
@@ -106,26 +106,26 @@ public:
   ~Exception_Base()
   {
 #ifndef JEL_DISABLE_EXCEPTION_PRINTF_SUPPORT
-    if(errorString)
+    if(errorString_)
     {
-      delete[] errorString;
+      delete[] errorString_;
     }
 #endif
   }
-  Exception_Base(Exception_Base&& rhs) : module(rhs.exMod), error(rhs.exCode)
+  Exception_Base(Exception_Base&& rhs) : module(rhs.module), error(rhs.error)
   {
 #ifndef JEL_DISABLE_EXCEPTION_PRINTF_SUPPORT
-    this->exMsg = rhs.exMsg;
-    rhs.exMsg = nullptr;  
+    this->errorString_= rhs.errorString_;
+    rhs.errorString_ = nullptr;  
 #else
-   this->exMsg = rhs.exMsg;
+   this->errorString_ = rhs.errorString_;
 #endif
   }
-  Exception_Base(const Exception_Base& rhs) : module(rhs.exMod), error(rhs.exCode)
+  Exception_Base(const Exception_Base& rhs) : module(rhs.module), error(rhs.error)
   {
 #ifndef JEL_DISABLE_EXCEPTION_PRINTF_SUPPORT
-    errorString = new char[std::strlen(rhs.exMsg) + 1];
-    std::strcpy(errorString, rhs.exMsg);
+    errorString_ = new char[std::strlen(rhs.exMsg) + 1];
+    std::strcpy(errorString_, rhs.exMsg);
 #else
 #endif
   }
@@ -133,14 +133,14 @@ public:
   const char* what() const noexcept final override 
   { 
 #ifndef JEL_DISABLE_EXCEPTION_PRINTF_SUPPORT
-    return errorString;
+    return errorString_;
 #else
     return "Error messages are only available when NDEBUG is undefined.";
 #endif
   }
 private:
 #ifndef JEL_DISABLE_EXCEPTION_PRINTF_SUPPORT
-  char* errorString; 
+  char* errorString_; 
 #endif
 };
 
