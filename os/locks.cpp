@@ -180,8 +180,10 @@ void Lock::unlock() noexcept
       case Type::mutex:
       case Type::countingSemaphore:
         xSemaphoreGive(handle_);
+        break;
       case Type::recursiveMutex:
         xSemaphoreGiveRecursive(handle_);
+        break;
       default:
         assert(false); //Illegal lock type.
         return;
