@@ -39,6 +39,10 @@ namespace jel
 namespace os
 {
 
+/** @class GenericCopyQueue_Base
+ *  @brief This base class is used strictly as a helper and should not be used in the application
+ *  directly.
+ * */
 class GenericCopyQueue_Base
 {
 protected:
@@ -61,7 +65,11 @@ private:
 /** @class Queue
  *  @brief General Queue template for a threadsafe, RTOS backed Queue.
  *
- *
+ *  The Queue class can be used for either POD style objects or most 'smart' non-POD objects such as
+ *  smart pointers (see note for details). The Queue interface is designed to implement as much of
+ *  the functionality of std::queue as is made available from the underlying RTOS, but there are
+ *  some important functional differences.
+ *    
  *  @note: For 'smart' objects that make use of non-trivial move and copy constructors, some
  *  additional overhead is required. Furthermore, any objects that store their address or the
  *  address of their members/have this address stored somewhere will be corrupted by this queue.
@@ -74,7 +82,8 @@ private:
  *  @note Eventually this Queue object will be re-rolled such that it is tightly integrated with the
  *  RTOS and supports direct move and copy operations across MPU barriers.
  *  */
-template<typename T, size_t maxNumberOfElements, bool isTrivial = std::is_trivially_copyable<T>::value>
+template<typename T, size_t maxNumberOfElements, 
+  bool isTrivial = std::is_trivially_copyable<T>::value>
 class Queue : private GenericCopyQueue_Base
 {
 public:
@@ -126,6 +135,8 @@ public:
       return Status::failure;
     }
   }
+  size_t size() const noexcept { return genericGetSize(); }
+  bool empty() const noexcept { return genericGetSize() > 0 ? false : true; }
 private:
   uint8_t itemMemory_[sizeof(T) * maxNumberOfElements];
 };
