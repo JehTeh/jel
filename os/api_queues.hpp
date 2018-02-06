@@ -2,6 +2,14 @@
  *  @brief Interface for all asynchronous queue primitives. 
  *
  *  @detail
+ *    The current implementation of the Queue  features a generic template Queue class capable of
+ *    handling both smart and regular POD objects, with some small limitations. Generally speaking,
+ *    the intended use of the Queue is for transfering small amounts of data (a few pointers/smart
+ *    pointers or less) between threads. As data is moved by copy, it is not recommended that
+ *    larger volumes of data be transferred. Instead, it is often more memory efficient to have a
+ *    producer and consumer queue where the consumer receives pointers to data to process, feeding
+ *    them back to the producer queue when done. This does result in the overhead of an additional
+ *    Queue (80B + (max number of pointers * 4B)) but removes the requirement for large data copies.
  *
  *  @author Jonathan Thomson 
  */
