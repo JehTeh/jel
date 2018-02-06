@@ -42,20 +42,20 @@ namespace os
 class GenericCopyQueue_Base
 {
 protected:
-  GenericCopyQueue_Base(const size_t maxLength, const size_t itemSize);
+  GenericCopyQueue_Base(const size_t maxLength, const size_t itemSize, uint8_t* memory);
   ~GenericCopyQueue_Base() noexcept;
   Status genericPush(const void* item, const Duration& timeout) noexcept;
   Status genericPushToFront(const void* item, const Duration& timeout) noexcept;
-  Status genericPop(const void* item, const Duration& timeout) noexcept;
-  Status genericGetSize(const void* item, const Duration& timeout) noexcept;
-  Status genericGetFreeSpace(const void* item, const Duration& timeout) noexcept;
-  Status genericErase(const void* item, const Duration& timeout) noexcept;
+  Status genericPop(void* item, const Duration& timeout) noexcept;
+  size_t genericGetSize() const noexcept;
+  size_t genericGetFreeSpace() const noexcept;
+  void genericErase() noexcept;
 private:
   using CbStorage = uint8_t[80];
   using Handle = void*;
   Handle handle_;
   CbStorage cbMemory_ __attribute__((aligned(4)));
-  uint8_t* itemMemory_;
+  uint8_t* itemStoragePtr_;
 };
 
 /** @class Queue
@@ -78,7 +78,7 @@ template<typename T, size_t maxNumberOfElements, bool isTrivial = std::is_trivia
 class Queue : private GenericCopyQueue_Base
 {
 public:
-  Queue();
+  Queue() : GenericCopyQueue_Base(maxNumberOfElements, sizeof(T), itemMemory_) { }
   ~Queue() noexcept;
   template<typename = std::enable_if<isTrivial>>
   Status push(const T& item, const Duration& timeout = Duration::max()) noexcept

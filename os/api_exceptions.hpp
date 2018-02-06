@@ -151,6 +151,7 @@ enum class ExceptionCode : uint32_t
 {
   allocationFailed = 0,
   lockConstructionFailed,
+  queueConstructionFailed,
 };
 
 class Exception : public Exception_Base<RESERVED_OS_MODULE_ID, ExceptionCode>

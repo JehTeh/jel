@@ -40,7 +40,83 @@ namespace jel
 namespace os
 {
 
+GenericCopyQueue_Base::GenericCopyQueue_Base(const size_t maxLength, const size_t itemSize, uint8_t* memory) :
+  itemStoragePtr_(memory)
+{
+  static_assert(sizeof(CbStorage) == sizeof(StaticQueue_t), 
+    "Static queue storage size must be equal to underlying OS primitive size.");
+  handle_ = xQueueCreateStatic(maxLength, itemSize, itemStoragePtr_, reinterpret_cast<StaticQueue_t*>(cbMemory_));
+  if(handle_ == nullptr)
+  {
+    throw Exception{ExceptionCode::queueConstructionFailed,
+      "Failed while constructing queue."};
+  }
+}
 
+GenericCopyQueue_Base::~GenericCopyQueue_Base() noexcept
+{
+  if(handle_ != nullptr)
+  {
+    vQueueDelete(handle_);
+  }
+}
+
+//Macro to avoid repetition. Used in place of tempaltes because FreeRTOS wraps queue API calls in
+//various macros.
+#define GENERIC_QUEUE_ACTION(isrAction, normalAction , item, timeout) \
+  assert(item); \
+  if(System::inIsr()) \
+  { \
+    auto wakeHpTask = pdFALSE; \
+    if(isrAction(handle_, item, &wakeHpTask) == pdTRUE) \
+    { \
+      portYIELD_FROM_ISR(wakeHpTask); \
+      return Status::success; \
+    } \
+    return Status::failure; \
+  } \
+  else \
+  { \
+    if(normalAction(handle_, item, toTicks(timeout)) == pdTRUE) \
+    { \
+      return Status::success; \
+    } \
+    else \
+    { \
+      return Status::success; \
+    } \
+  }
+
+Status GenericCopyQueue_Base::genericPush(const void* item, const Duration& timeout) noexcept
+{
+  GENERIC_QUEUE_ACTION(xQueueSendToBackFromISR, xQueueSendToBack, item, timeout)
+}
+
+Status GenericCopyQueue_Base::genericPushToFront(const void* item, const Duration& timeout) noexcept
+{
+  GENERIC_QUEUE_ACTION(xQueueSendToFrontFromISR, xQueueSendToFront, item, timeout)
+}
+
+Status GenericCopyQueue_Base::genericPop(void* item, const Duration& timeout) noexcept
+{
+  GENERIC_QUEUE_ACTION(xQueueReceiveFromISR, xQueueReceive, item, timeout)
+}
+
+size_t GenericCopyQueue_Base::genericGetSize() const noexcept
+{
+  if(System::inIsr()) { return uxQueueMessagesWaitingFromISR(handle_); }
+  else { return uxQueueMessagesWaiting(handle_); }
+}
+
+size_t GenericCopyQueue_Base::genericGetFreeSpace() const noexcept
+{
+  return uxQueueSpacesAvailable(handle_);
+}
+
+void GenericCopyQueue_Base::genericErase() noexcept
+{
+  xQueueReset(handle_);
+}
 
 } /** namespace os */
 } /** namespace jel */

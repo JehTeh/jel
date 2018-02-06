@@ -35,5 +35,6 @@ CSOURCE += $(addprefix os\,\
 CXXSOURCE += $(addprefix os\,\
 		boot.cpp \
 		locks.cpp \
+		queues.cpp \
 		)
 
