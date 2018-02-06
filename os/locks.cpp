@@ -3,7 +3,29 @@
  *
  *  @detail
  *    Locks are all implemented via the Lock base class. This provides the RTOS abstraction
- *    functionality. 
+ *    functionality. Note that all locks are designed using the static types supported by FreeRTOS.
+ *    This allows for fine control over memory management; locks may be allocated via new() if
+ *    desired but may also be stack allocated or a member of other objects. The older style malloc()
+ *    calling semaphores, mutexes etc. are not implemented by the locks API and are not intended for
+ *    use in the jel. Emulating the older style locks is possible by simply using the RTOS heap.
+ *
+ *  @code
+ *    //Create a new Mutex lock on the standard RTOS heap (i.e. heap used by 'new()'.)
+ *    std::unique_ptr<jel::os::Mutex> mtx = std::make_unique<jel::os::Mutex>();
+ *  @endcode
+ *
+ *    Use of 'static' objects allows for simple, thread safe RAII that does not require access to the
+ *    global system heap. For example, a stack allocated mutex will not require a free()/delete call
+ *    and therefore reduces system blocking time when created or destroyed only to the RTOS
+ *    teardown.
+ *  @note
+ *    A static assertion is used to verify that the memory reserved in the Lock definition is the
+ *    same size as the memory required by the RTOS primitive. Changes in the RTOS configuration may
+ *    require a change in this object size as well. This method is preferred as a way to isolate the
+ *    RTOS implementation from the application, at the cost of some tedium when reconfiguring the
+ *    RTOS (and application level testing to ensure stack sizes and object sizes are still
+ *    acceptable).
+ *
  *  @author Jonathan Thomson 
  */
 /**
