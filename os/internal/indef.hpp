@@ -53,7 +53,7 @@ inline TickType_t toTicks(const Duration& d) noexcept
   {
     TickType_t ticks = t_us / usPerTick;
     if(ticks == 0) { return 1; }
-    return ticks;
+    return ticks > UINT32_MAX ? UINT32_MAX : ticks;
   }
   else
   {
