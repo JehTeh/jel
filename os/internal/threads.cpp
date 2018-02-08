@@ -76,7 +76,7 @@ void GenericThread_Base::startThread(Thread* threadObject, const char* threadNam
 
 void GenericThread_Base::dispatcher(Thread* thread)
 {
-  thread->handle_ = xTaskGetHandle(nullptr);
+  thread->handle_ = xTaskGetCurrentTaskHandle();
   try
   {
     thread->userFunc_(thread->userArgPtr_);

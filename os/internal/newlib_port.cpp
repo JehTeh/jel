@@ -64,6 +64,7 @@ void* realloc(void* ptr, size_t size);
 void* calloc(size_t ptr, size_t size);
 void free(void* ptr);
 void _exit(int);
+int _kill(int, int);
 int _getpid();
 int _stat(const char*, struct stat*);
 int _fstat(int, struct stat*);
@@ -75,52 +76,53 @@ int _unlink(const char*);
 int _lseek(int, int, int);
 int _read(int, char*, int);
 int _write(int file, char *ptr, int len);
+void* _sbrk(int increment);
 #ifdef __cplusplus
 }
 #endif
 void* operator new(size_t size)
 {
-  return jel::os::systemAllocator->allocate(size);
+  return jel::os::SystemAllocator::systemAllocator()->allocate(size);
 }
 
 void* operator new[](size_t size)
 {
-  return jel::os::systemAllocator->allocate(size);
+  return jel::os::SystemAllocator::systemAllocator()->allocate(size);
 }
 
 void operator delete(void* ptr) noexcept
 {
-  jel::os::systemAllocator->deallocate(ptr);
+  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 void operator delete[](void* ptr) noexcept
 {
-  jel::os::systemAllocator->deallocate(ptr);
+  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 void operator delete(void* ptr, size_t) noexcept
 {
-  jel::os::systemAllocator->deallocate(ptr);
+  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 void operator delete[](void* ptr, size_t) noexcept
 {
-  jel::os::systemAllocator->deallocate(ptr);
+  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 void* operator new(size_t size, char const*, int)
 {
-  return jel::os::systemAllocator->allocate(size);
+  return jel::os::SystemAllocator::systemAllocator()->allocate(size);
 }
 
 void operator delete(void* ptr, char const*, int ) 
 {
-  jel::os::systemAllocator->deallocate(ptr);
+  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 auto mallocBase = [](size_t size)
 {
-  void* ptr = jel::os::systemAllocator->allocate(size);
+  void* ptr = jel::os::SystemAllocator::systemAllocator()->allocate(size);
   return ptr;
 };
 
@@ -143,7 +145,7 @@ auto callocBase = [](size_t num, size_t size)
 
 auto freeBase = [](void* ptr)
 {
-  jel::os::systemAllocator->deallocate(ptr);
+  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
 };
 
 void* malloc(size_t size)
@@ -288,6 +290,12 @@ int _write(int file, char *ptr, int len)
 {
   (void)file; (void)ptr; (void)len;
   return 0;
+}
+
+void* _sbrk(int increment)
+{
+  (void)increment;
+  return nullptr;
 }
 
 #ifdef __clang__
