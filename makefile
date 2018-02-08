@@ -48,7 +48,7 @@ include ./make/rules.make
 include ./os/files.make
 include ./ThirdParty/files.make
 
-.PHONY: clean force
+.PHONY: clean force targets
 
 ############################
 #       Target Rules       #

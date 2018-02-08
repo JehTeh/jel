@@ -50,7 +50,8 @@
 /** C/C++ Standard Library Headers */
 #include <cstdint>
 /** jel Library Headers */
-
+#include "os/internal/indef.hpp"
+#include "os/api_threads.hpp"
 
 extern "C"
 {
@@ -62,6 +63,15 @@ extern volatile uint32_t _sdata; /**< Start of .data section, located in RAM. */
 extern volatile uint32_t _edata; /**< End of .data section, located in RAM. */
 extern volatile uint32_t _sbss; /**< Start of .bss, located in RAM. */
 extern volatile uint32_t _ebss; /**< End of .bss, located in RAM. */
+
+int main(int, char**);
+namespace jel
+{
+namespace os
+{
+void bootThread(void*);
+}
+}
 
 inline static void initBss()
 {
@@ -80,7 +90,6 @@ inline static void initData()
   }
 }
 
-
 void _resetVector(void)
 {
   //TODO:
@@ -91,7 +100,26 @@ void _resetVector(void)
   initData();
   //-ISR INIT
   //-CORE PERIPHERALS INIT
-  //-OS START
-  //This statement should never be reached under normal operation.
-  while(true);
+  main(0, nullptr);
+  std::terminate();
 }
+
+int main(int, char**)
+{
+  xTaskCreate(&jel::os::bootThread, "BOOT", 512, nullptr, configMAX_PRIORITIES, nullptr);
+  vTaskStartScheduler();
+  return 1;
+}
+
+namespace jel
+{
+namespace os
+{
+
+void bootThread(void*)
+{
+  
+}
+
+} /** namespace os */
+} /** namespace jel */

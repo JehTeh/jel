@@ -289,7 +289,7 @@ int _read(int file, char* buffer, int len)
 int _write(int file, char *ptr, int len)
 {
   (void)file; (void)ptr; (void)len;
-  return 0;
+  return len;
 }
 
 void* _sbrk(int increment)
@@ -297,6 +297,7 @@ void* _sbrk(int increment)
   (void)increment;
   return nullptr;
 }
+
 
 namespace __cxxabiv1
 {
