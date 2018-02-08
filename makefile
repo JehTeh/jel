@@ -47,7 +47,17 @@ include ./make/rules.make
 
 include ./os/files.make
 include ./ThirdParty/files.make
+
+.PHONY: clean force
+
 ############################
 #       Target Rules       #
 ############################
+all : tm4c123gh6pm_dbg tm4c123gh6pm_rel
+
+force :
+
 include ./make/targets/tm4c123gh6pm.make
+
+clean : clean_tm4c123gh6pm_dbg clean_tm4c123gh6pm_rel
+

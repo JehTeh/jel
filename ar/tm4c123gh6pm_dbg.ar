@@ -1,0 +1,4 @@
+CREATE build_tm4c123gh6pm_dbg\bin\tm4c123gh6pm_dbg_fullarchive.a
+ADDLIB build_tm4c123gh6pm_dbg\bin\tm4c123gh6pm_dbg.a
+SAVE
+END
