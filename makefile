@@ -53,11 +53,14 @@ include ./ThirdParty/files.make
 ############################
 #       Target Rules       #
 ############################
-all : tm4c123gh6pm_dbg tm4c123gh6pm_rel
+GLOBAL_TARGET_LIST =
 
-force :
+default : all
 
 include ./make/targets/tm4c123gh6pm.make
 
-clean : clean_tm4c123gh6pm_dbg clean_tm4c123gh6pm_rel
+all : $(GLOBAL_TARGET_LIST)
+clean : $(addprefix clean_, $(GLOBAL_TARGET_LIST))
+info : $(addprefix info_, $(GLOBAL_TARGET_LIST))
 
+force :
