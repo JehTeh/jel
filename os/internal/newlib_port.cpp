@@ -298,6 +298,11 @@ void* _sbrk(int increment)
   return nullptr;
 }
 
+namespace __cxxabiv1
+{
+std::terminate_handler __terminate_handler = abort;
+}
+
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
