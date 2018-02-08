@@ -153,6 +153,7 @@ enum class ExceptionCode : uint32_t
   lockConstructionFailed,
   queueConstructionFailed,
   threadConstructionFailed,
+  allocatorConstructionFailed,
 };
 
 class Exception : public Exception_Base<RESERVED_OS_MODULE_ID, ExceptionCode>

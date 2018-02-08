@@ -36,6 +36,7 @@ CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
    	stream_buffer.c \
    	tasks.c \
    	timers.c \
+    portable\MemMang\heap_4.c \
 		)
 
 CXXSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\

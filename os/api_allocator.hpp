@@ -58,6 +58,7 @@ public:
   /** Removes the allocator from the system allocators table. */
   ~AllocatorStatisticsInterface() noexcept;
   virtual size_t freeSpace_Bytes() const noexcept = 0;
+  virtual size_t minimumFreeSpace_Bytes() const noexcept = 0;
   virtual size_t totalSpace_Bytes() const noexcept = 0;
   virtual size_t totalAllocations() const noexcept { return totalAllocations_; }
   virtual size_t totalDeallocations() const noexcept { return totalDeallocations_; }
@@ -75,7 +76,7 @@ private:
 class AllocatorInterface
 {
 public:
-  virtual void* allocate(const size_t size) = 0;
+  virtual void* allocate(size_t size) = 0;
   virtual void deallocate(void* ptr) = 0;
 };
 
@@ -92,11 +93,16 @@ public:
   SystemAllocator(SystemAllocator&&) = delete;
   SystemAllocator& operator=(const SystemAllocator&) = delete;
   SystemAllocator& operator=(SystemAllocator&&) = delete;
+  void* allocate(size_t size) override final;
+  void deallocate(void* ptr) override final;
+  size_t freeSpace_Bytes() const noexcept override final;
+  size_t minimumFreeSpace_Bytes() const noexcept override final;
+  size_t totalSpace_Bytes() const noexcept override final;
 private:
   static SystemAllocator* singletonPtr;
 };
 
-extern SystemAllocator* systemAllocator;
+extern SystemAllocator* const systemAllocator;
 
 } /** namespace os */
 } /** namespace jel */

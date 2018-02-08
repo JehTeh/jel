@@ -30,6 +30,7 @@
 
 /** jel Library Headers */
 #include "os/api_allocator.hpp"
+#include "os/api_exceptions.hpp"
 #include "os/internal/indef.hpp"
 
 
@@ -37,6 +38,61 @@ namespace jel
 {
 namespace os
 {
+
+static SystemAllocator defaultAllocator;
+
+SystemAllocator* const systemAllocator = &defaultAllocator;
+
+SystemAllocator* SystemAllocator::singletonPtr = nullptr;
+
+SystemAllocator::SystemAllocator() : AllocatorStatisticsInterface("SYSTEM")
+{
+  if(singletonPtr != nullptr)
+  {
+    throw Exception{ExceptionCode::allocatorConstructionFailed, 
+      "The system allocator is already instantiated."};
+  }
+  singletonPtr = this;
+}
+
+SystemAllocator::~SystemAllocator() noexcept
+{
+  singletonPtr = nullptr;
+}
+
+void* SystemAllocator::allocate(size_t size)
+{
+  void* ptr = pvPortMalloc(size);
+  if(ptr == nullptr)
+  {
+    throw std::bad_alloc();
+  }
+  recordAllocation();
+  return ptr;
+}
+
+void SystemAllocator::deallocate(void* ptr) 
+{
+  vPortFree(ptr);
+  recordDeallocation();
+}
+
+size_t SystemAllocator::freeSpace_Bytes() const noexcept
+{
+  size_t fs = xPortGetFreeHeapSize();
+  return fs;
+}
+
+size_t SystemAllocator::minimumFreeSpace_Bytes() const noexcept
+{
+  size_t mfs = xPortGetMinimumEverFreeHeapSize();
+  return mfs;
+}
+
+size_t SystemAllocator::totalSpace_Bytes() const noexcept
+{
+  return configTOTAL_HEAP_SIZE;
+}
 
 } /** namespace os */
 } /** namespace jel */
