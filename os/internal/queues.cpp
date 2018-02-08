@@ -1,4 +1,4 @@
-/** @file os/queues.cpp
+/** @file os/internal/queues.cpp
  *  @brief Implementation of threadsafe queuing primitives
  *
  *  @detail

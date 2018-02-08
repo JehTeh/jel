@@ -1,4 +1,4 @@
-/** @file os/boot.cpp
+/** @file os/internal/boot.cpp
  *  @brief jel system startup.
  *
  *  @detail

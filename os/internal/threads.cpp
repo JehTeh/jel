@@ -1,4 +1,4 @@
-/** @file os/threads.cpp
+/** @file os/internal/threads.cpp
  *  @brief Implementation of the threading wrappers for jel.
  *
  *  @detail

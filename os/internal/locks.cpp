@@ -1,4 +1,4 @@
-/** @file os/locks.cpp
+/** @file os/internal/locks.cpp
  *  @brief Implementation of locking primitives
  *
  *  @detail
