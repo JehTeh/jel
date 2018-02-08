@@ -23,6 +23,8 @@
 # OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ####################################################################################################
 #
+
+#
 ############ TEMPLATE RECIPE VARIABLES ############
 #These recipe variables must be defined by each target. Object files should include the appropriate
 #path to allow for organized out-of-directory builds. Targets must then $(eval) each of the template
@@ -152,4 +154,12 @@ $(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.cpp
 		@if not exist "$(OUTPUT_DIRECTORY_OBJECTS)" mkdir "$(OUTPUT_DIRECTORY_OBJECTS)"
 		@if not exist "$$(dir $$@)" mkdir "$$(dir $$@)"
 		@$$(CXX) $(CXXFLAGS) -o $$@ $$<
+endef
+
+# TEMPLRECIPE_CLEAN
+# Recipe template used for cleaning the target build outputs
+#
+define TEMPLRECIPE_CLEAN
+clean_$(TARGET_NAME) : 
+	@del /S /Q $(OUTPUT_DIRECTORY_BASE)
 endef

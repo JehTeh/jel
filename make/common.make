@@ -46,9 +46,9 @@ COMPILER_FLAGS_CPP_STANDARD = -std=c++14
 ############ LINKER ############
 #Standard libraries to include with the linker
 #Only libstdc++ and libc are needed for building the jel.
-LINKER_FLAGS_STANDARD_LIBRARIES = -lstdc++ -lc 
+LINKER_FLAGS_STANDARD_LIBRARIES = -lstdc++ -lc
 #Common linker flags used for all targets
-LINKER_FLAGS_COMMON = -static -nostartfiles $(COMPILER_FLAGS_LTO)
+LINKER_FLAGS_COMMON = -static -nostartfiles $(COMPILER_FLAGS_LTO) $(LINKER_FLAGS_STANDARD_LIBRARIES)
 #Linker includes. 
 LINKER_FLAGS_INCLUDE_GENERIC_HF = -I . -I $(LIBCXX_INCLUDE_PATH_LINKER_HARDFLOAT)
 LINKER_FLAGS_INCLUDE_GENERIC_SF = -I . -I $(LIBCXX_INCLUDE_PATH_LINKER_SOFTFLOAT)
