@@ -40,5 +40,6 @@ CXXSOURCE += $(addprefix os\,\
 		internal\allocator.cpp \
 		internal\newlib_port.cpp \
 		internal\freertos_hooks.cpp \
+		internal\system.cpp \
 		)
 

@@ -27,37 +27,105 @@
  */
 
 /** C/C++ Standard Library Headers */
-
+#include <cstring>
+#include <cassert>
 /** jel Library Headers */
 #include "os/api_allocator.hpp"
 #include "os/api_exceptions.hpp"
+#include "os/api_system.hpp"
 #include "os/internal/indef.hpp"
-
 
 namespace jel
 {
 namespace os
 {
 
-static SystemAllocator defaultAllocator;
+AllocatorStatisticsInterface::AllocatorsTableEntry*
+  AllocatorStatisticsInterface::allocatorTableStart_ = nullptr; 
 
-SystemAllocator* const systemAllocator = &defaultAllocator;
+AllocatorStatisticsInterface::AllocatorStatisticsInterface(const char* allocatorName)
+{
+  //Add this allocator to the system allocators table. The table is a unidirectional linked list
+  //structure, where the first entry is always the static systemTableStatsEntry_, which represents
+  //the system allocator as it is always the first allocator. Each successive allocator instantiated
+  //will follow the linked list to the end and insert itself and its corresponding table entry
+  //there.
+  statsTableEntry_.statsIf = this;
+  statsTableEntry_.next = nullptr;
+  if(allocatorTableStart_ == nullptr)
+  {
+    allocatorTableStart_ = &statsTableEntry_;
+  }
+  else
+  {
+    AllocatorsTableEntry* tablePtr = allocatorTableStart_;
+    {
+      SchedulerLock schLock; //Lock out other threads from potentially creating an allocator and 
+      //editing this list while we walk it and update it.
+      while(tablePtr->next != nullptr)
+      {
+        tablePtr = tablePtr->next;
+      }
+      tablePtr->next = &statsTableEntry_;
+    }
+  }
+  std::strncpy(name_, allocatorName, maxNameLength_chars - 1);
+  name_[maxNameLength_chars - 1] = '\0';
+  totalAllocations_ = 0;
+  totalDeallocations_ = 0;
+}
 
-SystemAllocator* SystemAllocator::singletonPtr = nullptr;
+AllocatorStatisticsInterface::~AllocatorStatisticsInterface() noexcept
+{
+  //When an allocator is deleted, it needs to be removed from the allocators listing table as well. 
+  AllocatorsTableEntry* lastTable = nullptr;
+  AllocatorsTableEntry* thisTable = allocatorTableStart_;
+  {
+    SchedulerLock schLock;
+    while(thisTable->statsIf != this)
+    {
+      lastTable = thisTable;
+      thisTable = thisTable->next;
+    }
+    AllocatorsTableEntry* nextTable = thisTable->next;
+    lastTable->next = nextTable;
+  }
+}
+
+/** @class System Allocator
+ *
+ * The memory used to store the global system allocator singleton. Because the system allocator
+ * provides the new/malloc redirection implementation, it must be allocated through placement new
+ * directly into a predefined storage region. By the time C++ constructors (or any allocation
+ * functions) are called it must already be operational.
+ *
+ * @note
+ *  The jel startup routine must manually construct a SystemAllocator object at the appropriate
+ *  point in boot cycle.
+ *
+ * */
+static uint8_t systemAllocatorStorage[sizeof(SystemAllocator)] __attribute__((aligned(4)));
+
+SystemAllocator* SystemAllocator::systemAllocator_ = nullptr;
 
 SystemAllocator::SystemAllocator() : AllocatorStatisticsInterface("SYSTEM")
 {
-  if(singletonPtr != nullptr)
+  if(systemAllocator_ != nullptr)
   {
     throw Exception{ExceptionCode::allocatorConstructionFailed, 
       "The system allocator is already instantiated."};
   }
-  singletonPtr = this;
+  systemAllocator_ = this;
 }
 
-SystemAllocator::~SystemAllocator() noexcept
+void SystemAllocator::constructSystemAllocator() noexcept
 {
-  singletonPtr = nullptr;
+  if(systemAllocator_ == nullptr)
+  {
+    //Do not assign the systemAllocator_ pointer here. That is done in the SystemAllocator
+    //constructor, which is automatically called by placement new.
+    new (systemAllocatorStorage) SystemAllocator;
+  }
 }
 
 void* SystemAllocator::allocate(size_t size)

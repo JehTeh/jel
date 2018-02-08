@@ -27,7 +27,7 @@
 #pragma once
 
 /** C/C++ Standard Library Headers */
-
+#include <cstdint>
 /** jel Library Headers */
 
 namespace jel
@@ -41,6 +41,47 @@ public:
   static bool cpuExceptionActive() noexcept;
   /** Returns true if called from within an IRQ execution state. */
   static bool inIsr() noexcept;
+};
+
+/** @class CriticalSection
+ *  @brief An RAII object that halts all scheduler execution and interrupts while it exists.
+ *  
+ *  A CriticalSection can be created as needed to protect data from asynchronous access in other
+ *  threads and interrupts. This should be used extremely sparingly and for limited scope, as it
+ *  may result in interrupt or task execution deadlines being missed. Where protection from
+ *  interrupts is not needed (for example, an interrupt would never interact with the data being
+ *  protected) then use of a SchedulerLock is preferred. 
+ * */
+class CriticalSection
+{
+public:
+  CriticalSection() noexcept;
+  ~CriticalSection() noexcept;
+  CriticalSection(const CriticalSection&) = delete;
+  CriticalSection(CriticalSection&&) = delete;
+  CriticalSection& operator=(const CriticalSection&) = delete;
+  CriticalSection& operator=(CriticalSection&&) = delete;
+protected:
+  uint32_t mask_;
+};
+
+/** @class SchedulerLock
+ *  @brief An RAII object that halts only scheduler operation while it exists.
+ *
+ *  A SchedulerLock is similar to a CriticalSection in that it prevents any thread rescheduling from
+ *  occurring (including scheduling the execution of a higher priority thread). It does not, 
+ *  however, stop interrupts from occurring and as such is preferred over a CriticalSection where
+ *  possible.
+ * */
+class SchedulerLock
+{
+public:
+  SchedulerLock() noexcept;
+  ~SchedulerLock() noexcept;
+  SchedulerLock(const SchedulerLock&) = delete;
+  SchedulerLock(SchedulerLock&&) = delete;
+  SchedulerLock& operator=(const SchedulerLock&) = delete;
+  SchedulerLock& operator=(SchedulerLock&&) = delete;
 };
 
 }

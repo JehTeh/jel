@@ -53,6 +53,8 @@ namespace os
 class AllocatorStatisticsInterface
 {
 public:
+  /** Allocator names longer than this (including a NULL terminator) will be truncated. */
+  static constexpr size_t maxNameLength_chars = 32;
   /** Registers the allocator within the system allocators table. */
   AllocatorStatisticsInterface(const char* allocatorName);
   /** Removes the allocator from the system allocators table. */
@@ -66,8 +68,16 @@ protected:
   void recordAllocation() noexcept { totalAllocations_++; };
   void recordDeallocation() noexcept { totalDeallocations_++; };
 private:
+  struct AllocatorsTableEntry
+  {
+    AllocatorsTableEntry* next;
+    AllocatorStatisticsInterface* statsIf;
+  };
   std::atomic<size_t> totalAllocations_;
   std::atomic<size_t> totalDeallocations_;
+  char name_[maxNameLength_chars];
+  AllocatorsTableEntry statsTableEntry_;
+  static AllocatorsTableEntry* allocatorTableStart_;
 };
 
 /** @class AllocatorInterface
@@ -88,7 +98,7 @@ class SystemAllocator : public AllocatorInterface, public AllocatorStatisticsInt
 {
 public:
   SystemAllocator();
-  ~SystemAllocator() noexcept;
+  ~SystemAllocator() = delete;
   SystemAllocator(const SystemAllocator&) = delete;
   SystemAllocator(SystemAllocator&&) = delete;
   SystemAllocator& operator=(const SystemAllocator&) = delete;
@@ -98,8 +108,12 @@ public:
   size_t freeSpace_Bytes() const noexcept override final;
   size_t minimumFreeSpace_Bytes() const noexcept override final;
   size_t totalSpace_Bytes() const noexcept override final;
+  static SystemAllocator* systemAllocator() { return systemAllocator_; }
+  /** The constructSystemAllocator function should only ever be called by the jel during startup,
+   * and never the application. */
+  static void constructSystemAllocator() noexcept;
 private:
-  static SystemAllocator* singletonPtr;
+  static SystemAllocator* systemAllocator_;
 };
 
 extern SystemAllocator* const systemAllocator;
