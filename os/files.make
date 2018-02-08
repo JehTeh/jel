@@ -37,5 +37,7 @@ CXXSOURCE += $(addprefix os\,\
 		internal\locks.cpp \
 		internal\queues.cpp \
 		internal\threads.cpp \
+		internal\allocator.cpp \
+		internal\newlib_port.cpp \
 		)
 

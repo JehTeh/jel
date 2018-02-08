@@ -103,7 +103,7 @@ public:
     (void)message;
 #endif
   }
-  ~Exception_Base()
+  ~Exception_Base() noexcept
   {
 #ifndef JEL_DISABLE_EXCEPTION_PRINTF_SUPPORT
     if(errorString_)

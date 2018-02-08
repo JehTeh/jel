@@ -98,6 +98,16 @@ void operator delete[](void* ptr) noexcept
   jel::os::systemAllocator->deallocate(ptr);
 }
 
+void operator delete(void* ptr, size_t) noexcept
+{
+  jel::os::systemAllocator->deallocate(ptr);
+}
+
+void operator delete[](void* ptr, size_t) noexcept
+{
+  jel::os::systemAllocator->deallocate(ptr);
+}
+
 void* operator new(size_t size, char const*, int)
 {
   return jel::os::systemAllocator->allocate(size);
@@ -221,7 +231,6 @@ int _getpid()
   return 1;
 }
 
-
 int _isatty(int)
 {
   return 1;
@@ -254,6 +263,7 @@ int _close(int file)
 int _link(const char* from, const char* to)
 {
   (void)from; (void)to;
+  return 0;
 }
 
 int _unlink(const char* name)
