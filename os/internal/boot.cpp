@@ -10,7 +10,7 @@
  *    the external linker section symbols are correctly defined.
  *
  *    The typical boot process is as follows:
- *      -MCU Reset vector called, _resetVector().
+ *      -MCU Reset vector called and stack is setup, then _resetVector() is called.
  *      -CPU clocks and the FPU (if present) are enabled and initialized.
  *      -The .bss and .data sections are initialized.
  *      -The interrupt controller is configured and interrupts are enabled.

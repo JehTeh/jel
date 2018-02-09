@@ -1,0 +1,3 @@
+#Ignore all files in this directory. This is done to ensure compliance with license restrictions.
+*
+!.gitignore

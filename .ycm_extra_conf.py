@@ -77,6 +77,8 @@ flags = [
 '-I',
 './../',
 '-DHW_TARGET_TM4C123GH6PM',
+'-I',
+'./ThirdParty/tivaware',
 ]
 # Set this to the absolute path to the folder (NOT the file!) containing the
 # compile_commands.json file to use that instead of 'flags'. See here for
