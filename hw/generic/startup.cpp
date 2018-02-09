@@ -48,8 +48,20 @@ namespace hw
 namespace startup
 {
   void defaultInitializeClocks() __attribute__((weak));
+  void enableFpu() __attribute__((weak));
+  void enableMpu() __attribute__((weak));
 
   void defaultInitializeClocks()
+  {
+    /** Nothing can be done here in the generic function. */
+  }
+
+  void enableFpu()
+  {
+    /** Nothing can be done here in the generic function. */
+  }
+
+  void enableMpu()
   {
     /** Nothing can be done here in the generic function. */
   }

@@ -44,7 +44,8 @@ namespace hw
 namespace startup
 {
   void defaultInitializeClocks();
-  
+  void enableFpu();
+  void enableMpu();
 } /** namespace startup */
 } /** namespace hw */
 } /** namespace jel */

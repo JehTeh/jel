@@ -48,9 +48,6 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/interrupt.h"
-#endif
-
-extern uint32_t g_ui32SysClock;
 
 namespace jel
 {

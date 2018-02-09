@@ -29,8 +29,10 @@
 /** C/C++ Standard Library Headers */
 #include <cstdint>
 /** jel Library Headers */
+#include "hw/targets/tm4c/tiva_shared.hpp"
 #include "hw/api_startup.hpp"
 /** Tivaware Library Headers */
+#include "inc/hw_nvic.h"
 
 extern "C"
 {
@@ -52,9 +54,21 @@ namespace hw
 namespace startup
 {
   void defaultInitializeClocks();
+  void enableFpu();
 
   void defaultInitializeClocks()
   {
+    #ifdef HW_TARGET_TM4C123GH6PM
+    //Configure the CPU clock for the maximum rated (80MHz). 
+    MAP_SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+    #endif
+  }
+
+  void enableFpu()
+  {
+    //As per tivaware library documentation...
+    HWREG(NVIC_CPAC) = ((HWREG(NVIC_CPAC) & ~(NVIC_CPAC_CP10_M | NVIC_CPAC_CP11_M)) |
+      NVIC_CPAC_CP10_FULL | NVIC_CPAC_CP11_FULL);
   }
 }
 }
