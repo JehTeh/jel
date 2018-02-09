@@ -35,6 +35,24 @@
 #include "os/api_system.hpp"
 #include "os/internal/indef.hpp"
 
+extern "C"
+{
+extern void* __real_pvPortMalloc(size_t size);
+extern void __real_vPortFree(void* ptr);
+void* __wrap_pvPortMalloc(size_t size);
+void __wrap_vPortFree(void* ptr);
+}
+
+void* __wrap_pvPortMalloc(size_t size)
+{
+  return jel::os::SystemAllocator::systemAllocator()->allocate(size);
+}
+
+void __wrap_vPortFree(void* ptr)
+{
+  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
+}
+
 namespace jel
 {
 namespace os
@@ -130,7 +148,7 @@ void SystemAllocator::constructSystemAllocator() noexcept
 
 void* SystemAllocator::allocate(size_t size)
 {
-  void* ptr = pvPortMalloc(size);
+  void* ptr = __real_pvPortMalloc(size);
   if(ptr == nullptr)
   {
     throw std::bad_alloc();
@@ -141,7 +159,7 @@ void* SystemAllocator::allocate(size_t size)
 
 void SystemAllocator::deallocate(void* ptr) 
 {
-  vPortFree(ptr);
+  __real_vPortFree(ptr);
   recordDeallocation();
 }
 
@@ -164,4 +182,3 @@ size_t SystemAllocator::totalSpace_Bytes() const noexcept
 
 } /** namespace os */
 } /** namespace jel */
-

@@ -52,17 +52,28 @@
 /** jel Library Headers */
 #include "os/internal/indef.hpp"
 #include "os/api_threads.hpp"
+#include "os/api_allocator.hpp"
+#include "hw/api_startup.hpp"
+#include "hw/api_irq.hpp"
 
 extern "C"
 {
-  void _resetVector(void) __attribute((noreturn));
-}
+/** Called by the driver layer _start function, which ensures stack is setup. */
+void _resetVector(void) __attribute((noreturn));
+/** libc constructor tables. These are manually called at the appropriate time to ensure static
+ * construction occurs after certain core system primitives are available. */
+extern void (*__preinit_array_start []) (void);
+extern void (*__preinit_array_end []) (void);
+extern void (*__init_array_start []) (void);
+extern void (*__init_array_end []) (void);
 
 extern volatile const uint32_t _sidata; /**< Start of initialization for .data, located in ROM. */
 extern volatile uint32_t _sdata; /**< Start of .data section, located in RAM. */
 extern volatile uint32_t _edata; /**< End of .data section, located in RAM. */
 extern volatile uint32_t _sbss; /**< Start of .bss, located in RAM. */
 extern volatile uint32_t _ebss; /**< End of .bss, located in RAM. */
+}
+
 
 int main(int, char**);
 namespace jel
@@ -92,14 +103,22 @@ inline static void initData()
 
 void _resetVector(void)
 {
+  using namespace jel;
   //TODO:
   //ANY SAFETY STARTUP/RESET TYPE DISPATCH
-  //-CPU/CLOCKS INIT
-  //-FPU INIT
+  hw::startup::defaultInitializeClocks();
+  hw::startup::enableFpu();
   initBss();
   initData();
-  //-ISR INIT
+  hw::irq::InterruptController::enableGlobalInterrupts();
+  os::SystemAllocator::constructSystemAllocator();
   //-CORE PERIPHERALS INIT
+  //Newlib pre-os initialization. This does everything except call C++ static constructors, as such
+  //most of the libc (not C++) functionality is available during pre-c++ initialization.
+  for(int32_t i = 0; i < __preinit_array_end - __preinit_array_start; i++)
+  {
+    __init_array_start[i]();
+  }
   main(0, nullptr);
   std::terminate();
 }
@@ -118,7 +137,11 @@ namespace os
 
 void bootThread(void*)
 {
-  
+  /** C++ Static object constructors are called here. */
+  for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
+  {
+    __init_array_start[i]();
+  }
 }
 
 } /** namespace os */
