@@ -36,3 +36,6 @@
 
 # Vim
 *.swp
+
+#build outputs
+build_*
