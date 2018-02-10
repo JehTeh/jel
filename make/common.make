@@ -29,7 +29,7 @@ COMPILER_FLAGS_WARNING = -Wall -Wextra -Wno-unused-parameter -fmax-errors=25
 #Generic compiler include flags, used for all builds
 COMPILER_FLAGS_INCLUDE_GENERIC = -I . -I $(RTOS_INCLUDE_PATH_BASE) -I $(RTOS_PRIVATE_INCLUDE_PATH_BASE) -I $(RTOS_CONFIGURATION_INCLUDE_PATH_BASE)
 #Special compiler flags used for debug builds (Cpputest and regular debug builds).
-COMPILER_FLAGS_DEBUGBUILD = -gdwarf-2 -g 
+COMPILER_FLAGS_DEBUGBUILD = -gdwarf-2 -g -ffunction-sections -fdata-sections -Wl,--gc-sections
 #Special compiler flags for optimized builds.
 COMPILER_FLAGS_RELEASEBUILD = -ffunction-sections -fdata-sections -Wl,--gc-sections
 #Compiler optimization levels.
