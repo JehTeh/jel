@@ -31,7 +31,7 @@
 #pragma once
 
 /** C/C++ Standard Library Headers */
-
+#include <cstdint>
 /** jel Library Headers */
 
 /** Tivaware Library Headers */
@@ -53,11 +53,10 @@ namespace jel
 {
 namespace hw
 {
-namespace startup
-{
-  void defaultInitializeClocks();
-  
-} /** namespace startup */
+#ifdef HW_TARGET_TM4C123GH6PM
+  constexpr uint32_t systemClockFrequency_Hz() { return 80'000'000; }
+#endif
+
 } /** namespace hw */
 } /** namespace jel */
 

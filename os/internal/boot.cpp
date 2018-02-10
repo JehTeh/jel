@@ -55,6 +55,7 @@
 #include "os/api_allocator.hpp"
 #include "hw/api_startup.hpp"
 #include "hw/api_irq.hpp"
+#include "hw/api_sysclock.hpp"
 
 extern "C"
 {
@@ -101,18 +102,41 @@ inline static void initData()
   }
 }
 
+/** 
+ *  @brief Pre-main initialization function, typically called immediately after stack setup is
+ *  complete from the crt0 style ASM initializer, or directly on some architectures such as the M4
+ *  where the stack is automatically configured.
+ *
+ *  The _resetVector function performs certain core system and libc initialization before calling
+ *  main(). This initialization includes CPU and system basic clock configuration (i.e CPU
+ *  frequency, bus clocks, etc). It also enables the FPU if it is present and performs .bss and
+ *  .data section initialization. Once all this is completed, it instantiates the global default
+ *  system allocator which translates all calls to malloc, new, free, delete, etc to the appropriate
+ *  heap. After allocation setup is complete, core system peripherals that are required for jel
+ *  operation are also enabled; these typically include GPIO drivers used for the heartbeat signal
+ *  and the system clock peripheral used for timekeeping (see os/api_time.hpp). Afterwards, C++
+ *  pre-init functions are also called, if any exist. main() is then called, which is expected to
+ *  start the RTOS.  
+ *
+ *  @note
+ *    On systems requiring additional low level handling at reset, a special dispatcher is called
+ *    before all other initialization. This dispatcher can be implemented at the driver layer for a
+ *    specific target and perform any actions required, including memory or system tests and
+ *    bootloader routines.
+ *
+ *  */
 void _resetVector(void)
 {
   using namespace jel;
-  //TODO:
-  //ANY SAFETY STARTUP/RESET TYPE DISPATCH
+  hw::startup::customDispatcher();
   hw::startup::defaultInitializeClocks();
   hw::startup::enableFpu();
   initBss();
   initData();
   hw::irq::InterruptController::enableGlobalInterrupts();
   os::SystemAllocator::constructSystemAllocator();
-  //-CORE PERIPHERALS INIT
+  hw::sysclock::SystemSteadyClockSource::startClock();
+  //-heartbeat IO init
   //Newlib pre-os initialization. This does everything except call C++ static constructors, as such
   //most of the libc (not C++) functionality is available during pre-c++ initialization.
   for(int32_t i = 0; i < __preinit_array_end - __preinit_array_start; i++)
@@ -123,9 +147,25 @@ void _resetVector(void)
   std::terminate();
 }
 
+/** 
+ *  @brief main(), the application entry point.
+ *
+ *  Registers a single, maximum priority thread named 'BOOT' that will begin executing once the RTOS
+ *  is started, then starts the RTOS.
+ *
+ *  @note
+ *    At this point, it is expected the system is in the following state:
+ *      -CPU clocking and stack is setup and valid.
+ *      -The .bss and .data sections have been initialized.
+ *      -Global interrupts are enabled.
+ *      -The system allocator is extant (i.e. calls to new/malloc() will not fail).
+ *      -C++ static constructors have *not* been called.
+ * */
 int main(int, char**)
 {
-  xTaskCreate(&jel::os::bootThread, "BOOT", 512, nullptr, configMAX_PRIORITIES, nullptr);
+  TaskHandle_t h = nullptr;
+  xTaskCreate(&jel::os::bootThread, "BOOT", 512, &h, 
+    configMAX_PRIORITIES | portPRIVILEGE_BIT, nullptr);
   vTaskStartScheduler();
   return 1;
 }
@@ -135,6 +175,13 @@ namespace jel
 namespace os
 {
 
+/** 
+ *  @brief The jel bootup thread, responsible for the majority of system initialization and starting
+ *  the user application thread(s).
+ *
+ *  ...todo
+ *
+ * */
 void bootThread(void*)
 {
   /** C++ Static object constructors are called here. */

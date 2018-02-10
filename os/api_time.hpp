@@ -37,6 +37,7 @@
 
 /** jel Library Headers */
 #include "os/api_common.hpp"
+#include "hw/api_sysclock.hpp"
 
 namespace jel
 {
@@ -54,16 +55,14 @@ namespace jel
 struct SteadyClock
 {
 public:
-  /** Frequency of the system clock, in Hz. Must be at least 1MHz. */
   static constexpr uint64_t SteadyClockFreq_Hz = 1'000'000;
   typedef std::chrono::duration<int64_t, std::ratio<1, SteadyClockFreq_Hz>> duration;
-  typedef duration::rep rep; //Note: rep is a signed 64b type.
+  typedef duration::rep rep; //Note: rep is a signed 64b type on arm-none-eabi-gcc.
   typedef duration::period period;
   typedef std::chrono::time_point<SteadyClock> time_point;
   static const bool is_steady = true;
-  /** Returns the current value of the system clock. */
-  static time_point now() noexcept { return time_point{duration{0}}; }
-  /** Returns a value of zero. Can be used to zero initialize timestamps. */
+  static time_point now() noexcept 
+  { return time_point{duration{hw::sysclock::SystemSteadyClockSource::readClock()}};}
   static constexpr time_point zero() noexcept { return time_point{duration{0}}; }
 private:
 };

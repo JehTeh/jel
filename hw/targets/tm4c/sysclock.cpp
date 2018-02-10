@@ -1,6 +1,7 @@
-/** @file hw/generic/startup.cpp
- *  @brief Generalized MCU hardware startup definitions. These are weakly-linked stubs that should
- *  be overridden in the target specific hardware implementation where appropriate.
+/** @file hw/targets/tm4c/sysclock.cpp
+ *  @brief Implementation of the TM4C system steady clock source.
+ *
+ *  @detail
  *
  *  @author Jonathan Thomson 
  */
@@ -28,50 +29,36 @@
 /** C/C++ Standard Library Headers */
 #include <cstdint>
 /** jel Library Headers */
-#include "hw/api_startup.hpp"
-
-extern "C"
-{
-extern void _resetVector(void) __attribute__((noreturn));
-void _start(void) __attribute__((noreturn, weak));
-}
-
-void _start(void) 
-{
-  _resetVector();
-}
+#include "hw/targets/tm4c/tiva_shared.hpp"
+#include "hw/api_sysclock.hpp"
+/** Tivaware Library Headers */
+#include "driverlib/timer.h"
 
 namespace jel
 {
 namespace hw
 {
-namespace startup
+namespace sysclock
 {
-  void defaultInitializeClocks() __attribute__((weak));
-  void enableFpu() __attribute__((weak));
-  void enableMpu() __attribute__((weak));
-  void customDispatcher() noexcept __attribute__((weak));
+#ifdef HW_TARGET_TM4C123GH6PM
+void SystemSteadyClockSource::startClock()
+{
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_WTIMER0);
+  while(!SysCtlPeripheralReady(SYSCTL_PERIPH_WTIMER0));
+  TimerConfigure(WTIMER0_BASE, TIMER_CFG_ONE_SHOT_UP);
+  TimerClockSourceSet(WTIMER0_BASE, TIMER_CLOCK_SYSTEM); //Using system clock as source.
+  TimerLoadSet64(WTIMER0_BASE, UINT64_MAX);
+  TimerEnable(WTIMER0_BASE, TIMER_A);
+}
 
-  void defaultInitializeClocks()
-  {
-    /** Nothing can be done here in the generic function. */
-  }
+uint64_t SystemSteadyClockSource::readClock() noexcept
+{
+  //Convert timer value from system clock (max 80Mhz) to 1us.
+  return TimerValueGet64(WTIMER0_BASE) / (systemClockFrequency_Hz() / 1'000'000);
+}
+#endif
 
-  void enableFpu()
-  {
-    /** Nothing can be done here in the generic function. */
-  }
-
-  void enableMpu()
-  {
-    /** Nothing can be done here in the generic function. */
-  }
-
-  void customDispatcher() noexcept
-  {
-    /** Nothing can be done here in the generic function. */
-  }
-} /** namespace startup */
+} /** namespace sysclock */
 } /** namespace hw */
 } /** namespace jel */
 

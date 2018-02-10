@@ -46,6 +46,7 @@ namespace startup
   void defaultInitializeClocks();
   void enableFpu();
   void enableMpu();
+  void customDispatcher() noexcept;
 } /** namespace startup */
 } /** namespace hw */
 } /** namespace jel */
