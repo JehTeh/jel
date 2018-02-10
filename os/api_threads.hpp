@@ -52,12 +52,8 @@ class GenericThread_Base
 protected:
   using ThreadControlStructureMemory = uint8_t[1176];
   GenericThread_Base();
-  void startThread(Thread* threadObject, const char* threadName, 
-    const uint32_t priority, const size_t stackSize, uint8_t* cbMemory, uint8_t* stackMemory);
-  static void dispatcher(Thread* thread);
-private:
-  ThreadControlStructureMemory* cbMemory_;
-  uint8_t* stackMemory_;
+  void startThread(Thread* threadObject);
+  static void dispatcher(void* threadInf);
 };
  
 
@@ -104,6 +100,7 @@ public:
   Thread(FunctionSignature userFunction, void* args, const char* name, const size_t stackSize = 256,
     const Priority priority = Priority::normal, 
     const ExceptionHandlerPolicy ehPolicy = ExceptionHandlerPolicy::haltThread); 
+  ~Thread() noexcept;
   void detach();
 protected:
   friend GenericThread_Base;
@@ -117,6 +114,9 @@ protected:
     void* userArgPtr_;
     const char* name_;
     size_t maxStack_;
+    std::unique_ptr<ThreadControlStructureMemory> cbMem_;
+    std::unique_ptr<uint8_t[]> stackMem_;
+    bool isDetached_;
   };
   std::unique_ptr<ThreadInfo> inf_;
 };

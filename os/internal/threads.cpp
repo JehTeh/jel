@@ -53,20 +53,20 @@ GenericThread_Base::GenericThread_Base()
    * the Thread* object has completed construction. */
 }
 
-void GenericThread_Base::startThread(Thread* threadObject, const char* threadName, 
-  const uint32_t priority, const size_t stackSize, uint8_t* cbMemory, uint8_t* stackMemory) 
+void GenericThread_Base::startThread(Thread* threadObject) 
 {
-  cbMemory_ = reinterpret_cast<ThreadControlStructureMemory*>(cbMemory);
-  stackMemory_ = stackMemory;
-  Thread::Handle thHandle = nullptr;
-  if(cbMemory_ && stackMemory_)
+  Thread::ThreadInfo* inf = threadObject->inf_.get();
+  inf->handle_ = nullptr;
+  if(inf->cbMem_ && inf->stackMem_)
   {
-    assert(false); //Static thread construction is currently TODO 
+    assert(false); //Static thread construction is currently TODO - not simple with freeRTOS, self
+    //deleting tasks run into issues with memory ownership when idle task attempts to delete them.
   }
   else
   {
-    if(xTaskCreate(reinterpret_cast<void(*)(void*)>(&dispatcher), threadName, stackSize, 
-         threadObject, priority, &thHandle) != pdPASS)
+    if(xTaskCreate(reinterpret_cast<void(*)(void*)>(&dispatcher), 
+         inf->name_, inf->maxStack_, inf, static_cast<uint32_t>(inf->priority_),
+         &inf->handle_) != pdPASS)
     {
       throw Exception{ExceptionCode::threadConstructionFailed, 
         "Failed to allocate the required memory when constructing a new Thread."};
@@ -74,9 +74,9 @@ void GenericThread_Base::startThread(Thread* threadObject, const char* threadNam
   }
 }
 
-void GenericThread_Base::dispatcher(Thread* thread)
+void GenericThread_Base::dispatcher(void* threadInf)
 {
-  Thread::ThreadInfo* inf = thread->inf_.get();
+  Thread::ThreadInfo* inf = reinterpret_cast<Thread::ThreadInfo*>(threadInf);
   inf->handle_ = xTaskGetCurrentTaskHandle();
   try
   {
@@ -114,6 +114,10 @@ void GenericThread_Base::dispatcher(Thread* thread)
         std::terminate();
     }
   }
+  if(inf->isDetached_)
+  {
+    delete inf;
+  }
 }
 
 Thread::Thread(FunctionSignature userFunction, void* args, const char* name, const size_t stackSize,
@@ -124,13 +128,26 @@ Thread::Thread(FunctionSignature userFunction, void* args, const char* name, con
   inf_ = std::make_unique<ThreadInfo>(); 
   inf_->userFunc_ = userFunction; inf_->userArgPtr_ = args; inf_->name_ = name;
   inf_->maxStack_ = stackSize; inf_->priority_ = priority; inf_->ehPolicy_ = ehPolicy;
-  startThread(this, inf_->name_, static_cast<uint32_t>(inf_->priority_), inf_->maxStack_,
-    nullptr, nullptr);
+  inf_->isDetached_ = false; inf_->cbMem_ = nullptr; inf_->stackMem_ = nullptr;
+  startThread(this);
+}
+
+Thread::~Thread() noexcept
+{
+  if(inf_ != nullptr)
+  {
+    if(inf_->handle_ != nullptr)
+    {
+      vTaskDelete(inf_->handle_);
+    }
+    inf_.reset();
+  }
 }
 
 void Thread::detach()
 {
-
+  inf_->isDetached_ = true;
+  inf_.release();
 }
 
 
