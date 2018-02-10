@@ -31,7 +31,7 @@ COMPILER_FLAGS_INCLUDE_GENERIC = -I . -I $(RTOS_INCLUDE_PATH_BASE) -I $(RTOS_PRI
 #Special compiler flags used for debug builds (Cpputest and regular debug builds).
 COMPILER_FLAGS_DEBUGBUILD = -gdwarf-2 -g 
 #Special compiler flags for optimized builds.
-COMPILER_FLAGS_RELEASEBUILD = 
+COMPILER_FLAGS_RELEASEBUILD = -ffunction-sections -fdata-sections -Wl,--gc-sections
 #Compiler optimization levels.
 COMPILER_FLAGS_DEBUGBUILD_LEVEL = -O0
 COMPILER_FLAGS_RELEASEBUILD_LEVEL = -O2
@@ -42,7 +42,7 @@ FINAL_COMPILER_COMMON_FLAGS_RELEASEBUILD = $(COMPILER_FLAGS_RELEASEBUILD_LEVEL) 
 COMPILER_FLAGS_CPP_STANDARD = -std=c++14
 #Compiler flag enabling Link-Time-Optimization. Can be disabled by simply commenting out the flag.
 #This may need to be done as some arm-none-eabi versions have issues with LTO.
-#COMPILER_FLAGS_LTO = -flto
+#COMPILER_FLAGS_LTO = -flto -fuse-linker-plugin -Wl,-flto,-fuse-linker-plugin
 ############ LINKER ############
 #Standard libraries to include with the linker
 #Only libstdc++ and libc are needed for building the jel.

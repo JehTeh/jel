@@ -34,7 +34,7 @@
 #pragma once
 
 /** C/C++ Standard Library Headers */
-
+#include <memory>
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
@@ -53,7 +53,7 @@ protected:
   using ThreadControlStructureMemory = uint8_t[1176];
   GenericThread_Base();
   void startThread(Thread* threadObject, const char* threadName, 
-    const uint8_t priority, const size_t stackSize, uint8_t* cbMemory, uint8_t* stackMemory);
+    const uint32_t priority, const size_t stackSize, uint8_t* cbMemory, uint8_t* stackMemory);
   static void dispatcher(Thread* thread);
 private:
   ThreadControlStructureMemory* cbMemory_;
@@ -68,7 +68,7 @@ public:
   /** @enum Priority
    *  @brief Possible priorities for thread execution. 
    * */
-  enum class Priority : uint8_t
+  enum class Priority : uint32_t
   {
     /** The maximum supported thread priority. Should be used only for critical routines with very
      * low latency allowances. */
@@ -103,23 +103,22 @@ public:
   };
   Thread(FunctionSignature userFunction, void* args, const char* name, const size_t stackSize = 256,
     const Priority priority = Priority::normal, 
-    const ExceptionHandlerPolicy ehPolicy = ExceptionHandlerPolicy::haltThread) : 
-    GenericThread_Base(), priority_(priority), ehPolicy_(ehPolicy),
-    userFunc_(userFunction), userArgPtr_(args), name_(name), maxStack_(stackSize)
-    {
-      startThread(this, name_, static_cast<uint8_t>(priority_), maxStack_, 
-        nullptr, nullptr);
-    }
+    const ExceptionHandlerPolicy ehPolicy = ExceptionHandlerPolicy::haltThread); 
+  void detach();
 protected:
   friend GenericThread_Base;
   using Handle = void*;
-  Priority priority_;
-  ExceptionHandlerPolicy ehPolicy_;
-  Handle handle_;
-  void(*userFunc_)(void*);
-  void* userArgPtr_;
-  const char* name_;
-  size_t maxStack_;
+  struct ThreadInfo
+  {
+    Priority priority_;
+    ExceptionHandlerPolicy ehPolicy_;
+    Handle handle_;
+    void(*userFunc_)(void*);
+    void* userArgPtr_;
+    const char* name_;
+    size_t maxStack_;
+  };
+  std::unique_ptr<ThreadInfo> inf_;
 };
 
 class ThisThread

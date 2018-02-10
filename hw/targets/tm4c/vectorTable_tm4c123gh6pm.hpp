@@ -52,9 +52,9 @@ extern void faultIsr();
 
 using IsrPtr = void(*)(void);
 
-static volatile uint32_t bootStack[128] __attribute__((aligned(8), section (".noinit")));
+static volatile uint32_t bootStack[128] __attribute__((aligned(8), section (".noinit"), used));
 
-static IsrPtr __attribute__((section (".vectorTable"))) vectorTable[] =
+static IsrPtr __attribute__((section (".vectorTable"), used)) vectorTable[] =
 {
   reinterpret_cast<IsrPtr>(reinterpret_cast<uint32_t>(bootStack + (sizeof(bootStack) / 4))),
   &_start,                                            // The reset handler

@@ -54,7 +54,7 @@ GenericThread_Base::GenericThread_Base()
 }
 
 void GenericThread_Base::startThread(Thread* threadObject, const char* threadName, 
-  const uint8_t priority, const size_t stackSize, uint8_t* cbMemory, uint8_t* stackMemory) 
+  const uint32_t priority, const size_t stackSize, uint8_t* cbMemory, uint8_t* stackMemory) 
 {
   cbMemory_ = reinterpret_cast<ThreadControlStructureMemory*>(cbMemory);
   stackMemory_ = stackMemory;
@@ -76,14 +76,15 @@ void GenericThread_Base::startThread(Thread* threadObject, const char* threadNam
 
 void GenericThread_Base::dispatcher(Thread* thread)
 {
-  thread->handle_ = xTaskGetCurrentTaskHandle();
+  Thread::ThreadInfo* inf = thread->inf_.get();
+  inf->handle_ = xTaskGetCurrentTaskHandle();
   try
   {
-    thread->userFunc_(thread->userArgPtr_);
+    inf->userFunc_(inf->userArgPtr_);
   }
   catch(const std::exception e)
   {
-    switch(thread->ehPolicy_)
+    switch(inf->ehPolicy_)
     {
       case Thread::ExceptionHandlerPolicy::haltThread:
         {
@@ -99,7 +100,7 @@ void GenericThread_Base::dispatcher(Thread* thread)
   }
   catch(...)
   {
-    switch(thread->ehPolicy_)
+    switch(inf->ehPolicy_)
     {
       case Thread::ExceptionHandlerPolicy::haltThread:
         {
@@ -114,6 +115,24 @@ void GenericThread_Base::dispatcher(Thread* thread)
     }
   }
 }
+
+Thread::Thread(FunctionSignature userFunction, void* args, const char* name, const size_t stackSize,
+  const Priority priority, const ExceptionHandlerPolicy ehPolicy)
+{
+  //Allocate and configure inf_ structure. This needs to be seperate from the thread object so that
+  //if the thread is detached the inf_ still exists.
+  inf_ = std::make_unique<ThreadInfo>(); 
+  inf_->userFunc_ = userFunction; inf_->userArgPtr_ = args; inf_->name_ = name;
+  inf_->maxStack_ = stackSize; inf_->priority_ = priority; inf_->ehPolicy_ = ehPolicy;
+  startThread(this, inf_->name_, static_cast<uint32_t>(inf_->priority_), inf_->maxStack_,
+    nullptr, nullptr);
+}
+
+void Thread::detach()
+{
+
+}
+
 
 void ThisThread::sleepfor(const Duration& time) noexcept
 {

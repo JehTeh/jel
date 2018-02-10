@@ -37,6 +37,8 @@
 
 extern "C"
 {
+extern void* pvPortMalloc(size_t size) __attribute__((used));
+extern void vPortFree(void* ptr) __attribute__((used));
 extern void* __real_pvPortMalloc(size_t size);
 extern void __real_vPortFree(void* ptr);
 void* __wrap_pvPortMalloc(size_t size);
