@@ -96,7 +96,7 @@ class Queue : private GenericCopyQueue_Base
 {
 public:
   Queue() : GenericCopyQueue_Base(maxNumberOfElements, sizeof(T), itemMemory_) { }
-  ~Queue() noexcept;
+  ~Queue() noexcept {}
   template<typename = std::enable_if<isTrivial>>
   Status push(const T& item, const Duration& timeout = Duration::max()) noexcept
   {

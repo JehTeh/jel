@@ -31,10 +31,10 @@
 /** C/C++ Standard Library Headers */
 #include <memory>
 #include <atomic>
-
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
+#include "os/api_queues.hpp"
 
 namespace jel
 {
@@ -116,7 +116,54 @@ private:
   static SystemAllocator* systemAllocator_;
 };
 
-extern SystemAllocator* const systemAllocator;
+template<typename ObjectT, size_t count>
+class ObjectPool
+{
+public:
+  using ObjQ = Queue<std::unique_ptr<ObjectT>, count>;
+  /** A container storing objects retrieved from the pool. A valid container always holds a non-null
+   * item pointer. */
+  class ObjectContainer
+  {
+    ObjectContainer() : item_{nullptr}, q_{nullptr} {}
+    ~ObjectContainer() noexcept { if(item_ != nullptr) { q_->push(item_); } }
+    ObjectContainer(const ObjectContainer&) = delete;
+    ObjectContainer(ObjectContainer&& other) noexcept : item_{std::move(other.item_)}, q_{other.q_}
+    { other.q_ = nullptr; }
+    ObjectContainer& operator=(const ObjectContainer&) = delete;
+    ObjectContainer& operator=(ObjectContainer&& other) noexcept 
+    {
+      item_ = std::move(other.item_); q_ = other.q_; other.q_ = nullptr; 
+    }
+    ObjectT* stored() { return item_.get(); };
+  private:
+    friend ObjectPool;
+    ObjectContainer(std::unique_ptr<ObjectT>&& obj, ObjQ& q) : item_{std::move(obj)}, q_{&q} {}
+    std::unique_ptr<ObjectT> item_;
+    ObjQ* q_;
+  };
+  ObjectPool()
+  {
+    for(size_t i = 0; i < count; i++)
+    {
+      std::unique_ptr<ObjectT> newObj = std::make_unique<ObjectT>();
+      pool_.push(newObj);
+    }
+  }
+  /** Acquire an object from the pool. If no object can be acquired before the timeout occurs, an
+   * empty container will be returned. */
+  ObjectContainer acquire(const Duration& timeout)
+  {
+    std::unique_ptr<ObjectT> objPtr;
+    if(pool_->pop(objPtr, timeout) == Status::success)
+    {
+      return ObjectContainer{objPtr, pool_};
+    }
+    return ObjectContainer();
+  }
+private:
+  ObjQ pool_;
+};
 
 } /** namespace os */
 } /** namespace jel */

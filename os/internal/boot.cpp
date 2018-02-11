@@ -53,6 +53,7 @@
 #include "os/internal/indef.hpp"
 #include "os/api_threads.hpp"
 #include "os/api_allocator.hpp"
+#include "os/api_io.hpp"
 #include "hw/api_startup.hpp"
 #include "hw/api_irq.hpp"
 #include "hw/api_sysclock.hpp"
