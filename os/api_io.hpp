@@ -60,10 +60,11 @@
 
 namespace jel
 {
-
 /** String class used by the jel.
+ *  @note
+ *    This is provided primarily to allow easy allocator changes or std::string replacement.
  * */
-using String = std::basic_string<char>;
+typedef std::basic_string<char> String;
 
 /** 
  *  A constexpr c-string length function, allowing the evaluation of a string length at compile

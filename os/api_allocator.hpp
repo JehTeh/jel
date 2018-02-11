@@ -125,6 +125,7 @@ public:
    * item pointer. */
   class ObjectContainer
   {
+  public:
     ObjectContainer() : item_{nullptr}, q_{nullptr} {}
     ~ObjectContainer() noexcept { if(item_ != nullptr) { q_->push(std::move(item_)); } }
     ObjectContainer(const ObjectContainer&) = delete;
@@ -138,7 +139,7 @@ public:
     ObjectT* stored() { return item_.get(); };
   private:
     friend ObjectPool;
-    ObjectContainer(std::unique_ptr<ObjectT>&& obj, ObjQ& q) : item_{std::move(obj)}, q_{&q} {}
+    ObjectContainer(std::unique_ptr<ObjectT>& obj, ObjQ& q) : item_{std::move(obj)}, q_{&q} {}
     std::unique_ptr<ObjectT> item_;
     ObjQ* q_;
   };
@@ -152,12 +153,12 @@ public:
   }
   /** Acquire an object from the pool. If no object can be acquired before the timeout occurs, an
    * empty container will be returned. */
-  ObjectContainer acquire(const Duration& timeout)
+  ObjectContainer acquire(const Duration& timeout = Duration::max())
   {
     std::unique_ptr<ObjectT> objPtr;
-    if(pool_->pop(objPtr, timeout) == Status::success)
+    if(pool_.pop(objPtr, timeout) == Status::success)
     {
-      return ObjectContainer{objPtr, pool_};
+      return ObjectContainer(objPtr, pool_);
     }
     return ObjectContainer();
   }

@@ -190,7 +190,8 @@ void bootThread(void*)
   {
     __init_array_start[i]();
   }
-  ObjectPool<int, 8> op;
+  ObjectPool<String, 8> op;
+  auto pi = op.acquire();
 }
 
 } /** namespace os */

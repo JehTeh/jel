@@ -139,6 +139,16 @@ public:
     return genericPush(tPtr, timeout);
   }
   template<typename U = Status>
+  ResolvedType<!isTrivial, U> push(T& item, const Duration& timeout = Duration::max()) 
+  {
+    static_assert(!std::is_trivially_copyable<T>::value, "Queue object is trivially copyable!");
+    uint8_t tempMemory[sizeof(T)] __attribute__((aligned(4)));
+    //TODO: Check if default construction can be eliminated in favour of raw ptr.
+    T* tPtr = new (tempMemory) T();
+    *tPtr = std::move(item);
+    return genericPush(tPtr, timeout);
+  }
+  template<typename U = Status>
   ResolvedType<!isTrivial, U> pushToFront(T&& item, const Duration& timeout = Duration::max())
   {
     static_assert(!std::is_trivially_copyable<T>::value, "Queue object is trivially copyable!");
@@ -148,7 +158,32 @@ public:
     return genericPushToFront(tPtr, timeout);
   }
   template<typename U = Status>
+  ResolvedType<!isTrivial, U> pushToFront(T& item, const Duration& timeout = Duration::max())
+  {
+    static_assert(!std::is_trivially_copyable<T>::value, "Queue object is trivially copyable!");
+    uint8_t tempMemory[sizeof(T)] __attribute__((aligned(4)));
+    T* tPtr = new (tempMemory) T(); //TODO: See push(T&&)
+    *tPtr = std::move(item);
+    return genericPushToFront(tPtr, timeout);
+  }
+  template<typename U = Status>
   ResolvedType<!isTrivial, U> pop(T&& item, const Duration& timeout = Duration::max())
+  {
+    static_assert(!std::is_trivially_copyable<T>::value, "Queue object is trivially copyable!");
+    uint8_t tempMemory[sizeof(T)] __attribute__((aligned(4)));
+    T* tPtr = new (tempMemory) T(); //TODO: See push(T&&)
+    if(genericPop(tPtr, timeout) == Status::success)
+    {
+      item = std::move(*tPtr);
+      return Status::success;
+    }
+    else
+    {
+      return Status::failure;
+    }
+  }
+  template<typename U = Status>
+  ResolvedType<!isTrivial, U> pop(T& item, const Duration& timeout = Duration::max())
   {
     static_assert(!std::is_trivially_copyable<T>::value, "Queue object is trivially copyable!");
     uint8_t tempMemory[sizeof(T)] __attribute__((aligned(4)));
