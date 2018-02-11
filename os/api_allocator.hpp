@@ -126,7 +126,7 @@ public:
   class ObjectContainer
   {
     ObjectContainer() : item_{nullptr}, q_{nullptr} {}
-    ~ObjectContainer() noexcept { if(item_ != nullptr) { q_->push(item_); } }
+    ~ObjectContainer() noexcept { if(item_ != nullptr) { q_->push(std::move(item_)); } }
     ObjectContainer(const ObjectContainer&) = delete;
     ObjectContainer(ObjectContainer&& other) noexcept : item_{std::move(other.item_)}, q_{other.q_}
     { other.q_ = nullptr; }
@@ -147,7 +147,7 @@ public:
     for(size_t i = 0; i < count; i++)
     {
       std::unique_ptr<ObjectT> newObj = std::make_unique<ObjectT>();
-      pool_.push(newObj);
+      pool_.push(std::move(newObj));
     }
   }
   /** Acquire an object from the pool. If no object can be acquired before the timeout occurs, an

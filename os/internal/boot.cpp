@@ -190,6 +190,7 @@ void bootThread(void*)
   {
     __init_array_start[i]();
   }
+  ObjectPool<int, 8> op;
 }
 
 } /** namespace os */

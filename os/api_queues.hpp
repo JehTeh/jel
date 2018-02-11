@@ -94,43 +94,63 @@ template<typename T, size_t maxNumberOfElements,
   bool isTrivial = std::is_trivially_copyable<T>::value>
 class Queue : private GenericCopyQueue_Base
 {
+  template<bool cond, typename U>
+  using ResolvedType = typename std::enable_if<cond, U>::type;
+  uint8_t itemMemory_[sizeof(T) * maxNumberOfElements];
 public:
-  Queue() : GenericCopyQueue_Base(maxNumberOfElements, sizeof(T), itemMemory_) { }
+  Queue() : GenericCopyQueue_Base(maxNumberOfElements, sizeof(T), itemMemory_) {}
   ~Queue() noexcept {}
-  template<typename = std::enable_if<isTrivial>>
-  Status push(const T& item, const Duration& timeout = Duration::max()) noexcept
+  //If the underlying queue object is trivially copyable, simply pass the pointer off to the
+  //underlying implementation which will memcpy the value.
+  template<typename U = Status>
+  ResolvedType<isTrivial, U> push(const T& item, const Duration& timeout = Duration::max()) noexcept
   {
+    static_assert(std::is_trivially_copyable<T>::value, "Queue object is not trivially copyable!");
     return genericPush(&item, timeout); 
   }
-  template<typename = std::enable_if<isTrivial>>
-  Status pushToFront(const T& item, const Duration& timeout = Duration::max()) noexcept
+  template<typename U = Status>
+  ResolvedType<isTrivial, U> pushToFront(const T& item, const Duration& timeout = Duration::max()) noexcept
   {
+    static_assert(std::is_trivially_copyable<T>::value, "Queue object is not trivially copyable!");
     return genericPushToFront(&item, timeout); 
   }
-  template<typename = std::enable_if<isTrivial>>
-  Status pop(const T& item, const Duration& timeout = Duration::max()) noexcept
+  template<typename U = Status>
+  ResolvedType<isTrivial, U> pop(const T& item, const Duration& timeout = Duration::max()) noexcept
   {
+    static_assert(std::is_trivially_copyable<T>::value, "Queue object is not trivially copyable!");
     return genericPop(&item, timeout);
   }
-  template<typename = std::enable_if<!isTrivial>>
-  Status push(T&& item, const Duration& timeout = Duration::max()) 
+  //If the underlying queue object is not trivially copyable, some more work has to be done to
+  //trigger a move constructor. Note that this won't work for objects that have their address
+  //tracked in another object and update it via a move constructor, because once the move
+  //constructor is called a deep copy is performed and the data is now locked into the queue and
+  //cannot be touched. Once it is moved out of the queue, another deep copy is performed and that
+  //memory is then moved from. This allows the use of most objects like smart pointers without
+  //issue, but can cause problems if a linked list item is placed into the queue because the other
+  //list pointers are pointing to some random chunk of stack memory after the push operation.
+  template<typename U = Status>
+  ResolvedType<!isTrivial, U> push(T&& item, const Duration& timeout = Duration::max()) 
   {
+    static_assert(!std::is_trivially_copyable<T>::value, "Queue object is trivially copyable!");
     uint8_t tempMemory[sizeof(T)] __attribute__((aligned(4)));
-    T* tPtr = new (tempMemory) T(); //TODO: Check if default construction can be eliminated in favour of raw ptr.
+    //TODO: Check if default construction can be eliminated in favour of raw ptr.
+    T* tPtr = new (tempMemory) T();
     *tPtr = std::move(item);
     return genericPush(tPtr, timeout);
   }
-  template<typename = std::enable_if<!isTrivial>>
-  Status pushToFront(T&& item, const Duration& timeout = Duration::max())
+  template<typename U = Status>
+  ResolvedType<!isTrivial, U> pushToFront(T&& item, const Duration& timeout = Duration::max())
   {
+    static_assert(!std::is_trivially_copyable<T>::value, "Queue object is trivially copyable!");
     uint8_t tempMemory[sizeof(T)] __attribute__((aligned(4)));
     T* tPtr = new (tempMemory) T(); //TODO: See push(T&&)
     *tPtr = std::move(item);
     return genericPushToFront(tPtr, timeout);
   }
-  template<typename = std::enable_if<!isTrivial>>
-  Status pop(T&& item, const Duration& timeout = Duration::max())
+  template<typename U = Status>
+  ResolvedType<!isTrivial, U> pop(T&& item, const Duration& timeout = Duration::max())
   {
+    static_assert(!std::is_trivially_copyable<T>::value, "Queue object is trivially copyable!");
     uint8_t tempMemory[sizeof(T)] __attribute__((aligned(4)));
     T* tPtr = new (tempMemory) T(); //TODO: See push(T&&)
     if(genericPop(tPtr, timeout) == Status::success)
@@ -145,8 +165,6 @@ public:
   }
   size_t size() const noexcept { return genericGetSize(); }
   bool empty() const noexcept { return genericGetSize() > 0 ? false : true; }
-private:
-  uint8_t itemMemory_[sizeof(T) * maxNumberOfElements];
 };
 
 
