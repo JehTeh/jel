@@ -100,6 +100,7 @@ namespace os
 class SerialWriterInterface
 {
 public:
+  virtual ~SerialWriterInterface() noexcept;
   /** Write a string of length_chars to the output. If the output is busy, transmission will be
    * overridden as soon as possible. */
   virtual void write(const char* cStr, const size_t length_chars) = 0;
@@ -120,6 +121,7 @@ public:
 class SerialReaderInterface
 {
 public:
+  virtual ~SerialReaderInterface() noexcept;
   /** Reads incoming data into the pointed to buffer, up to a maximum length (not including a null
    * terminator) of bufferLength_chars. Data is not null terminated, and is returned exactly as is
    * read from the input stream. A timeout must also be specified, if the timeout is exceeded then
@@ -132,7 +134,7 @@ public:
 /** @class AsyncLock
  *  @brief Locking object that can be held to prevent asynchronous access to streams.
  *  
- *  For AsyncWriter and AsyncReader objects, it is possible that multiple threads will attempt to
+ *  For MtWriter and MtReader objects, it is possible that multiple threads will attempt to
  *  read/write data simultaneously. While this is allowed, it means that separate calls to
  *  write()/read() may be split by other threads when this is not desired. To prevent this from
  *  happening, the Async objects support locking, which when done returns an AsyncLock that prevents
@@ -148,18 +150,21 @@ public:
   AsyncLock(const AsyncLock&) = delete;
 };
 
-/** @class AsyncWriter
+/** @class MtWriter
  *  @brief Provides a convenient interface around a SerialWriter that also provides thread-safety.
  *
  *  @note
- *    AsyncWriter objects are not capable of being used in interrupts.
+ *    MtWriter objects are not capable of being used in interrupts.
  * */
-class AsyncWriter
+class MtWriter
 {
 public:
   /** Construct a threadsafe writer object around a serial writer object. The writer object is
-   * considered the output stream. */
-  AsyncWriter(std::unique_ptr<SerialWriterInterface> writer);
+   * considered the output stream.
+   *  @note
+   *    Ownership of the output stream is taken by the MtWriter. 
+   * */
+  MtWriter(std::unique_ptr<SerialWriterInterface> writer);
   /** Writes to the output stream. A total of len characters will be printed, including null
    * characters, from the memory pointed to by data. A length of zero will result in a call to
    * std::strlen on the *data, in which case *data must be a valid, null terminated c-string.
@@ -175,21 +180,35 @@ private:
   RecursiveMutex lock_;
 };
 
-class AsyncReader
+/** @class MtReader
+ *  @brief Provides a threadsafe interface around a SerialReader.
+ *  
+ *  */
+class MtReader
 {
 public:
-  AsyncReader(std::unique_ptr<SerialReaderInterface> reader);
+  /** Construct the reader around a serial reader object. The reader object is considered the input
+   *  stream. 
+   *  @note
+   *    Ownership of the input stream is taken by the MtReader.
+   * */
+  MtReader(std::unique_ptr<SerialReaderInterface> reader);
+  /** Read up to length - 1 characters into the buffer. The buffer is always null terminated. */
   size_t read(char* buffer, const size_t length, const Duration& timeout);
-  size_t read(String& string, const Duration& timeout);
   AsyncLock lockStream(const Duration& timeout);
 private:
   std::unique_ptr<SerialReaderInterface> stream_;
   RecursiveMutex lock_;
 };
 
-struct IoStream
+/** @class MtIoStream 
+ *  @brief Provides a threadsafe I/O interface comprised of an MtReader and MtWriter.
+ * */
+class AsyncIoStream : public MtReader, public MtWriter
 {
-
+public:
+  AsyncIoStream(std::unique_ptr<SerialReaderInterface> reader, 
+    std::unique_ptr<SerialWriterInterface> writer);
 };
 
 /** @struct AnsiFormatter

@@ -41,13 +41,13 @@ namespace jel
 namespace os
 {
 
-AsyncWriter::AsyncWriter(std::unique_ptr<SerialWriterInterface> writer) :
+MtWriter::MtWriter(std::unique_ptr<SerialWriterInterface> writer) :
   stream_(std::move(writer))
 {
   
 }
 
-Status AsyncWriter::write(const char* cStr, size_t length, const Duration& timeout) 
+Status MtWriter::write(const char* cStr, size_t length, const Duration& timeout) 
 {
   assert(cStr != nullptr); //Cannot print a nulltpr.
   if(length == 0) { length = std::strlen(cStr); }
@@ -71,23 +71,23 @@ Status AsyncWriter::write(const char* cStr, size_t length, const Duration& timeo
   }
 }
 
-Status AsyncWriter::write(const String& string, const Duration& timeout)
+Status MtWriter::write(const String& string, const Duration& timeout)
 {
   return write(string.c_str(), string.length(), timeout);
 }
 
-AsyncLock AsyncWriter::lockStream(const Duration& timeout)
+AsyncLock MtWriter::lockStream(const Duration& timeout)
 {
   return AsyncLock{lock_, timeout};
 }
 
-AsyncReader::AsyncReader(std::unique_ptr<SerialReaderInterface> reader) :
+MtReader::MtReader(std::unique_ptr<SerialReaderInterface> reader) :
   stream_(std::move(reader))
 {
 
 }
 
-size_t AsyncReader::read(char* buffer, const size_t length, const Duration& timeout)
+size_t MtReader::read(char* buffer, const size_t length, const Duration& timeout)
 {
   if(length == 0) { return 0; }
   assert(buffer != nullptr); //Cannot receive data into a nullptr.
@@ -95,9 +95,24 @@ size_t AsyncReader::read(char* buffer, const size_t length, const Duration& time
   LockGuard lg{lock_, timeout};
   if(lg.isLocked())
   {
-    return stream_->read(buffer, length, timeout - (SteadyClock::now() - start));
+    size_t readLen = stream_->read(buffer, length - 1, timeout - (SteadyClock::now() - start));
+    buffer[readLen] = '\0';
+    return readLen;
   }
   return 0;
+}
+
+AsyncLock MtReader::lockStream(const Duration& timeout)
+{
+  return AsyncLock{lock_, timeout};
+}
+
+AsyncIoStream::AsyncIoStream(std::unique_ptr<SerialReaderInterface> reader, 
+  std::unique_ptr<SerialWriterInterface> writer) :
+  MtReader{std::move(reader)}, 
+  MtWriter{std::move(writer)}
+{
+
 }
 
 } /** namespace os */
