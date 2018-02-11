@@ -46,7 +46,7 @@ flags = [
 # a "-std=<something>".
 # For a C project, you would set this to something like 'c99' instead of
 # 'c++11'.
-'-std=c++14',
+'-std=c++17',
 '-nostdinc++',
 '--system-header-prefix=C:/MinGW/',
 '--system-header-prefix=E:/Apps/Microsoft/VC/',

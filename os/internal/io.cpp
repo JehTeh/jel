@@ -29,6 +29,8 @@
 /** C/C++ Standard Library Headers */
 #include <cassert>
 #include <cstring>
+#include <cstdio>
+#include <cinttypes>
 /** jel Library Headers */
 #include "os/api_io.hpp"
 #include "os/api_time.hpp"
@@ -53,7 +55,7 @@ Status AsyncWriter::write(const char* cStr, size_t length, const Duration& timeo
   LockGuard lg{lock_, timeout};
   if(lg.isLocked())
   { 
-    if(stream_->isBusy(SteadyClock::now() - start) == false)
+    if(stream_->isBusy(timeout - (SteadyClock::now() - start)) == false)
     {
       stream_->write(cStr, length);
       return Status::success;
@@ -79,54 +81,23 @@ AsyncLock AsyncWriter::lockStream(const Duration& timeout)
   return AsyncLock{lock_, timeout};
 }
 
-
-AsyncWriter& AsyncWriter::operator<<(bool value)
+AsyncReader::AsyncReader(std::unique_ptr<SerialReaderInterface> reader) :
+  stream_(std::move(reader))
 {
-  if(value)
+
+}
+
+size_t AsyncReader::read(char* buffer, const size_t length, const Duration& timeout)
+{
+  if(length == 0) { return 0; }
+  assert(buffer != nullptr); //Cannot receive data into a nullptr.
+  Timestamp start = SteadyClock::now();
+  LockGuard lg{lock_, timeout};
+  if(lg.isLocked())
   {
-    constexpr size_t trueLen = constStringLen("true");
-    write("true", trueLen);
+    return stream_->read(buffer, length, timeout - (SteadyClock::now() - start));
   }
-  else
-  {
-    constexpr size_t falseLen = constStringLen("false");
-    write("false", falseLen);
-  }
-}
-
-AsyncWriter& AsyncWriter::operator<<(int64_t value)
-{
-
-}
-
-AsyncWriter& AsyncWriter::operator<<(uint64_t value)
-{
-
-}
-
-AsyncWriter& AsyncWriter::operator<<(float value)
-{
-
-}
-
-AsyncWriter& AsyncWriter::operator<<(double value)
-{
-
-}
-
-AsyncWriter& AsyncWriter::operator<<(const String& string)
-{
-
-}
-
-AsyncWriter& AsyncWriter::operator<<(const char* cStr)
-{
-
-}
-
-AsyncWriter& AsyncWriter::operator<<(void*& ptr)
-{
-
+  return 0;
 }
 
 } /** namespace os */
