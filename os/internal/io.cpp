@@ -118,7 +118,7 @@ AsyncIoStream::AsyncIoStream(std::unique_ptr<SerialReaderInterface> reader,
 constexpr char AnsiFormatter::EscapeSequences::csi[];
 const PrettyPrinter::Config PrettyPrinter::defaultConfig;
 
-PrettyPrinter::PrettyPrinter(MtWriter& output, const Config& config) :
+PrettyPrinter::PrettyPrinter(const std::shared_ptr<MtWriter>& output, const Config& config) :
   out_(output), cfg_(config), clen_(0), cidnt_(0)
 {
   
@@ -138,12 +138,12 @@ Status PrettyPrinter::print(const char* cStr, size_t length)
   /** Print a newline, optionally with carriage return, and indent to tabLevel. */
   auto printAutoNewline = [&](const bool addCr, const size_t tabLevel)
   {
-    if(addCr) { out_.write("\r\n", 2); }
-    else { out_.write("\n", 1); }
+    if(addCr) { out_->write("\r\n", 2); }
+    else { out_->write("\n", 1); }
     clen_ = 0;
     for(size_t i = 0; i < tabLevel; i++)
     {
-      out_.write("\t", 1);
+      out_->write("\t", 1);
       clen_ += cfg_.indentDepth_chars; 
     }
     return;
@@ -151,7 +151,7 @@ Status PrettyPrinter::print(const char* cStr, size_t length)
   /** Print from bpos to epos, then advance bpos to epos. */
   auto printToEpos = [&]()
   {
-    out_.write(&cStr[bpos], epos - bpos);
+    out_->write(&cStr[bpos], epos - bpos);
     //TODO add throw on error
     bpos = epos;
     return;
@@ -176,7 +176,7 @@ Status PrettyPrinter::print(const char* cStr, size_t length)
           if((cStr[epos - 1] != '\r') && cfg_.carriageReturnNewline)
           {
             printToEpos(); //Print up to newline character.
-            out_.write("\r", 1); //Print a carriage return.
+            out_->write("\r", 1); //Print a carriage return.
           }
         }
         epos++;

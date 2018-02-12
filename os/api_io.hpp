@@ -458,7 +458,7 @@ public:
     bool carriageReturnNewline = true;
   };
   static const Config defaultConfig;
-  PrettyPrinter(MtWriter& output, const Config& config = defaultConfig);
+  PrettyPrinter(const std::shared_ptr<MtWriter>& output, const Config& config = defaultConfig);
   /** Prints a string. */
   Status print(const String& string);
   /** Prints a null-terminated C-string. If a length parameter is provided, a call to std::strlen is
@@ -466,7 +466,7 @@ public:
   Status print(const char* cStr, size_t length = 0);
   Config& editConfig() {return cfg_; }
 private:
-  MtWriter& out_;
+  std::shared_ptr<MtWriter> out_;
   Config cfg_;
   size_t clen_;
   size_t cidnt_;

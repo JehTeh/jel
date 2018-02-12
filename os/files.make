@@ -42,5 +42,6 @@ CXXSOURCE += $(addprefix os\,\
 		internal\freertos_hooks.cpp \
 		internal\system.cpp \
 		internal\io.cpp \
+		internal\cli.cpp \
 		)
 
