@@ -438,5 +438,39 @@ public:
   };
 };
 
+/** @class PrettyPrinter
+ *  @brief Provides an automatic output formatting interface for printing to a CLI.
+ *  
+ *  The PrettyPrinter will take arbitrary, non-null character input data and write it to an output
+ *  stream. Data that is printed can automatically have linebreaks inserted or ANSI Formatters
+ *  stripped out as desired. Automatic linebreaks will only be inserted inside non-whitespace, non
+ *  ANSI control characters.
+ *  */
+class PrettyPrinter
+{
+public:
+  struct Config
+  {
+    size_t lineLen = 80;
+    size_t indentDepth_chars = 4;
+    size_t maxIndentDepth = 4;
+    bool stripFormatters = false;
+    bool carriageReturnNewline = true;
+  };
+  static const Config defaultConfig;
+  PrettyPrinter(MtWriter& output, const Config& config = defaultConfig);
+  /** Prints a string. */
+  Status print(const String& string);
+  /** Prints a null-terminated C-string. If a length parameter is provided, a call to std::strlen is
+   * saved. The length parameter should be identical to what is returned by std::strlen(cStr); */
+  Status print(const char* cStr, size_t length = 0);
+  Config& editConfig() {return cfg_; }
+private:
+  MtWriter& out_;
+  Config cfg_;
+  size_t clen_;
+  size_t cidnt_;
+};
+
 } /** namespace os */
 } /** namespace jel */

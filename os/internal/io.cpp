@@ -115,6 +115,190 @@ AsyncIoStream::AsyncIoStream(std::unique_ptr<SerialReaderInterface> reader,
 
 }
 
+PrettyPrinter::PrettyPrinter(MtWriter& output, const Config& config) :
+  out_(output), cfg_(config), clen_(0), cidnt_(0)
+{
+  
+}
+
+Status PrettyPrinter::print(const String& string)
+{
+  return print(string.c_str(), string.length());
+}
+
+Status PrettyPrinter::print(const char* cStr, size_t length)
+{
+  assert(cStr); //Cannot print a nullptr.
+  if(length == 0) { length = std::strlen(cStr); }
+  size_t bpos = 0;
+  size_t epos = 0;
+  /** Print a newline, optionally with carriage return, and indent to tabLevel. */
+  auto printAutoNewline = [&](const bool addCr, const size_t tabLevel)
+  {
+    if(addCr) { out_.write("\r\n", 2); }
+    else { out_.write("\n", 1); }
+    clen_ = 0;
+    for(size_t i = 0; i < tabLevel; i++)
+    {
+      out_.write("\t", 1);
+      clen_ += cfg_.indentDepth_chars; 
+    }
+    return;
+  };
+  /** Print from bpos to epos, then advance bpos to epos. */
+  auto printToEpos = [&]()
+  {
+    out_.write(&cStr[bpos], epos - bpos);
+    //TODO add throw on error
+    bpos = epos;
+    return;
+  };
+  /** Advance epos to the next visible character. */
+  auto toNextVisible = [&]()
+  {
+    while(true)
+    {
+      if(cStr[epos] == '\t')
+      {
+        epos++;
+        if(cidnt_ < cfg_.maxIndentDepth)
+        {
+          cidnt_++; //track current indentation depth.
+        }
+      }
+      else if(cStr[epos] == '\n')
+      {
+        if(&cStr[0] <= &cStr[epos - 1])
+        {
+          if((cStr[epos - 1] != '\r') && cfg_.carriageReturnNewline)
+          {
+            printToEpos(); //Print up to newline character.
+            out_.write("\r", 1); //Print a carriage return.
+          }
+        }
+        epos++;
+        cidnt_ = 0;
+        clen_ = 0; //Reset current line length and indentation.
+      }
+      else if(cStr[epos] == AnsiFormatter::EscapeSequences::csi[0])
+      {
+        //If this is an escape sequence, we need to advance to epos past the end of it. When
+        //printed, an escape sequence needs to remain contiguous, and is invisible, so it does not
+        //count towards the line length.
+        constexpr size_t csilen = constStringLen(AnsiFormatter::EscapeSequences::csi);
+        bool isEscapeSeq = true;
+        //Verify this is an actual escape sequence, not just an escape character. To do this,
+        //check that this matches the escape sequence prefix.
+        for(size_t i = 0; i < csilen; i++)
+        {
+          if(cStr[epos + i] != AnsiFormatter::EscapeSequences::csi[i])
+          {
+            isEscapeSeq = false;
+            break;
+          }
+        }
+        if(isEscapeSeq)
+        {
+          size_t escSeqStartPos = epos;
+          while(true)
+          {
+            if((cStr[epos] >= 'A') && (cStr[epos] <= 'Z'))
+            {
+              epos++; //End of escape sequence.
+              break;
+            }
+            if((cStr[epos] >= 'a') && (cStr[epos] <= 'z'))
+            {
+              epos++; //End of escape sequence.
+              break;
+            }
+            epos++; //Not the end of escape sequence, keep advancing.
+          }
+          //If we are ignoring ANSI formatters, 'jump over' this escape sequence.
+          if(cfg_.stripFormatters)
+          {
+            size_t savedEpos = epos;
+            epos = escSeqStartPos;
+            printToEpos();
+            bpos = savedEpos; epos = savedEpos;
+          }
+        }
+      }
+      else if(cStr[epos] == ' ')
+      {
+        epos++;
+        clen_++;
+        if(clen_ >= cfg_.lineLen)
+        {
+          printToEpos();
+          printAutoNewline(cfg_.carriageReturnNewline, cidnt_);
+        }
+      }
+      else if(cStr[epos] == '\0')
+      {
+        printToEpos(); //End of string.
+        return;
+      }
+      else if ((cStr[epos] < ' ') || (cStr[epos] == 0x7F))
+      {
+        epos++; //Other control character.
+      }
+      else
+      {
+        //Character is a visible character. We are done advancing.
+        return;
+      }
+    }
+  };
+  auto toNextNonAlphanumeric = [&]()
+  {
+    size_t wlen = 0;
+    while(true)
+    {
+      if((cStr[epos + wlen] > ' ') && (cStr[epos + wlen] < 0x7F))
+      {
+        wlen++;
+      }
+      else if((cStr[epos + wlen] > 0x7F))
+      {
+        wlen++; //Character is an extended ASCII code, we treat these like regular characters.
+      }
+      else
+      {
+        //Non-visible character, word is over.
+        if((clen_ + wlen) >= cfg_.lineLen)
+        {
+          //Word would exceed the line length. We need to flush to current epos then print a newline
+          //character (+ any indentation).
+          printToEpos();
+          printAutoNewline(cfg_.carriageReturnNewline, cidnt_);
+          epos += wlen;
+          clen_ += wlen;
+          break;
+        }
+        else
+        {
+          //Word would not exceed line length. Simply increment epos and current line length by word
+          //length.
+          epos += wlen;
+          clen_ += wlen;
+          break;
+        }
+      }
+    }
+  };
+  while(cStr[epos] != '\0')
+  {
+    toNextVisible();
+    toNextNonAlphanumeric();
+  }
+  if(bpos < epos)
+  {
+    printToEpos();
+  }
+  return Status::success;
+}
+
 } /** namespace os */
 } /** namespace jel */
 
