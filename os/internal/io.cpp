@@ -115,6 +115,9 @@ AsyncIoStream::AsyncIoStream(std::unique_ptr<SerialReaderInterface> reader,
 
 }
 
+constexpr char AnsiFormatter::EscapeSequences::csi[];
+const PrettyPrinter::Config PrettyPrinter::defaultConfig;
+
 PrettyPrinter::PrettyPrinter(MtWriter& output, const Config& config) :
   out_(output), cfg_(config), clen_(0), cidnt_(0)
 {
