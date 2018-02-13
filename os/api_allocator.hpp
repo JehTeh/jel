@@ -31,6 +31,7 @@
 /** C/C++ Standard Library Headers */
 #include <memory>
 #include <atomic>
+#include <bitset>
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
@@ -58,7 +59,7 @@ public:
   /** Registers the allocator within the system allocators table. */
   AllocatorStatisticsInterface(const char* allocatorName);
   /** Removes the allocator from the system allocators table. */
-  ~AllocatorStatisticsInterface() noexcept;
+  virtual ~AllocatorStatisticsInterface() noexcept;
   virtual size_t freeSpace_Bytes() const noexcept = 0;
   virtual size_t minimumFreeSpace_Bytes() const noexcept = 0;
   virtual size_t totalSpace_Bytes() const noexcept = 0;
@@ -86,6 +87,7 @@ private:
 class AllocatorInterface
 {
 public:
+  virtual ~AllocatorInterface() noexcept {}
   virtual void* allocate(size_t size) = 0;
   virtual void deallocate(void* ptr) = 0;
 };
@@ -98,7 +100,7 @@ class SystemAllocator : public AllocatorInterface, public AllocatorStatisticsInt
 {
 public:
   SystemAllocator();
-  ~SystemAllocator() = delete;
+  ~SystemAllocator() {};
   SystemAllocator(const SystemAllocator&) = delete;
   SystemAllocator(SystemAllocator&&) = delete;
   SystemAllocator& operator=(const SystemAllocator&) = delete;
@@ -164,6 +166,95 @@ public:
   }
 private:
   ObjQ pool_;
+};
+
+template<size_t blockSize_Bytes, size_t totalBlocks>
+class BlockAllocator : public AllocatorStatisticsInterface, public AllocatorInterface
+{
+public:
+  BlockAllocator(const char* name = "Pool") : 
+    AllocatorStatisticsInterface(name), AllocatorInterface(),
+    nblk_{totalBlocks}, blksz_{blockSize_Bytes}, sz_{totalBlocks * blockSize_Bytes},
+    fblkcnt_{totalBlocks}, minfblkcnt_{totalBlocks}
+  {
+    for(size_t i = 0; i < nblk_; i++)
+    {
+      iuf_[i] = false;
+    }
+  }
+  BlockAllocator(const BlockAllocator&) = delete;
+  BlockAllocator(BlockAllocator&&) = delete;
+  BlockAllocator& operator=(const BlockAllocator&) = delete;
+  BlockAllocator& operator=(BlockAllocator&&) = delete;
+  size_t freeSpace_Bytes() const noexcept final override { return fblkcnt_ * blksz_; };
+  size_t minimumFreeSpace_Bytes() const noexcept final override { return minfblkcnt_ * blksz_; };
+  size_t totalSpace_Bytes() const noexcept final override { return sz_; };
+  void* allocate(size_t size_Bytes) final override
+  {
+    if(size_Bytes == 0) { return nullptr; }
+    size_Bytes += sizeof(size_t);
+    if(size_Bytes >= sz_) { throw std::bad_alloc(); }
+    size_t blksreq = size_Bytes / blksz_;
+    if((size_Bytes % blksz_) != 0) { blksreq++; }
+    size_t contBlocks = 0;
+    size_t* poolMemPtr = nullptr;
+    size_t firstFreeIdx;
+    for(size_t i = 0; i < nblk_; i++)
+    {
+      if(!iuf_[i]) //Scan through in-use-flags for free blocks.
+      {
+        if(++contBlocks == blksreq)
+        {
+          //A chunk of free blocks long enough is found. Lets get a pointer to the beginning of the
+          //memory chunk.
+          poolMemPtr = reinterpret_cast<size_t*>
+            (reinterpret_cast<size_t>(mem_) + (((i + 1) - contBlocks) * blksz_));
+          firstFreeIdx = i; //Don't set block flags here, if an exception is raised due to OOM it 
+          //will leave pool in an illegal state.
+          break;
+        }
+      }
+      else
+      {
+        contBlocks = 0; //This block isn't free, so our current free block length is reset.
+      }
+    }
+    if(!poolMemPtr) { throw std::bad_alloc(); } //No string of free blocks long enough found.
+    for(size_t j = contBlocks; j > 0;)
+    {
+      iuf_[(firstFreeIdx + 1) - j--] = true; //Set in-use-flags for each block.
+    }
+    *poolMemPtr = blksreq; //Store total blocks in this allocation. This is used when deallocating.
+    //Update current free/min free block count for statistics interface.
+    fblkcnt_ -= blksreq; if(fblkcnt_ < minfblkcnt_) { minfblkcnt_ = fblkcnt_; }
+    recordAllocation();
+    return poolMemPtr += 1; //Return pointer w/ 4B offset to hide our blksreq value.
+  }
+  void deallocate(void* itemPtr) final override
+  {
+    assert(itemPtr >= mem_); assert(itemPtr <= (mem_ + sz_));
+    //cast to integer pointer for easy of use.
+    size_t* mptr = reinterpret_cast<size_t*>(itemPtr);
+    mptr--; //Apply negative offset so we now point at the blksreq saved when this was allocated.
+    size_t btof = *mptr;
+    size_t iufFirstFlag = 
+      (reinterpret_cast<size_t>(mptr) - reinterpret_cast<size_t>(mem_)) / blksz_;
+    assert(iufFirstFlag < iuf_.size());
+    for(size_t i = iufFirstFlag; i < iufFirstFlag + btof;)
+    {
+      iuf_[i++] = false;
+    }
+    fblkcnt_ += btof; 
+    recordDeallocation();
+  }
+private:
+  const size_t nblk_; 
+  const size_t blksz_; 
+  const size_t sz_; 
+  size_t fblkcnt_;
+  size_t minfblkcnt_;
+  std::bitset<totalBlocks> iuf_; 
+  uint8_t mem_[blockSize_Bytes * totalBlocks] __attribute__((aligned(4)));
 };
 
 } /** namespace os */
