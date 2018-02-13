@@ -290,6 +290,7 @@ Status PrettyPrinter::print(const char* cStr, size_t length)
       }
     }
   };
+  auto outLock(out_->lockStream());
   while(cStr[epos] != '\0')
   {
     toNextVisible();
