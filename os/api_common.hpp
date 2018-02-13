@@ -103,6 +103,42 @@ private:
   const T* ptr;
 };
 
+/** @class ScopeGuard
+ *  @brief Used to optionally perform an RAII action when created and destroyed.
+ *  */
+template<typename F>
+class ScopeGuard
+{
+public:
+  ScopeGuard(const F& onExit) : exit_(onExit) { }
+  template<typename Fcreate>
+  ScopeGuard(const Fcreate& onEntry, const F& onExit) : exit_(onExit) 
+    { runOnExit = true; onEntry(); }
+  ~ScopeGuard() { if(runOnExit) { exit_(); } }
+  bool runOnExit;
+private:
+  F& exit_;
+};
+
+/** 
+ *  ScopeGuard specialization, only an exit function will be run.
+ * */
+template<typename F>
+class ScopeGuard<F> ToScopeGuard(const F& onExit)
+{
+  return ScopeGuard<F>(onExit);
+}
+
+/** 
+ *  ScopeGuard specialization, both an entry and exit function will be run.
+ * */
+template<typename Fentry, typename F>
+class ScopeGuard<F> ToScopeGuard(const Fentry& onEntry, const F& onExit)
+{
+  return ScopeGuard<F>(onEntry, onExit);
+}
+
+
 namespace os
 {
   enum class Status
