@@ -111,10 +111,22 @@ AsyncLock MtReader::lockStream(const Duration& timeout)
 }
 
 AsyncIoStream::AsyncIoStream(std::unique_ptr<SerialReaderInterface> reader, 
-  std::unique_ptr<SerialWriterInterface> writer) : 
-  MtReader(std::move(reader)), MtWriter(std::move(writer))
+  std::unique_ptr<SerialWriterInterface> writer, bool sharedInterface) : 
+  MtReader(std::move(reader)), MtWriter(std::move(writer)), shared_(sharedInterface)
 {
 
+}
+
+AsyncIoStream::~AsyncIoStream() noexcept
+{
+  if(shared_)
+  {
+    MtWriter::stream_.release(); //Release the ownership of the shared base class from one of the 
+    //two streams
+    MtReader::stream_ = nullptr; //Delete the base class.
+  }
+  //If they are not shared, then the respective destructors for MtReader and MtWriter will be called
+  //and delete their derived objects accordingly.
 }
 
 constexpr char AnsiFormatter::EscapeSequences::csi[];

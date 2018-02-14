@@ -50,6 +50,7 @@
 /** C/C++ Standard Library Headers */
 #include <cstdint>
 #include <cstring>
+#include <cassert>
 /** jel Library Headers */
 #include "os/internal/indef.hpp"
 #include "os/api_threads.hpp"
@@ -189,17 +190,39 @@ std::shared_ptr<AsyncIoStream> jelStandardIo;
  *  ...todo
  *
  * */
+
+char buf[128];
+
 void initializeStandardIo()
 {
   using namespace hw::uart;
   BasicUart_Base::Config uartConfig;
   uartConfig.baud = Baudrate::bps1Mbit;
   uartConfig.instance = UartInstance::uart0;
-  BasicUart* uart(new BasicUart(uartConfig));
-  std::unique_ptr<SerialWriterInterface> writerIf(uart);
-  std::unique_ptr<SerialReaderInterface> readerIf(uart);
-  std::shared_ptr<AsyncIoStream> io(new AsyncIoStream(std::move(readerIf), std::move(writerIf)));
-  jelStandardIo = io;
+  BasicUart* uart = nullptr;
+  switch(config::jelRuntimeConfiguration.stdioPortType)
+  {
+    case config::SerialPortType::uart0:
+      {
+        //Note: The ownership semantics may be a touch confusing here: Two unique pointers are
+        //created, both effectively pointing to the same UART object. This is because the
+        //AsyncIoStream accepts Reader and Writer interfaces that are not required to be part of the
+        //same object, but still wants exclusive ownership over both. The AsyncIoStream does support
+        //both base interfaces being the same object, however, and will deal with the underlying
+        //memory appropriately if destroyed to avoid a double deletion. The sharedInterface flag
+        //must be set to true to ensure this occurs.
+        uart = new BasicUart(uartConfig);
+        std::unique_ptr<SerialWriterInterface> writerIf(uart);
+        std::unique_ptr<SerialReaderInterface> readerIf(uart);
+        std::shared_ptr<AsyncIoStream> 
+          io(new AsyncIoStream(std::move(readerIf), std::move(writerIf), true));
+        jelStandardIo = io;
+      }
+      break;
+    default:
+      assert(false);
+      break;
+  }
 };
 
 void bootThread(void*)

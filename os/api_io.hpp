@@ -174,7 +174,7 @@ public:
   /** Lock the output stream. An AsyncLock object will be returned, which will prevent other threads
    * from using the output stream so long as it is extant. */
   AsyncLock lockStream(const Duration& timeout = Duration::max());
-private:
+protected:
   std::unique_ptr<SerialWriterInterface> stream_;
   RecursiveMutex lock_;
 };
@@ -195,19 +195,29 @@ public:
   /** Read up to length - 1 characters into the buffer. The buffer is always null terminated. */
   size_t read(char* buffer, const size_t length, const Duration& timeout);
   AsyncLock lockStream(const Duration& timeout);
-private:
+protected:
   std::unique_ptr<SerialReaderInterface> stream_;
   RecursiveMutex lock_;
 };
 
 /** @class MtIoStream 
  *  @brief Provides a threadsafe I/O interface comprised of an MtReader and MtWriter.
+ *
+ *  Combines a reader and writer interface under one asynchronous wrapper.
+ *  @note
+ *    If the reader and
+ *    writer pointers refer to the same base object (for example, a UART class that implements both
+ *    reader and writer) then the sharedInterface flag must be set to true to ensure a double
+ *    deletion does not occur on destruction of the AsyncIoStream.
  * */
 class AsyncIoStream : public MtReader, public MtWriter
 {
 public:
   AsyncIoStream(std::unique_ptr<SerialReaderInterface> reader, 
-    std::unique_ptr<SerialWriterInterface> writer);
+    std::unique_ptr<SerialWriterInterface> writer, const bool sharedInterface);
+  ~AsyncIoStream() noexcept;
+private:
+  bool shared_;
 };
 
 /** @struct AnsiFormatter
