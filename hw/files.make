@@ -34,6 +34,7 @@ CSOURCE += $(addprefix hw\,\
 
 CXXSOURCE += $(addprefix hw\,\
 		generic\startup.cpp \
+		generic\uart.cpp \
 		)
 
 TM4C123GH6PM_ASOURCE += $(addprefix hw\targets\tm4c\,\
@@ -48,4 +49,5 @@ TM4C123GH6PM_CXXSOURCE += $(addprefix hw\targets\tm4c\,\
 		startup.cpp \
 		irq.cpp \
 		sysclock.cpp \
+		uart.cpp \
 		)
