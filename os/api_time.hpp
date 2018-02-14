@@ -105,7 +105,7 @@ public:
    * SteadyClock is running at sub-microsecond precision. */
   inline constexpr int64_t toMicroseconds() const
     {
-      constexpr int64_t p = period().den; constexpr int64_t ratio = 1'000'000;
+      constexpr int64_t p = period().den; constexpr int64_t ratio = 1;
       return (count() + ((p / ratio) / 2)) / ratio;
     }
   /** Returns the current span of the duration, in milliseconds. Rounding is performed. */
@@ -117,7 +117,7 @@ public:
   /** Returns the current span of the duration, in integer seconds. Rounding is performed. */
   inline constexpr int64_t toSeconds() const
     {
-      constexpr int64_t p = period().den; constexpr int64_t ratio = 1;
+      constexpr int64_t p = period().den; constexpr int64_t ratio = 1'000'000;
       return (count() + ((p / ratio) / 2)) / ratio;
     }
   /** Create a duration that is t microseconds in span. */

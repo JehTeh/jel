@@ -50,8 +50,8 @@ namespace os
 inline TickType_t toTicks(const Duration& d) noexcept
 {
   //Assumption is made that TickType_t is an integer type.
-  constexpr int64_t usPerTick = 1'000'000 / configTICK_RATE_HZ;
-  int64_t t_us = d.toMicroseconds();
+  constexpr uint64_t usPerTick = 1'000'000 / configTICK_RATE_HZ;
+  uint64_t t_us = d.toMicroseconds();
   if(t_us > 0)
   {
     TickType_t ticks = t_us / usPerTick;

@@ -63,7 +63,8 @@ namespace jel
 namespace os
 {
 
-Lock::Lock(const Type type, const size_t maxCount, const size_t initialCount)
+Lock::Lock(const Type type, const size_t maxCount, const size_t initialCount) :
+  type_(type)
 {
   //Ensure the memory required by the RTOS matches the size of the memory in the object.
   static_assert(sizeof(StaticMemoryBlock) == sizeof(StaticSemaphore_t), 
