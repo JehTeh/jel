@@ -47,8 +47,11 @@
 /** C/C++ Standard Library Headers */
 #include <cstdint>
 #include <cstring>
+#include <fcntl.h>
+#include <unistd.h>
 /** jel Library Headers */
 #include "os/api_allocator.hpp"
+#include "os/internal/indef.hpp"
 
 //For use with clang static analysis tools - these functions do not need a 'dllimport' attribute.
 #ifdef __clang__
@@ -291,16 +294,33 @@ int _lseek(int file, int offset, int smode)
 
 int _read(int file, char* buffer, int len)
 {
-  (void)file; (void)buffer; (void)len;
-  return 0;
+  using namespace jel;
+  switch(file)
+  {
+    case STDOUT_FILENO:
+    case STDIN_FILENO:
+      return os::jelStandardIo->read(buffer, len, Duration::max());
+    default:
+      return 0;
+  }
 }
 
 int _write(int file, char *ptr, int len)
 {
-  (void)file; (void)ptr; (void)len;
-  return len;
+  using namespace jel;
+  switch(file)
+  {
+    case STDOUT_FILENO:
+    case STDERR_FILENO:
+      os::jelStandardIo->write(ptr, len, Duration::max());
+      return len;
+    default:
+      return len;
+  }
 }
 
+//Newlibs allocation is completely overriden and replaced by the system allocation scheme. _sbrk
+//should not be used.
 void* _sbrk(int increment)
 {
   (void)increment;

@@ -223,6 +223,14 @@ void initializeStandardIo()
       assert(false);
       break;
   }
+  jelStandardIo->write("\r\n"
+                       "╔══════════════════════════════════════╗\r\n"
+                       "║                 BOOT                 ║\r\n"
+                       "╚══════════════════════════════════════╝\r\n");
+  jelStandardIo->write("System standard I/O initialization complete.\r\n");
+  jelStandardIo->write("Runtime configuration '"); 
+  jelStandardIo->write(config::jelRuntimeConfiguration.name);
+  jelStandardIo->write("' has been loaded successfully.\r\n");
 };
 
 void bootThread(void*)
