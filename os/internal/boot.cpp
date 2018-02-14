@@ -179,6 +179,9 @@ namespace jel
 namespace os
 {
 
+/** Note: This must be nullptr/unitialized. If it is not, GCC will call a static constructor and
+ * blow away the Io pointer that is assigned before C++ static initialization. */
+std::shared_ptr<AsyncIoStream> jelStandardIo;
 /** 
  *  @brief The jel bootup thread, responsible for the majority of system initialization and starting
  *  the user application thread(s).
@@ -200,19 +203,26 @@ void bootThread(void*)
   BasicUart* uart(new BasicUart(uartConfig));
   std::unique_ptr<SerialWriterInterface> writerIf(uart);
   std::unique_ptr<SerialReaderInterface> readerIf(uart);
-  AsyncIoStream io(std::move(readerIf), std::move(writerIf));
-  while(true)
-  {
-    io.write("Enter input for echo in 5s.\r\n");
-    size_t sz = io.read(buf, 128, Duration::seconds(5));
-    io.write(buf, sz);
-    io.write("\r\n");
-  }
-  
+  std::shared_ptr<AsyncIoStream> io(new AsyncIoStream(std::move(readerIf), std::move(writerIf)));
+  std::sprintf(buf, "io ptr addr before assign %p\r\n", jelStandardIo.get());
+  jelStandardIo = io;
+  PrettyPrinter pp(io);
+  pp.print(buf);
+  std::sprintf(buf, "io ptr addr %p\r\n", jelStandardIo.get());
+  pp.print(buf);
   /** C++ Static object constructors are called here. */
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
     __init_array_start[i]();
+  }
+  std::sprintf(buf, "io ptr addr after SC %p\r\n", jelStandardIo.get());
+  pp.print(buf);
+  while(true)
+  {
+    pp.print("This is a pretty printer line. It is kind of long and should in fact exceed the nominal pp line length.\r\n");
+    size_t sz = io->read(buf, 128, Duration::seconds(2));
+    io->write(buf, sz);
+    io->write("\r\n");
   }
 }
 

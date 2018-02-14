@@ -66,6 +66,10 @@ inline TickType_t toTicks(const Duration& d) noexcept
 
 typedef ObjectPool<String, config::stringPoolStringCount> JelStringPool;
 extern JelStringPool* jelStringPool;
+/** This is intentionally not just a shared pointer - this pointer is set before libc constructor
+ * calls and must persist through them. To avoid requiring a double de-reference, objects should
+ * cache their own shared_ptr copy. */
+extern std::shared_ptr<AsyncIoStream> jelStandardIo;
 
 }
 }

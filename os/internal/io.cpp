@@ -58,6 +58,7 @@ Status MtWriter::write(const char* cStr, size_t length, const Duration& timeout)
     if(stream_->isBusy(timeout - (SteadyClock::now() - start)) == false)
     {
       stream_->write(cStr, length);
+      stream_->isBusy(timeout - (SteadyClock::now() - start));
       return Status::success;
     }
     else

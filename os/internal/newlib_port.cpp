@@ -85,6 +85,7 @@ int _lseek(int, int, int);
 int _read(int, char*, int);
 int _write(int file, char *ptr, int len);
 void* _sbrk(int increment);
+void __libc_fini_array(void);
 #ifdef __cplusplus
 }
 #endif
@@ -311,6 +312,13 @@ namespace __cxxabiv1
 {
 std::terminate_handler __terminate_handler = abort;
 }
+
+void __libc_fini_array(void)
+{
+
+}
+
+void *__dso_handle = 0;
 
 #ifdef __clang__
 #pragma clang diagnostic pop
