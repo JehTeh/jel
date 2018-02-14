@@ -37,12 +37,17 @@
 #include "driverlib/uart.h"
 #include "driverlib/gpio.h"
 
+
+void isrEntry_Uart0() noexcept __attribute__((interrupt ("IRQ")));
+
 namespace jel
 {
 namespace hw
 {
 namespace uart 
 {
+
+BasicUart* isrVectorDispatchTable[8];
 
 struct BasicUartHardwareProperties
 {
@@ -119,7 +124,17 @@ BasicUart::BasicUart(const BasicUart_Base::Config& config) : BasicUart_Base{conf
     throw Exception{ExceptionCode::driverInstanceNotAvailable,
       "This UART instance is not available on this platform." }; 
   }
+  isrVectorDispatchTable[static_cast<size_t>(hw_->instance)] = this;
   initializeHardware();
+}
+
+BasicUart::~BasicUart() noexcept
+{
+  if(hw_ != nullptr)
+  {
+    isrVectorDispatchTable[static_cast<size_t>(hw_->instance)] = nullptr;
+    UARTDisable(hw_->base);
+  }
 }
 
 void BasicUart::reconfigure(const Config& config)
@@ -172,6 +187,14 @@ void BasicUart::clearTxIsrFlags()
 
 void BasicUart::initializeHardware()
 {
+
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+  while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC));
+
+
+
   SysCtlPeripheralEnable(hw_->uartSystemId);
   ROM_GPIOPinTypeUART(hw_->io_rxPort, hw_->io_rxPin); ROM_GPIOPinTypeUART(hw_->io_txPort, hw_->io_txPin);
   GPIOPinConfigure(hw_->io_muxRx); GPIOPinConfigure(hw_->io_muxTx);
@@ -246,7 +269,36 @@ void BasicUart::initializeHardware()
   }
 };
 
+class InterruptDispatcher
+{
+public:
+  static void uartEntry(const UartInstance instance) noexcept
+  {
+    BasicUart* uart = isrVectorDispatchTable[static_cast<size_t>(instance)];
+    uint32_t flags = UARTIntStatus(uart->hw_->base, true);
+    switch(flags)
+    {
+      case UART_INT_RT:
+      case UART_INT_RX:
+        uart->isr_RxBufferFull();
+        break;
+      case UART_INT_TX:
+        uart->isr_TxBufferEmpty();
+        break;
+      default:
+        UARTIntClear(uart->hw_->base, flags);
+        break;
+    }
+  }
+};
+
 } /** namespace uart */
 } /** namespace hw */
 } /** namespace jel */
+
+void isrEntry_Uart0() noexcept
+{
+  using namespace jel::hw::uart;
+  InterruptDispatcher::uartEntry(UartInstance::uart0);
+}
 

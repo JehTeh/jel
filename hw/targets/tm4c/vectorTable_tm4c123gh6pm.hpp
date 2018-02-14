@@ -40,6 +40,8 @@ extern void xPortPendSVHandler(void);
 extern void xPortSysTickHandler(void);
 }
 
+extern void isrEntry_Uart0() noexcept __attribute__((interrupt ("IRQ")));
+
 namespace jel
 {
 namespace hw

@@ -57,6 +57,7 @@
 #include "hw/api_startup.hpp"
 #include "hw/api_irq.hpp"
 #include "hw/api_sysclock.hpp"
+#include "hw/api_uart.hpp"
 
 extern "C"
 {
@@ -186,6 +187,16 @@ namespace os
 void bootThread(void*)
 {
   /** C++ Static object constructors are called here. */
+  using namespace hw::uart;
+  BasicUart_Base::Config uartConfig;
+  uartConfig.baud = Baudrate::bps1Mbit;
+  uartConfig.instance = UartInstance::uart0;
+  uartConfig.rxBlockingMode = BlockingMode::isr;
+  uartConfig.txBlockingMode = BlockingMode::isr;
+
+  std::unique_ptr<hw::uart::BasicUart> uart = std::make_unique<hw::uart::BasicUart>(uartConfig);
+  const char boot[] = "Uart is alive\r\n";
+  uart->write(boot, sizeof(boot)/sizeof(char));
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
     __init_array_start[i]();

@@ -150,12 +150,15 @@ public:
     WordLength wordlen;
     BlockingMode rxBlockingMode;
     BlockingMode txBlockingMode;
+    Config() : instance{UartInstance::uart0}, baud{Baudrate::bps115200}, parity{Parity::none}, stop{StopBits::one},
+      wordlen{WordLength::eight}, rxBlockingMode{BlockingMode::isr}, txBlockingMode{BlockingMode::isr} {}
   };
   BasicUart_Base(const Config& config);
-  virtual ~BasicUart_Base() noexcept;
+  virtual ~BasicUart_Base() noexcept {}
   size_t read(char* buffer, const size_t bufferLen, const Duration& timeout) final override;
   void write(const char* cStr, const size_t length_chars) final override;
   void write(const char c) final override;
+  bool isBusy(const Duration& timeout) final override;
   virtual void reconfigure(const Config& newConfig) = 0;
 protected:
   /**   */
@@ -209,6 +212,7 @@ protected:
  *    application should not make use of it at any point.
  * */
 struct BasicUartHardwareProperties;
+class InterruptDispatcher;
 
 /** @class BasicUart
  *  @brief Instantation of the BasicUart_Base class.
@@ -228,6 +232,7 @@ public:
   BasicUart& operator=(BasicUart&&) = delete;
   void reconfigure(const Config& config) final override;
 private:
+  friend InterruptDispatcher;
   const BasicUartHardwareProperties* hw_;
   char readRxBuffer() final override;
   void loadTxBuffer(const char c) final override;

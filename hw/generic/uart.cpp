@@ -150,6 +150,13 @@ void BasicUart_Base::write(const char c)
   loadTxBuffer(c);
 }
 
+bool BasicUart_Base::isBusy(const Duration& timeout) 
+{
+  os::LockGuard lg(tx_.flag, timeout);
+  if(lg.isLocked()) { return false; }
+  return true;
+}
+
 void BasicUart_Base::isr_RxBufferFull() noexcept
 {
   auto onExit = ToScopeGuard([&]() { clearRxIsrFlags(); });
