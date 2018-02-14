@@ -189,13 +189,8 @@ std::shared_ptr<AsyncIoStream> jelStandardIo;
  *  ...todo
  *
  * */
-
-char buf[128] = { 0 };
-
-void bootThread(void*)
+void initializeStandardIo()
 {
-
-  hw::gpio::GpioController::initializeGpio();
   using namespace hw::uart;
   BasicUart_Base::Config uartConfig;
   uartConfig.baud = Baudrate::bps1Mbit;
@@ -204,25 +199,18 @@ void bootThread(void*)
   std::unique_ptr<SerialWriterInterface> writerIf(uart);
   std::unique_ptr<SerialReaderInterface> readerIf(uart);
   std::shared_ptr<AsyncIoStream> io(new AsyncIoStream(std::move(readerIf), std::move(writerIf)));
-  std::sprintf(buf, "io ptr addr before assign %p\r\n", jelStandardIo.get());
   jelStandardIo = io;
-  PrettyPrinter pp(io);
-  pp.print(buf);
-  std::sprintf(buf, "io ptr addr %p\r\n", jelStandardIo.get());
-  pp.print(buf);
+};
+
+void bootThread(void*)
+{
+  //Initialize GPIO hardware and the serial I/O port
+  hw::gpio::GpioController::initializeGpio();
+  initializeStandardIo();
   /** C++ Static object constructors are called here. */
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
     __init_array_start[i]();
-  }
-  std::sprintf(buf, "io ptr addr after SC %p\r\n", jelStandardIo.get());
-  pp.print(buf);
-  while(true)
-  {
-    pp.print("This is a pretty printer line. It is kind of long and should in fact exceed the nominal pp line length.\r\n");
-    size_t sz = io->read(buf, 128, Duration::seconds(2));
-    io->write(buf, sz);
-    io->write("\r\n");
   }
 }
 

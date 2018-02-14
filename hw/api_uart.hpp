@@ -143,15 +143,13 @@ public:
    *  */
   struct Config
   {
-    UartInstance instance;
-    Baudrate baud;
-    Parity parity;
-    StopBits stop;
-    WordLength wordlen;
-    BlockingMode rxBlockingMode;
-    BlockingMode txBlockingMode;
-    Config() : instance{UartInstance::uart0}, baud{Baudrate::bps115200}, parity{Parity::none}, stop{StopBits::one},
-      wordlen{WordLength::eight}, rxBlockingMode{BlockingMode::isr}, txBlockingMode{BlockingMode::isr} {}
+    UartInstance instance = UartInstance::uart0;
+    Baudrate baud = Baudrate::bps115200;
+    Parity parity = Parity::none;
+    StopBits stop = StopBits::one;
+    WordLength wordlen = WordLength::eight;
+    BlockingMode rxBlockingMode = BlockingMode::isr;
+    BlockingMode txBlockingMode = BlockingMode::isr;
   };
   BasicUart_Base(const Config& config);
   virtual ~BasicUart_Base() noexcept {}

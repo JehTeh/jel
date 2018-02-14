@@ -31,6 +31,8 @@ COMPILER_FLAGS_INCLUDE_GENERIC = -I . -I $(RTOS_INCLUDE_PATH_BASE) -I $(RTOS_PRI
 #Special compiler flags used for debug builds (Cpputest and regular debug builds).
 COMPILER_FLAGS_DEBUGBUILD = -gdwarf-2 -g -ffunction-sections -fdata-sections -Wl,--gc-sections
 #Special compiler flags for optimized builds.
+#Note: Null pointer checks are not deleted because they are often used for control flow at the
+#driver level.
 COMPILER_FLAGS_RELEASEBUILD = -fno-delete-null-pointer-checks -ffunction-sections -fdata-sections -Wl,--gc-sections
 #Compiler optimization levels.
 COMPILER_FLAGS_DEBUGBUILD_LEVEL = -O0

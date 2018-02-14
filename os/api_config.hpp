@@ -44,11 +44,13 @@
 #include <cstdint>
 
 /** jel Library Headers */
+#include "hw/api_uart.hpp"
 
 namespace jel
 {
 namespace config
 {
+#ifdef HW_TARGET_TM4C123GH6PM
 /** Determines the total number of strings in the jel shared string pool. The string pool is used
  *  by the CLI and logger. 
  *  
@@ -87,8 +89,56 @@ constexpr size_t cliHistoryDepth = 8;
  * functionality with a minimum of 8 arguments. 
  * */
 constexpr size_t cliMaximumArguments = 12;
+#else
+constexpr size_t stringPoolStringCount = 24;
+constexpr size_t stringPoolStringSize = 256;
+constexpr bool optimizeStringMemory = true;
+constexpr size_t cliHistoryDepth = 8;
+constexpr size_t cliMaximumArguments = 12;
+#endif
 
-static_assert(stringPoolStringCount > (cliHistoryDepth + 4));
+static_assert(stringPoolStringCount > (cliHistoryDepth + 4),
+  "There are insufficient strings for the given CLI history depth.");
+
+/** @enum SerialPortType
+ *  @brief The type of serial port to instantiate for System I/O
+ *
+ *  The jel supports various serial port hardware configurations for the standard I/O channel. At
+ *  this time, these include:
+ *    -uart0: The default debug UART port on the microcontroller. Requires a client with a terminal
+ *    emulator such as PuTTY or bash and a bidirectional serial port, either directly or over a USB
+ *    to serial converter.
+ *    -usbcdc0: The MCU USB port will be used to turn the MCU directly into a USB serial device, at
+ *    which point it can be communicated with directly from the host system. The USB serial drivers
+ *    take longer to start up than a typical UART driver, and are also not always available on all
+ *    microcontrollers.
+ *    -usbcomposite0: The MCU USB port will be used, as in usbcdc0, but as a member of a composite
+ *    device. This allows later instantation of another USB device sharing the bus, such as a mass
+ *    storage driver.
+ *  */
+enum class SerialPortType
+{
+  uart0, 
+  usbcdc0, /**< Support is pending for TIVA targets. */
+  usbcomposite0 /**< Support is pending for TIVA targets. */ 
+};
+
+struct JelRuntimeConfiguration
+{
+  /** Human readable name for this configuration. */
+  const char* name;
+  /** The type of serial port to instantiate on startup. */
+  SerialPortType stdioPortType;
+  /** The serial line configuration parameters to use for the system standard I/O channel. */
+  const hw::uart::BasicUart::Config stdioUartConfiguration;
+};
+
+/** 
+ *  If the application requires a custom configuration, it must define this symbol (under the
+ *  jel::config:: namespace) somewhere. The linker will automatically override the default, weakly
+ *  linked jel configuration with the application configuration.
+ * */
+extern const JelRuntimeConfiguration jelRuntimeConfiguration;
 
 } /** namespace config */
 } /** namespace jel */
