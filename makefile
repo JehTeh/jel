@@ -61,7 +61,16 @@ default : all
 include ./make/targets/tm4c123gh6pm.make
 
 all : $(GLOBAL_TARGET_LIST)
+
 clean : $(addprefix clean_, $(GLOBAL_TARGET_LIST))
+
 info : $(addprefix info_, $(GLOBAL_TARGET_LIST))
+
+targets: force
+	@echo $(GLOBAL_TARGET_LIST)
+
+gdb:
+	@echo "Starting remote debugging session..."
+	arm-none-eabi-gdb -iex "set auto-load safe-path /" ./Debug_tm4c129xnczad/bin/tm4c129xnczad.elf \
 
 force :

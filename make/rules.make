@@ -72,9 +72,9 @@ endef
 # jlink toolchain to be available and configured.
 #
 define TEMPLRECIPE_SEGGER_JFLASH
-flash_$(TARGET_NAME): $(OUTPUT_BINARY_FILE) jlink\$(TARGET_NAME)_flash.jflash force
+flash_$(TARGET_NAME): $(OUTPUT_BINARY_FILE) jlink\jflash\targets\$(TARGET_NAME).jflash force
 		@echo "Flashing binary..."
-		@$$(JLINK_EXE) -openprj./jlink/$(TARGET_NAME)_flash.jflash -open./$(OUTPUT_BINARY_FILE) -connect -erasechip -program -startapp -disconnect -exit
+		$$(JLINK_EXE) -openprj./jlink/jflash/$(TARGET_NAME).jflash -open./$(OUTPUT_BINARY_FILE) -connect -erasechip -program -startapp -disconnect -exit
 		@echo "Binary flashed successfully."
 endef
 
@@ -162,4 +162,10 @@ endef
 define TEMPLRECIPE_CLEAN
 clean_$(TARGET_NAME) : 
 	@del /S /Q $(OUTPUT_DIRECTORY_BASE)
+endef
+
+define TEMPLRECIPE_GDB
+gdb_$(TARGET_NAME): $(OUTPUT_ELF_FILE)
+	@echo "Starting GDB remote..."
+	arm-none-eabi-gdb -iex "set auto-load safe-path /" $(OUTPUT_ELF_FILE)
 endef
