@@ -123,13 +123,11 @@ class SerialReaderInterface
 {
 public:
   virtual ~SerialReaderInterface() noexcept {}
-  /** Reads incoming data into the pointed to buffer, up to a maximum length (not including a null
-   * terminator) of bufferLength_chars. Data is not null terminated, and is returned exactly as is
-   * read from the input stream. A timeout must also be specified, if the timeout is exceeded then
-   * the call will return regardless of the number of characters received.
-   * @returns The number of characters received. */
-  virtual size_t read(char* buffer, const size_t bufferLen, 
-    const Duration& timeout) = 0;
+  /** Starts a receive operation. If a receive operation is ongoing, it will be overridden. */
+  virtual size_t read(char* buffer, const size_t bufferLen) = 0;
+  /** If a receive operation is ongoing, this will block until it is complete or the timeout is
+   * reached. */
+  virtual size_t waitForChars(const Duration& timeout) = 0;
 };
 
 /** @class AsyncLock

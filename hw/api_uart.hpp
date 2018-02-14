@@ -155,10 +155,11 @@ public:
   };
   BasicUart_Base(const Config& config);
   virtual ~BasicUart_Base() noexcept {}
-  size_t read(char* buffer, const size_t bufferLen, const Duration& timeout) final override;
+  size_t read(char* buffer, const size_t bufferLen) final override;
   void write(const char* cStr, const size_t length_chars) final override;
   void write(const char c) final override;
   bool isBusy(const Duration& timeout) final override;
+  size_t waitForChars(const Duration& timeout) final override;
   virtual void reconfigure(const Config& newConfig) = 0;
 protected:
   /**   */
@@ -168,7 +169,6 @@ protected:
     volatile size_t pos;
     volatile size_t totalLen;
     volatile BufferType* buffer;
-    BlockingMode mode;
     os::Semaphore flag;
   };
   Config cfg_;

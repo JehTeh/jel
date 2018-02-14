@@ -1,5 +1,5 @@
-/** @file os/internal/cli.cpp
- *  @brief Implementation of the jel CLI.
+/** @file hw/targets/tm4c/gpio.cpp
+ *  @brief Tiva C GPIO definitions
  *
  *  @detail
  *
@@ -27,38 +27,37 @@
  */
 
 /** C/C++ Standard Library Headers */
+#include <cstdint>
 #include <cassert>
 /** jel Library Headers */
-#include "os/internal/cli.hpp"
-#include "os/api_allocator.hpp"
+#include "hw/targets/tm4c/tiva_shared.hpp"
+#include "hw/api_gpio.hpp"
+/** Tivaware Library Headers */
+#include "driverlib/gpio.h"
 
 namespace jel
 {
-namespace cli 
+namespace hw
+{
+namespace gpio
 {
 
-using CliArgumentPool = 
-  os::BlockAllocator<sizeof(ArgumentContainer::Argument) + 8, config::cliMaximumArguments>;
-
-CliArgumentPool* argumentPool;
-
-
-Status Vtt::write(const char* cStr, size_t length)
+void GpioController::initializeGpio()
 {
-  return Status::success;
-}
-
-size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
-{
-  //Reset current cursor position, selection and insert mode parameters.
-  cpos_ = 0; selpos_ = 0; selend_ = 0; imode_ = false;
-  wb_ = "";
-  while(true)
+  auto init = [](uint32_t peripheral)
   {
-    
-  }
+    SysCtlPeripheralEnable(peripheral);
+    while(!SysCtlPeripheralReady(peripheral));
+  };
+  init(SYSCTL_PERIPH_GPIOA);
+  init(SYSCTL_PERIPH_GPIOB);
+  init(SYSCTL_PERIPH_GPIOC);
+  init(SYSCTL_PERIPH_GPIOD);
+  init(SYSCTL_PERIPH_GPIOE);
 }
 
-} /** namespace cli */
+
+} /** namespace gpio */
+} /** namespace hw */
 } /** namespace jel */
 

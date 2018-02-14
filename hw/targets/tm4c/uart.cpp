@@ -165,8 +165,8 @@ bool BasicUart::isTxBufferReady()
 
 void BasicUart::setRxIsrEnable(const bool enableIsr)
 {
-  if(enableIsr) { UARTIntEnable(hw_->base, UART_INT_RX); }
-  else { UARTIntDisable(hw_->base, UART_INT_RX); }
+  if(enableIsr) { UARTIntEnable(hw_->base, UART_INT_RX | UART_INT_RT); }
+  else { UARTIntDisable(hw_->base, UART_INT_RX | UART_INT_RT); }
 }
 
 void BasicUart::setTxIsrEnable(const bool enableIsr)
@@ -187,14 +187,6 @@ void BasicUart::clearTxIsrFlags()
 
 void BasicUart::initializeHardware()
 {
-
-  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
-  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
-  while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC));
-
-
-
   SysCtlPeripheralEnable(hw_->uartSystemId);
   ROM_GPIOPinTypeUART(hw_->io_rxPort, hw_->io_rxPin); ROM_GPIOPinTypeUART(hw_->io_txPort, hw_->io_txPin);
   GPIOPinConfigure(hw_->io_muxRx); GPIOPinConfigure(hw_->io_muxTx);

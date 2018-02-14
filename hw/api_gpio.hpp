@@ -1,8 +1,8 @@
-/** @file os/internal/cli.cpp
- *  @brief Implementation of the jel CLI.
+/** @file hw/api_gpio.hpp
+ *  @brief General purpose I/O API.
  *
  *  @detail
- *
+ *    
  *  @author Jonathan Thomson 
  */
 /**
@@ -26,39 +26,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#pragma once
+
 /** C/C++ Standard Library Headers */
-#include <cassert>
+#include <cstdint>
 /** jel Library Headers */
-#include "os/internal/cli.hpp"
-#include "os/api_allocator.hpp"
 
 namespace jel
 {
-namespace cli 
+namespace hw
+{
+namespace gpio
 {
 
-using CliArgumentPool = 
-  os::BlockAllocator<sizeof(ArgumentContainer::Argument) + 8, config::cliMaximumArguments>;
-
-CliArgumentPool* argumentPool;
-
-
-Status Vtt::write(const char* cStr, size_t length)
+class GpioController
 {
-  return Status::success;
-}
+public:
+  /** Enables the GPIO pins and default multiplexing options. */
+  static void initializeGpio();
+};
 
-size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
-{
-  //Reset current cursor position, selection and insert mode parameters.
-  cpos_ = 0; selpos_ = 0; selend_ = 0; imode_ = false;
-  wb_ = "";
-  while(true)
-  {
-    
-  }
-}
 
-} /** namespace cli */
+} /** namespace gpio */
+} /** namespace hw */
 } /** namespace jel */
 

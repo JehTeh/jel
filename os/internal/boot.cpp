@@ -49,6 +49,7 @@
 
 /** C/C++ Standard Library Headers */
 #include <cstdint>
+#include <cstring>
 /** jel Library Headers */
 #include "os/internal/indef.hpp"
 #include "os/api_threads.hpp"
@@ -56,6 +57,7 @@
 #include "os/api_io.hpp"
 #include "hw/api_startup.hpp"
 #include "hw/api_irq.hpp"
+#include "hw/api_gpio.hpp"
 #include "hw/api_sysclock.hpp"
 #include "hw/api_uart.hpp"
 
@@ -166,7 +168,7 @@ void _resetVector(void)
 int main(int, char**)
 {
   TaskHandle_t h = nullptr;
-  xTaskCreate(&jel::os::bootThread, "BOOT", 512, &h, 
+  xTaskCreate(&jel::os::bootThread, "BOOT", 2048, &h, 
     configMAX_PRIORITIES | portPRIVILEGE_BIT, nullptr);
   vTaskStartScheduler();
   return 1;
@@ -184,19 +186,30 @@ namespace os
  *  ...todo
  *
  * */
+
+char buf[128] = { 0 };
+
 void bootThread(void*)
 {
-  /** C++ Static object constructors are called here. */
+
+  hw::gpio::GpioController::initializeGpio();
   using namespace hw::uart;
   BasicUart_Base::Config uartConfig;
   uartConfig.baud = Baudrate::bps1Mbit;
   uartConfig.instance = UartInstance::uart0;
-  uartConfig.rxBlockingMode = BlockingMode::isr;
-  uartConfig.txBlockingMode = BlockingMode::isr;
-
-  std::unique_ptr<hw::uart::BasicUart> uart = std::make_unique<hw::uart::BasicUart>(uartConfig);
-  const char boot[] = "Uart is alive\r\n";
-  uart->write(boot, sizeof(boot)/sizeof(char));
+  BasicUart* uart(new BasicUart(uartConfig));
+  std::unique_ptr<SerialWriterInterface> writerIf(uart);
+  std::unique_ptr<SerialReaderInterface> readerIf(uart);
+  AsyncIoStream io(std::move(readerIf), std::move(writerIf));
+  while(true)
+  {
+    io.write("Enter input for echo in 5s.\r\n");
+    size_t sz = io.read(buf, 128, Duration::seconds(5));
+    io.write(buf, sz);
+    io.write("\r\n");
+  }
+  
+  /** C++ Static object constructors are called here. */
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
     __init_array_start[i]();

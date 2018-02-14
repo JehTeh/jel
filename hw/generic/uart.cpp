@@ -45,7 +45,7 @@ BasicUart_Base::BasicUart_Base(const Config& config) : cfg_{config}
 
 }
 
-size_t BasicUart_Base::read(char* buffer, const size_t bufferLen, const Duration& timeout)
+size_t BasicUart_Base::read(char* buffer, const size_t bufferLen)
 {
   if(bufferLen == 0) { return 0; }
   assert(buffer);
@@ -54,13 +54,13 @@ size_t BasicUart_Base::read(char* buffer, const size_t bufferLen, const Duration
   rx_.pos = 0;
   rx_.totalLen = bufferLen;
   rx_.flag.unlock();
-  Timestamp startTime = SteadyClock::now();
-  switch(rx_.mode)
+  switch(cfg_.rxBlockingMode)
   {
     //In ISR mode the hardware receive buffer is first flushed of characters. If there is still room
     //for receiving more characters, the ISR is enabled and the thread will sleep on the ISR done
     //flag for the timeout duration.
     case BlockingMode::isr:
+      rx_.flag.lock(Duration::milliseconds(0));
       while(isRxBufferReady() && (rx_.pos < rx_.pos))
       {
         rx_.buffer[rx_.pos++] = readRxBuffer();
@@ -69,12 +69,9 @@ size_t BasicUart_Base::read(char* buffer, const size_t bufferLen, const Duration
       {
         return rx_.pos;
       }
-      //We need to ensure the RX flag is not available before the RX interrupt is enabled. If this
-      //is done after enabling the rx interrupt then we could end up with a flag that never gets
-      //posted.
-      rx_.flag.lock(Duration::milliseconds(0));
+      //Enable the interrupt then sleep on the semaphore. Once RX ISR is finished, we should be
+      //woken up.
       setRxIsrEnable(true); 
-      rx_.flag.lock(timeout);
       break;
     //Polling mode simply spins on the receive buffer, grabbing a timestamp after each check to see
     //if we have timed out. Note that depending on how timestamps are implemented, this can actually
@@ -83,15 +80,17 @@ size_t BasicUart_Base::read(char* buffer, const size_t bufferLen, const Duration
     case BlockingMode::polling:
       while(rx_.pos < rx_.totalLen) 
       {
-        while(!isRxBufferReady()); //Wait for a character.
+        while(!isRxBufferReady());
         rx_.buffer[rx_.pos++] = readRxBuffer();
-        if((SteadyClock::now() - startTime) >= timeout)
-        { 
-          return rx_.pos;
-        }
       }
       break;
   }
+  return rx_.pos;
+}
+
+size_t BasicUart_Base::waitForChars(const Duration& timeout)
+{
+  os::LockGuard grabFlag(rx_.flag, timeout);
   return rx_.pos;
 }
 
@@ -105,7 +104,7 @@ void BasicUart_Base::write(const char* cStr, const size_t length_chars)
   tx_.totalLen = length_chars;
   tx_.flag.unlock();
   //A switch is used here to allow easy expansion of modes in the future.
-  switch(tx_.mode)
+  switch(cfg_.txBlockingMode)
   {
     case BlockingMode::isr:
       //Ensure the transmit flag is cleared. This means if the isr posts it later we will see it.
@@ -123,10 +122,8 @@ void BasicUart_Base::write(const char* cStr, const size_t length_chars)
         }
       }
       //There are still characters left to transmit. This will be handled from here on out by the
-      //ISR, which will post the done flag when it finishes. Therefore, we enable the interrupt then
-      //wait on the flag.
+      //ISR, which will post the done flag when it finishes. 
       setTxIsrEnable(true);
-      tx_.flag.lock();
       break;
     case BlockingMode::polling:
       //Polling mode is simple, just spin while hardware buffer is sending characters and keep
@@ -160,7 +157,7 @@ bool BasicUart_Base::isBusy(const Duration& timeout)
 void BasicUart_Base::isr_RxBufferFull() noexcept
 {
   auto onExit = ToScopeGuard([&]() { clearRxIsrFlags(); });
-  switch(rx_.mode)
+  switch(cfg_.rxBlockingMode)
   {
     case BlockingMode::isr:
       while(isRxBufferReady())
@@ -184,7 +181,7 @@ void BasicUart_Base::isr_RxBufferFull() noexcept
 void BasicUart_Base::isr_TxBufferEmpty() noexcept
 {
   auto onExit = ToScopeGuard([&]() { clearTxIsrFlags(); });
-  switch(tx_.mode)
+  switch(cfg_.txBlockingMode)
   {
     case BlockingMode::isr:
       while(isTxBufferReady())

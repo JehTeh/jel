@@ -79,7 +79,7 @@ static IsrPtr __attribute__((section (".vectorTable"), used)) vectorTable[] =
   phantomIsr,                                         // GPIO Port C
   phantomIsr,                                         // GPIO Port D
   phantomIsr,                                         // GPIO Port E
-  phantomIsr,                                         // UART0 Rx and Tx
+  isrEntry_Uart0,                                     // UART0 Rx and Tx
   phantomIsr,                                         // UART1 Rx and Tx
   phantomIsr,                                         // SSI0 Rx and Tx
   phantomIsr,                                         // I2C0 Master and Slave

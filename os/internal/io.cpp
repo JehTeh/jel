@@ -95,7 +95,9 @@ size_t MtReader::read(char* buffer, const size_t length, const Duration& timeout
   LockGuard lg{lock_, timeout};
   if(lg.isLocked())
   {
-    size_t readLen = stream_->read(buffer, length - 1, timeout - (SteadyClock::now() - start));
+    //Read one character less than the buffer size so we can null terminate it.
+    stream_->read(buffer, length - 1);
+    size_t readLen = stream_->waitForChars(timeout - (SteadyClock::now() - start));
     buffer[readLen] = '\0';
     return readLen;
   }
@@ -108,9 +110,8 @@ AsyncLock MtReader::lockStream(const Duration& timeout)
 }
 
 AsyncIoStream::AsyncIoStream(std::unique_ptr<SerialReaderInterface> reader, 
-  std::unique_ptr<SerialWriterInterface> writer) :
-  MtReader{std::move(reader)}, 
-  MtWriter{std::move(writer)}
+  std::unique_ptr<SerialWriterInterface> writer) : 
+  MtReader(std::move(reader)), MtWriter(std::move(writer))
 {
 
 }
