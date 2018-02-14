@@ -41,17 +41,37 @@ namespace jel
 namespace cli
 {
 
-class VttIo 
+/** @class Vtt
+ *  @brief The Visual Text Terminal (VTT) provides input/output functionality.
+ *
+ * */
+class Vtt 
 {
 public:
+  struct Config
+  {
+    size_t historyDepth = 8;
+    size_t maxEntryLength = 128;
+    size_t receiveBufferLength = 128;
+  };
   Status write(const char* cStr, size_t length);
   size_t read(char* buffer, size_t bufferSize, const Duration& timeout); 
   Status prefix(const char* cStr);
-  VttIo(const std::shared_ptr<os::AsyncIoStream>& ios);
-  ~VttIo();
+  Vtt(const std::shared_ptr<os::AsyncIoStream>& ios);
+  ~Vtt();
 private:
   std::shared_ptr<os::AsyncIoStream> ios_;
   os::PrettyPrinter printer_;
+  Config cfg_;
+  os::JelStringPool::ObjectContainer wbWrapper_;
+  os::JelStringPool::ObjectContainer rxWrapper_;
+  String& wb_;
+  String& rxs_;
+  bool imode_;
+  size_t cpos_;
+  size_t selpos_;
+  size_t selend_;
+
 };
 
 } /** namespace cli */

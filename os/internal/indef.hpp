@@ -33,6 +33,9 @@
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
+#include "os/api_allocator.hpp"
+#include "os/api_io.hpp"
+#include "os/api_config.hpp"
 /** RTOS Library Headers */
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -60,6 +63,9 @@ inline TickType_t toTicks(const Duration& d) noexcept
     return 0;
   }
 }
+
+typedef ObjectPool<String, config::stringPoolStringCount> JelStringPool;
+extern JelStringPool* jelStringPool;
 
 }
 }

@@ -41,6 +41,7 @@ namespace cli
 {
 
 typedef os::Status Status;
+typedef std::basic_string<char> CliString;
 
 class ArgumentContainer
 {
@@ -61,7 +62,7 @@ public:
     Value(int64_t i) { int64_t_ = i; }
     Value(uint64_t ui) { uint64_t_ = ui; }
     Value(double dbl) { double_ = dbl; }
-    Value(const String& str) { string_ = &str; }
+    Value(const CliString& str) { string_ = &str; }
   };
   struct Argument
   {

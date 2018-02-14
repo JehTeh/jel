@@ -117,7 +117,7 @@ public:
   ~ScopeGuard() { if(runOnExit) { exit_(); } }
   bool runOnExit;
 private:
-  F& exit_;
+  F exit_;
 };
 
 /** 

@@ -128,7 +128,7 @@ public:
    * read from the input stream. A timeout must also be specified, if the timeout is exceeded then
    * the call will return regardless of the number of characters received.
    * @returns The number of characters received. */
-  virtual size_t read(char* buffer, const size_t bufferLength_chars, 
+  virtual size_t read(char* buffer, const size_t bufferLen, 
     const Duration& timeout) = 0;
 };
 

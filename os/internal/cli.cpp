@@ -30,16 +30,40 @@
 #include <cassert>
 /** jel Library Headers */
 #include "os/internal/cli.hpp"
+#include "os/api_allocator.hpp"
 
 namespace jel
 {
 namespace cli 
 {
 
-VttIo::VttIo(const std::shared_ptr<os::AsyncIoStream>& ios) :
-  ios_(ios), printer_(std::static_pointer_cast<os::MtWriter>(ios))
+using CliArgumentPool = 
+  os::BlockAllocator<sizeof(ArgumentContainer::Argument) + 8, config::cliMaximumArguments>;
+
+CliArgumentPool* argumentPool;
+
+Vtt::Vtt(const std::shared_ptr<os::AsyncIoStream>& ios) :
+  ios_(ios), printer_(std::static_pointer_cast<os::MtWriter>(ios)),
+  wbWrapper_(os::jelStringPool->acquire()), rxWrapper_(os::jelStringPool->acquire()),
+  wb_(*wbWrapper_.stored()), rxs_(*wbWrapper_.stored())
 {
 
+}
+
+Status Vtt::write(const char* cStr, size_t length)
+{
+  return Status::success;
+}
+
+size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
+{
+  //Reset current cursor position, selection and insert mode parameters.
+  cpos_ = 0; selpos_ = 0; selend_ = 0; imode_ = false;
+  wb_ = "";
+  while(true)
+  {
+    
+  }
 }
 
 } /** namespace cli */

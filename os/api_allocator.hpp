@@ -145,11 +145,12 @@ public:
     std::unique_ptr<ObjectT> item_;
     ObjQ* q_;
   };
-  ObjectPool()
+  template<typename ...Args>
+  ObjectPool(Args&& ...args)
   {
     for(size_t i = 0; i < count; i++)
     {
-      std::unique_ptr<ObjectT> newObj = std::make_unique<ObjectT>();
+      std::unique_ptr<ObjectT> newObj = std::make_unique<ObjectT>(std::forward<Args>(args)...);
       pool_.push(std::move(newObj));
     }
   }
