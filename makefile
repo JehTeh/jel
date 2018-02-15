@@ -71,6 +71,6 @@ targets: force
 
 gdb:
 	@echo "Starting remote debugging session..."
-	arm-none-eabi-gdb -iex "set auto-load safe-path /" ./Debug_tm4c129xnczad/bin/tm4c129xnczad.elf \
+	arm-none-eabi-gdb -iex "set auto-load safe-path /" ./build_tm4c123gh6pm_dbg/bin/tm4c123gh6pm_dbg.elf \
 
 force :
