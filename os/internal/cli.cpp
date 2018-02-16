@@ -28,9 +28,11 @@
 
 /** C/C++ Standard Library Headers */
 #include <cassert>
+#include <cstring>
 /** jel Library Headers */
 #include "os/internal/cli.hpp"
 #include "os/api_allocator.hpp"
+#include "hw/api_exceptions.hpp"
 
 namespace jel
 {
@@ -43,19 +45,379 @@ using CliArgumentPool =
 CliArgumentPool* argumentPool;
 
 
+Vtt::Vtt(const std::shared_ptr<os::AsyncIoStream>& ios) : ios_(ios), printer_(ios),
+  wb_(), rxs_(), fmts_(new char[formatScratchBufferSize])
+{
+  assert(cfg_.maxEntryLength > 80);
+  assert(cfg_.receiveBufferLength > 16);
+  wb_.reserve(cfg_.maxEntryLength);
+  rxs_.reserve(cfg_.receiveBufferLength);
+  pfx_ = "";
+}
+
+
 Status Vtt::write(const char* cStr, size_t length)
 {
+  printer_.print(cStr, length);
   return Status::success;
 }
 
+char buf[128];
+
 size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
 {
-  //Reset current cursor position, selection and insert mode parameters.
-  cpos_ = 0; selpos_ = 0; selend_ = 0; imode_ = false;
-  wb_ = "";
+  assert(bufferSize);
+  wb_ = ""; cpos_ = 0; cshandled_ = false; imode_ = false; smode_ = false; terminated_ = false;
+  const Timestamp tStart = SteadyClock::now();
+  while((SteadyClock::now() - tStart) < timeout)
+  {
+    //Read characters into the receive scratch buffer.
+    while(loadRxs(timeout - (SteadyClock::now() - tStart)) == 0)
+    {
+      if((SteadyClock::now() - tStart) >= timeout)
+      {
+        ios_->write(os::AnsiFormatter::FixedControlSequences::eraseLine);
+        buffer[0] = '\0'; return 0;
+      }
+    }
+    //Scan the receive scratch for any special control sequences or characters.
+    if(handleControlCharacters()) { cshandled_ = true; } else { cshandled_ = false; }
+    regenerateOuput();
+    if(terminated_)
+    {
+      ios_->write("\r\n");
+      std::strncpy(buffer, wb_.c_str(), bufferSize - 1);
+      buffer[bufferSize - 1] = '\0'; //Ensure buffer is null terminated.
+      return wb_.length() > bufferSize ? bufferSize : wb_.length();
+    }
+  }
+  ios_->write(os::AnsiFormatter::FixedControlSequences::eraseLine);
+  buffer[0] = '\0'; return 0;
+}
+
+size_t Vtt::loadRxs(const Duration& timeout)
+{
+  const Timestamp tStart = SteadyClock::now();
+  rxs_.assign(cfg_.receiveBufferLength, ' ');
   while(true)
   {
-    
+    try
+    {
+      //Use &rxs_[0] here. Could use .data(), but this avoids requiring C++17.
+      size_t charsRx = ios_->read(&rxs_[0], rxs_.size(), cfg_.pollingPeriod);
+      if(charsRx > 0)
+      {
+        rxs_.resize(charsRx);
+        return rxs_.size();
+      }
+      if((SteadyClock::now() - tStart) >= timeout)
+      {
+        return 0;
+      }
+    }
+    catch(const hw::Exception& e)
+    {
+      //Ignore error with clang, YCM/libclang has issues with completion and inherited from
+      //templates.
+      #ifndef __clang__
+      if(e.error == hw::ExceptionCode::receiveOverrun)
+      {
+        //If the RX hardware was overrun, we will just retry the receive operation and throw out the
+        //buffer.
+        continue;
+      }
+      else
+      {
+        throw e;
+      }
+      #endif
+    }
+  }
+}
+
+size_t Vtt::handleControlCharacters()
+{
+  using fmt = os::AnsiFormatter;
+  //Search for any special escape or control characters (i.e. non-visible ASCII)
+  for(size_t pos = 0; pos != rxs_.length(); pos++)
+  {
+    if((rxs_[pos] < ' ') || (rxs_[pos] == 0x7F))
+    {
+      switch(rxs_[pos])
+      {
+        case fmt::ControlCharacters::escape:
+          if(parseEscapeSequence(pos)) { return 1; }
+          break;
+        case fmt::ControlCharacters::newline:
+        case fmt::ControlCharacters::carriageReturn:
+          if(terminateInput(pos)) { return 1; }
+          break;
+        default:
+          if(parseAsciiControl(pos)) { return 1; }
+      }
+    }
+  }
+  return 0;
+}
+
+bool Vtt::parseEscapeSequence(const size_t sp)
+{
+  using efmt = os::AnsiFormatter::FixedControlSequences;
+  constexpr size_t npos = std::string::npos; 
+  if(rxs_.find(efmt::leftArrowKey, sp) != npos)
+  {
+    if(cpos_ > 0) { cpos_--; }
+    smode_ = false;
+  }
+  else if(rxs_.find(efmt::rightArrowKey, sp) != npos)
+  {
+    if(cpos_ < wb_.length()) { cpos_++; }
+    smode_ = false;
+  }
+  else if(rxs_.find(efmt::shiftLeftArrowKey, sp) != npos)
+  {
+    if(!smode_)
+    {
+      smode_ = true;
+      if(cpos_ > 0) { sst_ = cpos_; }
+      else { sst_ = 0; }
+    }
+    if(cpos_ > 0) { cpos_--; }
+  }
+  else if(rxs_.find(efmt::shiftRightArrowKey, sp) != npos)
+  {
+    if(!smode_)
+    {
+      smode_ = true;
+      if(cpos_ < wb_.length()) { sst_ = cpos_; }
+      else { sst_ = wb_.length() - 1; }
+    }
+    if(cpos_ < wb_.length()) { cpos_++; }
+  }
+  else if(rxs_.find(efmt::insertKey, sp) != npos)
+  {
+    smode_ = false;
+    imode_ = !imode_;
+  }
+  else if(rxs_.find(efmt::homeKey, sp) != npos)
+  {
+    cpos_ = 0;
+  }
+  else if(rxs_.find(efmt::deleteKey, sp) != npos)
+  {
+    //Erase the key under the cursor.
+    if(smode_)
+    {
+      eraseSelection();
+    }
+    else
+    {
+      if(cpos_ < wb_.length())
+      {
+        wb_.erase(cpos_, 1);
+      } 
+    }
+  }
+  else if(rxs_.find(efmt::endKey, sp) != npos)
+  {
+    cpos_ = wb_.length();
+  }
+  else if(rxs_.find(efmt::pageUpKey, sp) != npos)
+  {
+    ios_->write(efmt::pageUp);
+  }
+  else if(rxs_.find(efmt::pageDownKey, sp) != npos)
+  {
+    ios_->write(efmt::pageDown);
+  }
+  else if((rxs_.find(efmt::upArrowKey, sp) != npos) ||
+    (rxs_.find(efmt::shiftUpArrowKey, sp) != npos))
+  {
+
+  }
+  else if((rxs_.find(efmt::downArrowKey, sp) != npos) ||
+    (rxs_.find(efmt::shiftDownArrowKey, sp) != npos))
+  {
+
+  }
+  else
+  {
+
+  }
+  return true;
+}
+
+bool Vtt::parseAsciiControl(const size_t sp)
+{
+  using fmt = os::AnsiFormatter::ControlCharacters;
+  if((rxs_[sp] == fmt::backspace) || (rxs_[sp] == fmt::del))
+  {
+    if(smode_)
+    {
+      eraseSelection();
+      return true;
+    }
+    if(cpos_ > 0)
+    {
+      if(wb_.length() > 0)
+      {
+        //Erase character before the cursor.
+        wb_.erase(cpos_ - 1, 1);
+        cpos_--;
+      }
+    }
+  }
+  return true;
+}
+
+bool Vtt::terminateInput(const size_t sp)
+{
+  using fmt = os::AnsiFormatter::ControlCharacters;
+  if((rxs_[sp] == fmt::carriageReturn) || (rxs_[sp] == fmt::newline))
+  {
+    terminated_ = true;
+  }
+  return true;
+}
+
+void Vtt::regenerateOuput()
+{
+  //If a non-control-sequence is in the rxs_, we need to insert it into the working buffer.
+  if(!cshandled_ && !((wb_.length() + rxs_.length()) >= cfg_.maxEntryLength))
+  {
+    if(imode_) //Insert mode logic is actually inverted, i.e. if insert key was pressed then 
+      //overwrite, not insert.
+    {
+      wb_.replace(cpos_, rxs_.length(), rxs_);
+      cpos_ += rxs_.length();
+    }
+    else if(smode_)
+    {
+      eraseSelection();
+      if(wb_.length() > 0)
+      {
+        wb_.insert(cpos_, rxs_);
+        cpos_ += rxs_.length();
+      }
+      else
+      {
+        wb_ = rxs_;
+        cpos_ = wb_.length();
+      }
+    }
+    else if(wb_.length() == 0)
+    {
+      wb_ = rxs_;
+      cpos_ = wb_.length();
+    }
+    else
+    {
+      wb_.insert(cpos_, rxs_);
+      cpos_ += rxs_.length();
+    }
+  }
+  using fmt = os::AnsiFormatter;
+  auto lg = ios_->lockOutput();
+  ios_->write(fmt::FixedControlSequences::eraseLine); //Erase the line.
+  ios_->write(fmt::FixedControlSequences::resetFormatting); //Clear any active formatting.
+  assert(pfx_); //Prefix string cannot be null!
+  if(pfx_[0] != '\0') { ios_->write(pfx_); } //Print the prefix string.  
+  if(imode_)
+  {
+    std::sprintf(fmts_.get(), "%s100%c", fmt::EscapeSequences::csi, fmt::Csi::SGR);
+    ios_->write(fmts_.get()); //Highlight line background if in insert mode.
+  }
+  else
+  {
+    ios_->write("\e[49m"); //Disable any highlighting outside of insert mode.
+  }
+  for(size_t i = 0; i < wb_.length(); i++) //Print the buffer.
+  {
+    if(imode_)
+    {
+      if(i == cpos_)
+      {
+        ios_->write(fmt::FixedControlSequences::underlineEnable);
+        ios_->write(wb_[i]);
+        ios_->write(fmt::FixedControlSequences::underlineDisable);
+      }
+      else
+      {
+        ios_->write(wb_[i]);
+      }
+    }
+    else if(smode_)
+    {
+      if(cpos_ > sst_)
+      {
+        if(i == sst_)
+        {
+          ios_->write(fmt::FixedControlSequences::highlightEnable);
+          ios_->write(wb_[i]);
+        }
+        else if(i == cpos_)
+        {
+          ios_->write(wb_[i]);
+          ios_->write(fmt::FixedControlSequences::highlightDisable);
+        }
+        else
+        {
+          ios_->write(wb_[i]);
+        }
+      }
+      else if(cpos_ < sst_)
+      {
+        if(i == cpos_)
+        {
+          ios_->write(wb_[i]);
+          ios_->write(fmt::FixedControlSequences::highlightEnable);
+        }
+        else if(i == sst_)
+        {
+          ios_->write(wb_[i]);
+          ios_->write(fmt::FixedControlSequences::highlightDisable);
+        }
+        else
+        {
+          ios_->write(wb_[i]);
+        }
+      }
+      else
+      {
+        if(i == sst_)
+        {
+          ios_->write(fmt::FixedControlSequences::highlightEnable);
+          ios_->write(wb_[i]);
+          ios_->write(fmt::FixedControlSequences::highlightDisable);
+        }
+        else
+        {
+          ios_->write(wb_[i]);
+        }
+      }
+    }
+    else
+    {
+      ios_->write(wb_[i]);
+    }
+  }
+  ios_->write(fmt::FixedControlSequences::resetFormatting); //Clear any active formatting.
+  std::sprintf(fmts_.get(), "\e[%dG", cpos_ + std::strlen(pfx_) + 1);
+  ios_->write(fmts_.get()); //Set cursor position.
+}
+
+void Vtt::eraseSelection()
+{
+  if(cpos_ > sst_)
+  {
+    smode_ = false;
+    wb_.erase(sst_, cpos_ - sst_ + 1);
+    cpos_ = sst_;
+  }
+  else
+  {
+    smode_ = false;
+    wb_.erase(cpos_, sst_ - cpos_ + 1);
   }
 }
 

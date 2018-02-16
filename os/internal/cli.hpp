@@ -52,7 +52,8 @@ public:
   {
     size_t historyDepth = 8;
     size_t maxEntryLength = 128;
-    size_t receiveBufferLength = 128;
+    size_t receiveBufferLength = 32;
+    Duration pollingPeriod =  Duration::milliseconds(50);
   };
   Status write(const char* cStr, size_t length);
   size_t read(char* buffer, size_t bufferSize, const Duration& timeout); 
@@ -60,18 +61,34 @@ public:
   Vtt(const std::shared_ptr<os::AsyncIoStream>& ios);
   ~Vtt();
 private:
+  static constexpr size_t formatScratchBufferSize = 16; 
+  class HistoryBuffer
+  {
+  public:
+
+  private:
+
+  };
   std::shared_ptr<os::AsyncIoStream> ios_;
   os::PrettyPrinter printer_;
   Config cfg_;
-  os::JelStringPool::ObjectContainer wbWrapper_;
-  os::JelStringPool::ObjectContainer rxWrapper_;
-  String& wb_;
-  String& rxs_;
-  bool imode_;
+  String wb_;
+  String rxs_;
+  const char* pfx_;
   size_t cpos_;
-  size_t selpos_;
-  size_t selend_;
-
+  size_t sst_;
+  bool imode_;
+  bool smode_;
+  bool cshandled_;
+  bool terminated_;
+  std::unique_ptr<char[]> fmts_; 
+  size_t loadRxs(const Duration& timeout);
+  size_t handleControlCharacters();
+  bool parseEscapeSequence(const size_t csbeg);
+  bool parseAsciiControl(const size_t  csbeg);
+  bool terminateInput(const size_t csbeg);
+  void regenerateOuput();
+  void eraseSelection();
 };
 
 } /** namespace cli */

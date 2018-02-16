@@ -77,7 +77,13 @@ Status MtWriter::write(const String& string, const Duration& timeout)
   return write(string.c_str(), string.length(), timeout);
 }
 
-AsyncLock MtWriter::lockStream(const Duration& timeout)
+Status MtWriter::write(const char c)
+{
+  stream_->write(c);
+  return Status::success;
+}
+
+AsyncLock MtWriter::lockOutput(const Duration& timeout)
 {
   return AsyncLock{lock_, timeout};
 }
@@ -105,7 +111,7 @@ size_t MtReader::read(char* buffer, const size_t length, const Duration& timeout
   return 0;
 }
 
-AsyncLock MtReader::lockStream(const Duration& timeout)
+AsyncLock MtReader::lockInput(const Duration& timeout)
 {
   return AsyncLock{lock_, timeout};
 }
@@ -304,7 +310,7 @@ Status PrettyPrinter::print(const char* cStr, size_t length)
       }
     }
   };
-  auto outLock(out_->lockStream());
+  auto outLock(out_->lockOutput());
   while(cStr[epos] != '\0')
   {
     toNextVisible();

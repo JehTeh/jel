@@ -62,6 +62,8 @@
 #include "hw/api_sysclock.hpp"
 #include "hw/api_uart.hpp"
 
+#include "os/internal/cli.hpp"
+
 extern "C"
 {
 /** Called by the driver layer _start function, which ensures stack is setup. */
@@ -183,6 +185,7 @@ namespace os
 /** Note: This must be nullptr/unitialized. If it is not, GCC will call a static constructor and
  * blow away the Io pointer that is assigned before C++ static initialization. */
 std::shared_ptr<AsyncIoStream> jelStandardIo;
+std::shared_ptr<JelStringPool> jelStringPool;
 /** 
  *  @brief The jel bootup thread, responsible for the majority of system initialization and starting
  *  the user application thread(s).
@@ -191,13 +194,12 @@ std::shared_ptr<AsyncIoStream> jelStandardIo;
  *
  * */
 
-char buf[128];
 
 void initializeStandardIo()
 {
   using namespace hw::uart;
   BasicUart_Base::Config uartConfig;
-  uartConfig.baud = Baudrate::bps1Mbit;
+  uartConfig.baud = Baudrate::bps256kBit;
   uartConfig.instance = UartInstance::uart0;
   BasicUart* uart = nullptr;
   switch(config::jelRuntimeConfiguration.stdioPortType)
@@ -233,15 +235,26 @@ void initializeStandardIo()
   jelStandardIo->write("' has been loaded successfully.\r\n");
 };
 
+char buf[128];
+
 void bootThread(void*)
 {
   //Initialize GPIO hardware and the serial I/O port
   hw::gpio::GpioController::initializeGpio();
   initializeStandardIo();
+  jelStringPool = std::make_shared<ObjectPool<String, config::stringPoolStringCount>>();
+  cli::Vtt* vtt = new cli::Vtt(jelStandardIo);
   /** C++ Static object constructors are called here. */
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
     __init_array_start[i]();
+  }
+  while(true)
+  {
+    size_t read = vtt->read(buf, 128, Duration::max());
+    jelStandardIo->write("Read '");
+    jelStandardIo->write(buf, read);
+    jelStandardIo->write("'.\r\n");
   }
 }
 

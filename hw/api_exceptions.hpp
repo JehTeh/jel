@@ -42,6 +42,7 @@ enum class ExceptionCode : uint32_t
 {
   driverFeatureNotSupported,
   driverInstanceNotAvailable,
+  receiveOverrun,
 };
 
 class Exception : public Exception_Base<RESERVED_HW_MODULE_ID, ExceptionCode>

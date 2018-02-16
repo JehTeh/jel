@@ -106,7 +106,7 @@ public:
    * overridden as soon as possible. */
   virtual void write(const char* cStr, const size_t length_chars) = 0;
   /** Write a single character to the output. If the output is busy, transmission will be overridden
-   * as soon as possible. */
+   * as soon as possible (i.e., there is a space available in the buffer). */
   virtual void write(const char c) = 0;
   /** Check if the transmitter is currently busy. If a nonzero timeout parameter is specified, this
    * call will block until the transmitter is no longer busy or the timeout expires. */
@@ -123,7 +123,11 @@ class SerialReaderInterface
 {
 public:
   virtual ~SerialReaderInterface() noexcept {}
-  /** Starts a receive operation. If a receive operation is ongoing, it will be overridden. */
+  /** Starts a receive operation. If a receive operation is ongoing, it will be overridden. 
+   *  @throws
+   *    This function may throw if the hardware performing the reception encounters an overrun
+   *    condition.
+   * */
   virtual size_t read(char* buffer, const size_t bufferLen) = 0;
   /** If a receive operation is ongoing, this will block until it is complete or the timeout is
    * reached. */
@@ -171,9 +175,13 @@ public:
   Status write(const char* data, size_t len = 0, const Duration& timeout = Duration::max());
   /** Writes a string to the output stream in the same manner was write(const char*...). */
   Status write(const String& string, const Duration& timeout = Duration::max());
+  /** Writes a single character to the output stream. Note: This function is optimized for speed,
+   * and does *not* assume the output stream is already locked. It must be manually locked with
+   * lockStream() before calling! */
+  Status write(const char c);
   /** Lock the output stream. An AsyncLock object will be returned, which will prevent other threads
    * from using the output stream so long as it is extant. */
-  AsyncLock lockStream(const Duration& timeout = Duration::max());
+  AsyncLock lockOutput(const Duration& timeout = Duration::max());
 protected:
   std::unique_ptr<SerialWriterInterface> stream_;
   RecursiveMutex lock_;
@@ -194,7 +202,7 @@ public:
   MtReader(std::unique_ptr<SerialReaderInterface> reader);
   /** Read up to length - 1 characters into the buffer. The buffer is always null terminated. */
   size_t read(char* buffer, const size_t length, const Duration& timeout);
-  AsyncLock lockStream(const Duration& timeout);
+  AsyncLock lockInput(const Duration& timeout);
 protected:
   std::unique_ptr<SerialReaderInterface> stream_;
   RecursiveMutex lock_;
@@ -206,6 +214,7 @@ protected:
  *  Combines a reader and writer interface under one asynchronous wrapper.
  *  @note
  *    If the reader and
+ *
  *    writer pointers refer to the same base object (for example, a UART class that implements both
  *    reader and writer) then the sharedInterface flag must be set to true to ensure a double
  *    deletion does not occur on destruction of the AsyncIoStream.
@@ -237,6 +246,47 @@ public:
   {
     /** 'Control Sequence Introducer' - CSI escape sequence. */
     static constexpr char csi[] = "\e[";
+  };
+  /** Definitions for special ASCII characters. */
+  struct ControlCharacters
+  {
+    static constexpr char bell = '\007';
+    static constexpr char backspace = '\010';
+    static constexpr char tab = '\t';
+    static constexpr char newline = '\n';
+    static constexpr char carriageReturn = '\r';
+    static constexpr char escape = '\033';
+    static constexpr char del = '\177';
+  };
+  /** @struct FixedControlSequences
+   *  @brief Pre-generated control sequences, used primarily for handling special input functions
+   *  from a terminal client.
+   *  */
+  struct FixedControlSequences
+  {
+    static constexpr char upArrowKey[] = "\e[A";
+    static constexpr char downArrowKey[] = "\e[B";
+    static constexpr char rightArrowKey[] = "\e[C";
+    static constexpr char leftArrowKey[] = "\e[D";
+    static constexpr char shiftUpArrowKey[] = "\eOA";
+    static constexpr char shiftDownArrowKey[] = "\eOB";
+    static constexpr char shiftRightArrowKey[] = "\eOC";
+    static constexpr char shiftLeftArrowKey[] = "\eOD";
+    static constexpr char homeKey[] = "\e[1~";
+    static constexpr char insertKey[] = "\e[2~";
+    static constexpr char deleteKey[] = "\e[3~";
+    static constexpr char endKey[] = "\e[4~";
+    static constexpr char pageUpKey[] = "\e[5~";
+    static constexpr char pageDownKey[] = "\e[6~";
+    static constexpr char highlightEnable[] = "\e[5m";
+    static constexpr char highlightDisable[] = "\e[25m";
+    static constexpr char underlineEnable[] = "\e[4m";
+    static constexpr char underlineDisable[] = "\e[24m";
+    static constexpr char eraseLine[] = "\e[2K\r";
+    static constexpr char eraseScreenAfter[] = "\e[0J\r";
+    static constexpr char resetFormatting[] = "\e[0m\r";
+    static constexpr char pageUp[] = "\e[S\r";
+    static constexpr char pageDown[] = "\e[T\r";
   };
   /** @enum Csi
    *  @brief 'Control Sequence Introducer' - CSI command sequences. 

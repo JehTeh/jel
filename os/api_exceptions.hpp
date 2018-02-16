@@ -124,8 +124,8 @@ public:
   Exception_Base(const Exception_Base& rhs) : module(rhs.module), error(rhs.error)
   {
 #ifndef JEL_DISABLE_EXCEPTION_PRINTF_SUPPORT
-    errorString_ = new char[std::strlen(rhs.exMsg) + 1];
-    std::strcpy(errorString_, rhs.exMsg);
+    errorString_ = new char[std::strlen(rhs.errorString_) + 1];
+    std::strcpy(errorString_, rhs.errorString_);
 #else
 #endif
   }
