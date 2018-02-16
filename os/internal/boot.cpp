@@ -249,12 +249,22 @@ void bootThread(void*)
   {
     __init_array_start[i]();
   }
+  String str;
+  str.reserve(128);
   while(true)
   {
-    size_t read = vtt->read(buf, 128, Duration::max());
+    vtt->read(str, Duration::max());
     jelStandardIo->write("Read '");
-    jelStandardIo->write(buf, read);
-    jelStandardIo->write("'.\r\n");
+    jelStandardIo->write(str);
+    jelStandardIo->write("'. Tokenizing...\r\n");
+    cli::Tokenizer tkns(str);
+    std::sprintf(buf, "%d tokens found. They are:\r\n", tkns.count());
+    jelStandardIo->write(buf);
+    for(size_t i = 0; i < tkns.count(); i++)
+    {
+      jelStandardIo->write(tkns[i]);
+      jelStandardIo->write("\r\n");
+    }
   }
 }
 

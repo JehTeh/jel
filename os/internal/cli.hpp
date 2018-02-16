@@ -44,6 +44,9 @@ namespace cli
 /** @class Vtt
  *  @brief The Visual Text Terminal (VTT) provides input/output functionality.
  *
+ *  The Vtt is designed to take over an I/O interface and provide standard CLI interface features,
+ *  which includes supporting control sequences like home/delete, selection emulation, and command
+ *  history buffering. 
  * */
 class Vtt 
 {
@@ -57,6 +60,7 @@ public:
   };
   Status write(const char* cStr, size_t length);
   size_t read(char* buffer, size_t bufferSize, const Duration& timeout); 
+  size_t read(String& string, const Duration& timeout); 
   Status prefix(const char* cStr);
   Vtt(const std::shared_ptr<os::AsyncIoStream>& ios);
   ~Vtt();
@@ -100,6 +104,26 @@ private:
   void regenerateOuput();
   void eraseSelection();
 };
+
+/** @class Tokenizer 
+ *  @brief Splits the provided input string into discrete tokens. The input string must not be
+ *    modified while the Tokenizer is extant.
+ *  
+ *  @note
+ *    Eventually refactor this to take std::unique_ptr<String>, but not until CLI/String class is
+ *    using custom deleter/allocator scheme.
+ * */
+class Tokenizer
+{
+public:
+  Tokenizer(String& str, const char delimiter = ' ');
+  const char* operator[](size_t index);
+  size_t count() { return tc_; }
+private:
+  size_t tc_;
+  String& s_;
+};
+
 
 } /** namespace cli */
 } /** namespace jel */
