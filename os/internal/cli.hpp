@@ -117,12 +117,46 @@ class Tokenizer
 {
 public:
   Tokenizer(String& str, const char delimiter = ' ');
-  const char* operator[](size_t index);
-  size_t count() { return tc_; }
+  const char* operator[](size_t index) const;
+  size_t count() const { return tc_; }
 private:
   size_t tc_;
   String& s_;
 };
+
+struct ParamaterStringComponent
+{
+};
+
+class ParameterString
+{
+public:
+  struct Symbols
+  {
+    static constexpr char delimiters[] = "%";
+    static constexpr char optionals[] = "?";
+    static constexpr char ignored[] = " hljztL";
+    static constexpr char specifiers_char[] = "c";
+    static constexpr char specifiers_strings[] = "s";
+    static constexpr char specifiers_signedInts[] = "id";
+    static constexpr char specifiers_unsignedInts[] = "u";
+    static constexpr char specifiers_float[] = "f";
+  };
+  struct Parameter
+  {
+    bool isOptional;
+    Argument::Type type;
+  };
+  ParameterString(const char* pstr);
+  Parameter operator[](size_t index);
+  size_t optionalCount() { return optcnt_; }
+  size_t totalCount() { return pcnt_; }
+private:
+  size_t pcnt_;
+  size_t optcnt_;
+  const char* const s_;
+};
+
 
 
 } /** namespace cli */

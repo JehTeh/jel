@@ -30,6 +30,7 @@
 
 /** C/C++ Standard Library Headers */
 #include <cassert>
+#include <exception>
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
@@ -43,15 +44,39 @@ namespace cli
 typedef os::Status Status;
 typedef std::basic_string<char> CliString;
 
-class ArgumentContainer
+class CliException : public std::exception
 {
 public:
+  enum class Id
+  {
+    /** An illegalArgumentAccess exception will be thrown from an Argument object if an attempt is
+     * made to access the stored value with the as[xxx]() function of the wrong type. */
+    illegalArgumentAccess,
+    /** A maxArgumentsExceeded exception is thrown if the total number of arguments in an input
+     * string to the CLI exceeds the config::cliMaximumArguments value. */
+    maxArgumentsExceeded,
+  };
+  Id id;
+  CliException(const char* errStr, const Id id);
+  const char* what() const noexcept final override { return estr_; }
+private:
+  const char* estr_;
+};
+
+/** Forward declarations. */
+class Tokenizer;
+class Vtt;
+
+struct Argument
+{
+public: 
   enum class Type
   {
     int64_t_,
     uint64_t_,
     double_,
     string_,
+    invalid,
   };
   union Value
   {
@@ -64,30 +89,36 @@ public:
     Value(double dbl) { double_ = dbl; }
     Value(const CliString& str) { string_ = &str; }
   };
-  struct Argument
-  {
-    const Type type;
-    ~Argument() noexcept {}
-    int64_t& asInt() { assert(type == Type::int64_t_); return value.int64_t_; }
-    uint64_t& asUInt() { assert(type == Type::uint64_t_); return value.uint64_t_; }
-    double& asDouble() { assert(type == Type::double_); return value.double_; }
-    const String& asString() { assert(type == Type::string_); return *value.string_; }
-  private:
-    Value value;
-    Argument(const int64_t& int_) : type(Type::int64_t_), value{int_ } { }
-    Argument(const uint64_t& uint_) : type(Type::uint64_t_), value{uint_ } { }
-    Argument(const double& dbl_) : type(Type::double_), value{dbl_} { }
-    Argument(const String& str_) : type(Type::string_), value{str_} { }
-  };
-  size_t totalArguments() { return argsLen_; }
-  Argument& operator[](size_t idx) { assert(idx < argsLen_); return args_[idx]; }
-  using It = Iterator<Argument>;
-  It begin() { return It{args_.get()};}
-  It end() { return It{args_.get(), argsLen_}; }
+  const Type type;
+  const Value value;
+  ~Argument() noexcept {}
+  const int64_t& asInt() const; 
+  const uint64_t& asUInt() const;
+  const double& asDouble() const;
+  const String& asString() const;
+private:
+  Argument(const int64_t& int_) : type(Type::int64_t_), value{int_ } { }
+  Argument(const uint64_t& uint_) : type(Type::uint64_t_), value{uint_ } { }
+  Argument(const double& dbl_) : type(Type::double_), value{dbl_} { }
+  Argument(const String& str_) : type(Type::string_), value{str_} { }
+};
+
+class ArgumentContainer
+{
+public:
+  size_t totalArguments() const { return numOfArgs_; }
+  const Argument& operator[](size_t idx) const; 
 protected:
-  size_t argsLen_;
-  std::unique_ptr<Argument[]> args_;
-  ArgumentContainer();
+  struct ArgListItem
+  {
+    Argument arg;
+    std::unique_ptr<ArgListItem, void(*)(ArgListItem*)> next;
+    template<typename T>
+    ArgListItem(T argval) : arg(argval) { }
+  };
+  size_t numOfArgs_;
+  std::unique_ptr<ArgListItem> firstArg;
+  ArgumentContainer(const Tokenizer& tokens, const size_t discardThreshold, const char* params);
   ~ArgumentContainer() noexcept;
 };
 
@@ -101,7 +132,7 @@ struct FormatSpecifer
   bool enablePrefixes;
 };
 
-class CommandIo : public ArgumentContainer, public FormatSpecifer
+class CommandIo
 {
 public:
   ~CommandIo() noexcept;
@@ -113,8 +144,11 @@ public:
   size_t scan(char* buffer, size_t bufferLen, const Duration& timeout = Duration::max());
   bool getConfirmation(const char* prompt = nullptr, const Duration& timeout = Duration::max());
   bool waitForContinue(const char* prompt = nullptr, const Duration& timeout = Duration::max());
+  FormatSpecifer fmt;
+  const ArgumentContainer args;
 protected:
-  CommandIo();
+  Vtt& vtt;
+  CommandIo(const Tokenizer& tokens, Vtt& vtt);
 };
 
 enum class AccessPermission : uint8_t

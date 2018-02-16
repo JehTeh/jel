@@ -256,14 +256,33 @@ void bootThread(void*)
     vtt->read(str, Duration::max());
     jelStandardIo->write("Read '");
     jelStandardIo->write(str);
-    jelStandardIo->write("'. Tokenizing...\r\n");
-    cli::Tokenizer tkns(str);
-    std::sprintf(buf, "%d tokens found. They are:\r\n", tkns.count());
+    jelStandardIo->write("'. Running ParameterParser...\r\n");
+    cli::ParameterString ps(str.c_str());
+    std::sprintf(buf, "%d parameters detected, %d of which are optional. These are:\r\n",
+      ps.totalCount(), ps.optionalCount()); 
     jelStandardIo->write(buf);
-    for(size_t i = 0; i < tkns.count(); i++)
+    for(size_t i = 0; i < ps.totalCount(); i++)
     {
-      jelStandardIo->write(tkns[i]);
-      jelStandardIo->write("\r\n");
+      cli::ParameterString::Parameter p = ps[i];
+      switch(p.type)
+      {
+        case cli::Argument::Type::int64_t_:
+          std::sprintf(buf, "\tP[%d]: int64. Optional: %d\r\n", i, p.isOptional);
+          break;
+        case cli::Argument::Type::uint64_t_:
+          std::sprintf(buf, "\tP[%d]: uint64. Optional: %d\r\n", i, p.isOptional);
+          break;
+        case cli::Argument::Type::double_:
+          std::sprintf(buf, "\tP[%d]: double. Optional: %d\r\n", i, p.isOptional);
+          break;
+        case cli::Argument::Type::string_:
+          std::sprintf(buf, "\tP[%d]: string. Optional: %d\r\n", i, p.isOptional);
+          break;
+        case cli::Argument::Type::invalid:
+          std::sprintf(buf, "\tP[%d]: invalid. Optional: %d\r\n", i, p.isOptional);
+          break;
+      }
+      jelStandardIo->write(buf);
     }
   }
 }

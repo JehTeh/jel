@@ -40,7 +40,7 @@ namespace cli
 {
 
 using CliArgumentPool = 
-  os::BlockAllocator<sizeof(ArgumentContainer::Argument) + 8, config::cliMaximumArguments>;
+  os::BlockAllocator<sizeof(Argument) + 8, config::cliMaximumArguments>;
 
 CliArgumentPool* argumentPool;
 
@@ -535,7 +535,7 @@ Tokenizer::Tokenizer(String& str, const char delimiter) : tc_(0), s_(str)
   }
 }
 
-const char* Tokenizer::operator[](size_t index)
+const char* Tokenizer::operator[](size_t index) const
 {
   if(index >= tc_) { return nullptr; }
   size_t c = 0;
@@ -555,6 +555,100 @@ const char* Tokenizer::operator[](size_t index)
     }
   }
   return nullptr;
+}
+
+ParameterString::ParameterString(const char* pstr) : pcnt_(0), optcnt_(0), s_(pstr)
+{
+  if(s_ == nullptr) { return; }
+  if(s_[0] == '\0') { return; }
+  const char* pos = s_;
+  while(pos != nullptr)
+  {
+    //Scan for a delimiter which marks the beginning of a parameter.
+    //If we find one, increment parameter count and if it is also optional increment optional count.
+    pos = std::strpbrk(pos, Symbols::delimiters);
+    if(pos != nullptr) 
+    {
+      pos++;
+      pcnt_++;
+      //If the next character after delimiter is an optional specifier, also increment optional
+      //count.
+      if(std::strchr(Symbols::optionals, *pos) != nullptr)
+      {
+        optcnt_++;
+      }
+      if(*pos == '\0') { break; }
+    }
+  }
+}
+
+ParameterString::Parameter ParameterString::operator[](size_t index)
+{
+  size_t cp = 0;
+  const char* pos = s_;
+  pos = std::strpbrk(pos, Symbols::delimiters);
+  while(pos != nullptr)
+  {
+    //If a delimiter is found
+    if(cp == index)
+    {
+      //The current parameter matches the requested index. We need to construct a new Parameter
+      //object.
+      Parameter param;
+      pos++;
+      //Check if the parameter is optional.
+      if(std::strchr(Symbols::optionals, *pos) != nullptr) { param.isOptional = true; pos++; }
+      else { param.isOptional = false; }
+      //Advance past any 'ignored' characters. These would typically include things like unused
+      //scanf modifiers such as 'l' or 'h'. If a match to any of them is found at the current
+      //position, just advance to to the next position.
+      while(std::strchr(Symbols::ignored, *pos) != nullptr) { pos++; }
+      if(*pos == '\0') { break; } //End of parameters list. 
+      //Now we have to determine what type of parameter is excepted.
+      if(std::strchr(Symbols::specifiers_signedInts, *pos) != nullptr)
+      {
+        param.type = Argument::Type::int64_t_;
+      }
+      else if(std::strchr(Symbols::specifiers_unsignedInts, *pos) != nullptr)
+      {
+        param.type = Argument::Type::uint64_t_;
+      }
+      else if(std::strchr(Symbols::specifiers_float, *pos) != nullptr)
+      {
+        param.type = Argument::Type::double_;
+      }
+      else if(std::strchr(Symbols::specifiers_strings, *pos) != nullptr)
+      {
+        param.type = Argument::Type::string_;
+      }
+      else
+      {
+        param.type = Argument::Type::invalid;
+      }
+      return param;
+    }
+    //This is not the parameter index we want. Advance to the next delimiter or the end of the
+    //string.
+    else { cp++; pos++; }
+    pos = std::strpbrk(pos, Symbols::delimiters);
+  }
+  //No parameter found.
+  return Parameter{true, Argument::Type::invalid };
+}
+
+
+
+ArgumentContainer::ArgumentContainer(const Tokenizer& tokens, const size_t discardThreshold, 
+  const char* )
+{
+  if((tokens.count() - discardThreshold) >= config::cliMaximumArguments)
+  {
+    throw CliException("", CliException::Id::maxArgumentsExceeded);
+  }
+  //size_t ppos = 0;
+  for(size_t i = discardThreshold; i < tokens.count(); i++)
+  {
+  }
 }
 
 } /** namespace cli */
