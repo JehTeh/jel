@@ -521,17 +521,16 @@ void Vtt::HistoryBuffer::prevpos()
 Tokenizer::Tokenizer(String& str, const char delimiter) : tc_(0), s_(str)
 {
   if(s_.length() == 0) { return; }
-  if(s_[0] != delimiter) { tc_++; } //Count first token.
-  for(size_t i = 0; i < s_.length(); i++)
+  for(size_t i = 0; i < s_.length();)
   {
     if(s_[i] == delimiter)
     {
-      while((s_[++i] == delimiter) && (i < s_.length())); //Advance to non-delim.
-      if(i < s_.length())
-      {
-        tc_++;
-        s_[i - 1] = '\0'; 
-      }
+      s_[i++] = '\0';
+    }
+    else
+    {
+      tc_++;
+      while((s_[i] != delimiter) && (i < s_.length())) { i++; }
     }
   }
 }
@@ -539,20 +538,20 @@ Tokenizer::Tokenizer(String& str, const char delimiter) : tc_(0), s_(str)
 const char* Tokenizer::operator[](size_t index)
 {
   if(index >= tc_) { return nullptr; }
-  if(index == 0) { return &s_[0]; }
   size_t c = 0;
-  for(size_t i = 0; i < s_.length(); i++)
+  for(size_t i = 0; i < s_.length();)
   {
-    if(s_[i] == '\0')
+    if(s_[i] != '\0')
     {
-      while((s_[++i] == '\0') && (i < s_.length()));
-      if(i < s_.length())
+      if(c++ == index)
       {
-        if(++c == index)
-        {
-          return &s_[i];
-        }
+        return &s_[i];
       }
+      while((s_[i] != '\0') && (i < s_.length())) { i++; }
+    }
+    else
+    {
+      i++;
     }
   }
   return nullptr;
