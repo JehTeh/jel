@@ -137,6 +137,7 @@ public:
     ObjectContainer& operator=(ObjectContainer&& other) noexcept 
     {
       item_ = std::move(other.item_); q_ = other.q_; other.q_ = nullptr; 
+      return *this;
     }
     ObjectT* stored() { return item_.get(); };
   private:

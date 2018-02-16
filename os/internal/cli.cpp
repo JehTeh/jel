@@ -233,12 +233,20 @@ bool Vtt::parseEscapeSequence(const size_t sp)
   else if((rxs_.find(efmt::upArrowKey, sp) != npos) ||
     (rxs_.find(efmt::shiftUpArrowKey, sp) != npos))
   {
-
+    hbuf_.currentBuffer() = wb_;
+    while((--hbuf_).length() == 0);
+    wb_ = hbuf_.currentBuffer();
+    cpos_ = wb_.length();
+    smode_ = false; imode_ = false;
   }
   else if((rxs_.find(efmt::downArrowKey, sp) != npos) ||
     (rxs_.find(efmt::shiftDownArrowKey, sp) != npos))
   {
-
+    hbuf_.currentBuffer() = wb_;
+    while((++hbuf_).length() == 0);
+    wb_ = hbuf_.currentBuffer();
+    cpos_ = wb_.length();
+    smode_ = false; imode_ = false;
   }
   else
   {
@@ -276,6 +284,7 @@ bool Vtt::terminateInput(const size_t sp)
   if((rxs_[sp] == fmt::carriageReturn) || (rxs_[sp] == fmt::newline))
   {
     terminated_ = true;
+    hbuf_++ = wb_;
   }
   return true;
 }
@@ -324,7 +333,8 @@ void Vtt::regenerateOuput()
   if(pfx_[0] != '\0') { ios_->write(pfx_); } //Print the prefix string.  
   if(imode_)
   {
-    std::sprintf(fmts_.get(), "%s100%c", fmt::EscapeSequences::csi, fmt::Csi::SGR);
+    std::sprintf(fmts_.get(), "%s100%c", fmt::EscapeSequences::csi, 
+      static_cast<char>(fmt::Csi::SGR));
     ios_->write(fmts_.get()); //Highlight line background if in insert mode.
   }
   else
@@ -420,6 +430,67 @@ void Vtt::eraseSelection()
     wb_.erase(cpos_, sst_ - cpos_ + 1);
   }
 }
+
+Vtt::HistoryBuffer::HistoryBuffer()
+{
+  for(size_t i = 0; i < config::cliHistoryDepth; i++)
+  {
+    buffers_[i] = os::jelStringPool->acquire();
+    buffers_[i].stored()->reserve(config::cliMaximumStringLength);
+    *buffers_[i].stored() = "";
+  }
+  bpos_ = 0;
+}
+
+String& Vtt::HistoryBuffer::currentBuffer()
+{
+  return *buffers_[bpos_].stored();
+}
+
+String& Vtt::HistoryBuffer::operator++()
+{
+  nextpos();
+  return *buffers_[bpos_].stored();
+}
+
+String& Vtt::HistoryBuffer::operator--()
+{
+  prevpos();
+  return *buffers_[bpos_].stored();
+}
+
+String& Vtt::HistoryBuffer::operator++(int)
+{
+  String& s = *buffers_[bpos_].stored();
+  nextpos();
+  return s;
+}
+
+String& Vtt::HistoryBuffer::operator--(int)
+{
+  String& s = *buffers_[bpos_].stored();
+  prevpos();
+  return s;
+}
+
+void Vtt::HistoryBuffer::nextpos()
+{
+  bpos_++;
+  if(bpos_ >= config::cliHistoryDepth)
+  {
+    bpos_ = 0;
+  }
+}
+
+void Vtt::HistoryBuffer::prevpos()
+{
+  bpos_--;
+  if(bpos_ >= config::cliHistoryDepth)
+  {
+    bpos_ = config::cliHistoryDepth - 1;
+  }
+}
+
 
 } /** namespace cli */
 } /** namespace jel */

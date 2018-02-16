@@ -89,6 +89,7 @@ constexpr size_t cliHistoryDepth = 8;
  * functionality with a minimum of 8 arguments. 
  * */
 constexpr size_t cliMaximumArguments = 12;
+constexpr size_t cliMaximumStringLength = 128;
 #else
 constexpr size_t stringPoolStringCount = 24;
 constexpr size_t stringPoolStringSize = 256;

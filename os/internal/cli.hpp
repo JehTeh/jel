@@ -50,7 +50,7 @@ class Vtt
 public:
   struct Config
   {
-    size_t historyDepth = 8;
+    size_t historyDepth = config::cliHistoryDepth;
     size_t maxEntryLength = 128;
     size_t receiveBufferLength = 32;
     Duration pollingPeriod =  Duration::milliseconds(50);
@@ -65,9 +65,17 @@ private:
   class HistoryBuffer
   {
   public:
-
+    HistoryBuffer();
+    String& currentBuffer();
+    String& operator++();
+    String& operator--();
+    String& operator++(int index);
+    String& operator--(int index);
   private:
-
+    size_t bpos_;
+    os::JelStringPool::ObjectContainer buffers_[config::cliHistoryDepth];
+    void nextpos();
+    void prevpos();
   };
   std::shared_ptr<os::AsyncIoStream> ios_;
   os::PrettyPrinter printer_;
@@ -82,6 +90,7 @@ private:
   bool cshandled_;
   bool terminated_;
   std::unique_ptr<char[]> fmts_; 
+  HistoryBuffer hbuf_;
   size_t loadRxs(const Duration& timeout);
   size_t handleControlCharacters();
   bool parseEscapeSequence(const size_t csbeg);
