@@ -167,5 +167,5 @@ endef
 define TEMPLRECIPE_GDB
 gdb_$(TARGET_NAME): $(OUTPUT_ELF_FILE)
 	@echo "Starting GDB remote..."
-	arm-none-eabi-gdb -iex "set auto-load safe-path /" $(OUTPUT_ELF_FILE)
+	arm-none-eabi-gdb -q -iex "set auto-load safe-path /" $(OUTPUT_ELF_FILE)
 endef
