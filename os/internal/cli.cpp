@@ -523,14 +523,32 @@ Tokenizer::Tokenizer(String& str, const char delimiter) : tc_(0), s_(str)
   if(s_.length() == 0) { return; }
   for(size_t i = 0; i < s_.length();)
   {
-    if(s_[i] == delimiter)
-    {
-      s_[i++] = '\0';
+    if((s_[i] == delimiter) || (s_[i] == '"'))
+    { 
+      if(s_[i] == '"')
+      {
+        size_t slen = 0;
+        s_[i++] = '\0';
+        while((s_[i] != '\0') && (i < s_.length()))
+        {
+          if(s_[i] == '"')
+          {
+            s_[i++] = '\0';
+            if(slen > 0) { tc_++; }
+            break;
+          }
+          else { i++; slen++; }
+        }
+      }
+      else
+      {
+        s_[i++] = '\0';
+      }
     }
     else
     {
       tc_++;
-      while((s_[i] != delimiter) && (i < s_.length())) { i++; }
+      while((s_[i] != delimiter) && (s_[i] != '"') && (i < s_.length())) { i++; }
     }
   }
 }
@@ -639,16 +657,13 @@ ParameterString::Parameter ParameterString::operator[](size_t index)
 
 
 ArgumentContainer::ArgumentContainer(const Tokenizer& tokens, const size_t discardThreshold, 
-  const char* )
+  const char* params)
 {
   if((tokens.count() - discardThreshold) >= config::cliMaximumArguments)
   {
     throw CliException("", CliException::Id::maxArgumentsExceeded);
   }
-  //size_t ppos = 0;
-  for(size_t i = discardThreshold; i < tokens.count(); i++)
-  {
-  }
+  ParameterString ps(params);
 }
 
 } /** namespace cli */
