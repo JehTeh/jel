@@ -68,6 +68,7 @@ size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
 {
   assert(bufferSize);
   wb_ = ""; cpos_ = 0; cshandled_ = false; imode_ = false; smode_ = false; terminated_ = false;
+  bufedtd_ = false;
   const Timestamp tStart = SteadyClock::now();
   while((SteadyClock::now() - tStart) < timeout)
   {
@@ -216,6 +217,7 @@ bool Vtt::parseEscapeSequence(const size_t sp)
       {
         wb_.erase(cpos_, 1);
       } 
+      bufedtd_ = true;
     }
   }
   else if(rxs_.find(efmt::endKey, sp) != npos)
@@ -233,8 +235,16 @@ bool Vtt::parseEscapeSequence(const size_t sp)
   else if((rxs_.find(efmt::upArrowKey, sp) != npos) ||
     (rxs_.find(efmt::shiftUpArrowKey, sp) != npos))
   {
-    hbuf_.currentBuffer() = wb_;
-    while((--hbuf_).length() == 0);
+    if(bufedtd_)
+    {
+      ++hbuf_ = wb_;
+      hbuf_--;
+    }
+    auto* hbptr = &hbuf_.currentBuffer();
+    while((--hbuf_).length() == 0)
+    {
+      if(hbptr == &(hbuf_.currentBuffer())) { break; }
+    };
     wb_ = hbuf_.currentBuffer();
     cpos_ = wb_.length();
     smode_ = false; imode_ = false;
@@ -242,15 +252,23 @@ bool Vtt::parseEscapeSequence(const size_t sp)
   else if((rxs_.find(efmt::downArrowKey, sp) != npos) ||
     (rxs_.find(efmt::shiftDownArrowKey, sp) != npos))
   {
-    hbuf_.currentBuffer() = wb_;
-    while((++hbuf_).length() == 0);
+    if(bufedtd_)
+    {
+      --hbuf_ = wb_;
+      hbuf_++;
+    }
+    auto* hbptr = &hbuf_.currentBuffer();
+    while((++hbuf_).length() == 0)
+    {
+      if(hbptr == &(hbuf_.currentBuffer())) { break; }
+    };
     wb_ = hbuf_.currentBuffer();
     cpos_ = wb_.length();
     smode_ = false; imode_ = false;
   }
   else
   {
-
+    //Some unused control sequence.
   }
   return true;
 }
@@ -273,6 +291,7 @@ bool Vtt::parseAsciiControl(const size_t sp)
         wb_.erase(cpos_ - 1, 1);
         cpos_--;
       }
+      bufedtd_ = true;
     }
   }
   return true;
@@ -294,6 +313,7 @@ void Vtt::regenerateOuput()
   //If a non-control-sequence is in the rxs_, we need to insert it into the working buffer.
   if(!cshandled_ && !((wb_.length() + rxs_.length()) >= cfg_.maxEntryLength))
   {
+    bufedtd_ = true;
     if(imode_) //Insert mode logic is actually inverted, i.e. if insert key was pressed then 
       //overwrite, not insert.
     {
@@ -429,6 +449,7 @@ void Vtt::eraseSelection()
     smode_ = false;
     wb_.erase(cpos_, sst_ - cpos_ + 1);
   }
+  bufedtd_ = true;
 }
 
 Vtt::HistoryBuffer::HistoryBuffer()

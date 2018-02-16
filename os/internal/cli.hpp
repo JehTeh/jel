@@ -89,6 +89,7 @@ private:
   bool smode_;
   bool cshandled_;
   bool terminated_;
+  bool bufedtd_;
   std::unique_ptr<char[]> fmts_; 
   HistoryBuffer hbuf_;
   size_t loadRxs(const Duration& timeout);
