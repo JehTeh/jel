@@ -249,25 +249,72 @@ void bootThread(void*)
   {
     __init_array_start[i]();
   }
-  String str;
-  str.reserve(128);
+  String pstr;
+  String cstr;
+  pstr.reserve(128);
+  cstr.reserve(128);
+  cli::initCliPool();
   while(true)
   {
-    vtt->read(str, Duration::max());
-    jelStandardIo->write("Read '");
-    jelStandardIo->write(str);
-    jelStandardIo->write("'.\r\n");
-    cli::Tokenizer tk(str);
-    if(tk.count() > 0)
+    std::printf("Enter parameter string.\r\n");
+    vtt->read(pstr, Duration::max());
+    std::printf("Enter command string.\r\n");
+    vtt->read(cstr, Duration::max());
+    cli::Tokenizer tk(cstr);
+    cli::ArgumentContainer ac;
+    switch(ac.generateArgumentList(tk, 2, pstr.c_str()))
     {
-      std::sprintf(buf, "%d tokens read. These are:\r\n", tk.count());
-      jelStandardIo->write(buf);
-      for(size_t i = 0; i < tk.count(); i++)
+      case cli::ArgumentContainer::Status::argumentTypeMismatch:
+        std::printf("Error: Argument type mismatch.\r\n");
+        break;
+      case cli::ArgumentContainer::Status::insufficientArguments:
+        std::printf("Error: Insuff. arguments.\r\n");
+        break;
+      case cli::ArgumentContainer::Status::tooManyArguments:
+        std::printf("Error: Too many arguments.\r\n");
+        break;
+      case cli::ArgumentContainer::Status::maxGlobalArgsExceeded:
+        std::printf("Error: Global max args exceeded.\r\n");
+        break;
+      case cli::ArgumentContainer::Status::success:
+        break;
+    }
+    if(ac.isArgListValid())
+    {
+      std::printf("%d arguments captured. These are:\r\n", ac.totalArguments());
+      for(size_t i = 0; i < ac.totalArguments(); i++)
       {
-        std::sprintf(buf, "%s\r\n", tk[i]);
-        jelStandardIo->write(buf);
+        const cli::Argument& arg = ac[i];
+        switch(arg.type)
+        {
+          case cli::Argument::Type::int64_t_:
+            std::printf("\t[%d]: Signed int.\r\n\tValue: %lld\r\n", i, arg.asInt());
+            break;
+          case cli::Argument::Type::uint64_t_:
+            std::printf("\t[%d]: Unsigned int.\r\n\tValue: %llu\r\n", i, arg.asUInt());
+            break;
+          case cli::Argument::Type::double_:
+            std::printf("\t[%d]: Double.\r\n\tValue: %f\r\n", i, arg.asDouble());
+            break;
+          case cli::Argument::Type::string_:
+            std::printf("\t[%d]: String.\r\n\tValue: %s\r\n", i, arg.asString().c_str());
+            break;
+          case cli::Argument::Type::invalid:
+            std::printf("Invalid type.\r\n");
+            break;
+          default:
+            std::printf("Illegal/default enum index\r\n");
+            break;
+        }
       }
     }
+    std::printf("Apool Stats:\r\nAll: %d Deall: %d: FreeSpace: %d\r\n", 
+      cli::cliPoolIf().totalAllocations(), cli::cliPoolIf().totalDeallocations(), 
+      cli::cliPoolIf().freeSpace_Bytes());
+    std::printf("Heap Stats:\r\nAll: %d Deall: %d: FreeSpace: %d\r\n", 
+      SystemAllocator::systemAllocator()->totalAllocations(), 
+      SystemAllocator::systemAllocator()->totalDeallocations(), 
+      SystemAllocator::systemAllocator()->freeSpace_Bytes());
   }
 }
 

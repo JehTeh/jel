@@ -30,7 +30,6 @@
 
 /** C/C++ Standard Library Headers */
 #include <cassert>
-#include <exception>
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
@@ -44,28 +43,10 @@ namespace cli
 typedef os::Status Status;
 typedef std::basic_string<char> CliString;
 
-class CliException : public std::exception
-{
-public:
-  enum class Id
-  {
-    /** An illegalArgumentAccess exception will be thrown from an Argument object if an attempt is
-     * made to access the stored value with the as[xxx]() function of the wrong type. */
-    illegalArgumentAccess,
-    /** A maxArgumentsExceeded exception is thrown if the total number of arguments in an input
-     * string to the CLI exceeds the config::cliMaximumArguments value. */
-    maxArgumentsExceeded,
-  };
-  Id id;
-  CliException(const char* errStr, const Id id);
-  const char* what() const noexcept final override { return estr_; }
-private:
-  const char* estr_;
-};
-
 /** Forward declarations. */
 class Tokenizer;
 class Vtt;
+class ArgumentContainer;
 
 struct Argument
 {
@@ -92,11 +73,12 @@ public:
   const Type type;
   const Value value;
   ~Argument() noexcept {}
-  const int64_t& asInt() const; 
-  const uint64_t& asUInt() const;
-  const double& asDouble() const;
-  const String& asString() const;
+  const int64_t& asInt() const { assert(type == Type::int64_t_); return value.int64_t_; }; 
+  const uint64_t& asUInt() const { assert(type == Type::uint64_t_); return value.uint64_t_; };
+  const double& asDouble() const { assert(type == Type::double_); return value.double_; };
+  const String& asString() const { assert(type == Type::string_); return *value.string_; };
 private:
+  friend ArgumentContainer;
   Argument(const int64_t& int_) : type(Type::int64_t_), value{int_ } { }
   Argument(const uint64_t& uint_) : type(Type::uint64_t_), value{uint_ } { }
   Argument(const double& dbl_) : type(Type::double_), value{dbl_} { }
@@ -108,18 +90,32 @@ class ArgumentContainer
 public:
   size_t totalArguments() const { return numOfArgs_; }
   const Argument& operator[](size_t idx) const; 
-protected:
+  bool isArgListValid() const { return argListValid_; };
+//private:
+  enum class Status
+  {
+    success,
+    tooManyArguments,
+    insufficientArguments,
+    maxGlobalArgsExceeded,
+    argumentTypeMismatch,
+  };
   struct ArgListItem
   {
     Argument arg;
     std::unique_ptr<ArgListItem, void(*)(ArgListItem*)> next;
     template<typename T>
-    ArgListItem(T argval) : arg(argval) { }
+    ArgListItem(T&& argval) : arg(argval), next{nullptr, nullptr} { }
   };
+  bool argListValid_;
   size_t numOfArgs_;
-  std::unique_ptr<ArgListItem> firstArg;
-  ArgumentContainer(const Tokenizer& tokens, const size_t discardThreshold, const char* params);
+  std::unique_ptr<ArgListItem, void(*)(ArgListItem*)> firstArg;
+  ArgumentContainer();
   ~ArgumentContainer() noexcept;
+  Status generateArgumentList(const Tokenizer& tokens, const size_t discardThreshold, 
+    const char* params);
+  template<typename T>
+  ArgListItem& appendListItem(T&& argval);
 };
 
 struct FormatSpecifer

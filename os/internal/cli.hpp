@@ -32,6 +32,7 @@
 
 /** C/C++ Standard Library Headers */
 #include <cassert>
+#include <exception>
 /** jel Library Headers */
 #include "os/api_cli.hpp"
 #include "os/internal/indef.hpp"
@@ -40,6 +41,9 @@ namespace jel
 {
 namespace cli
 {
+
+void initCliPool();
+os::AllocatorStatisticsInterface& cliPoolIf();
 
 /** @class Vtt
  *  @brief The Visual Text Terminal (VTT) provides input/output functionality.
@@ -144,8 +148,10 @@ public:
   };
   struct Parameter
   {
+    static constexpr size_t maxFormatStringLength = 8;
     bool isOptional;
     Argument::Type type;
+    char formatString[maxFormatStringLength];
   };
   ParameterString(const char* pstr);
   Parameter operator[](size_t index);
@@ -156,8 +162,6 @@ private:
   size_t optcnt_;
   const char* const s_;
 };
-
-
 
 } /** namespace cli */
 } /** namespace jel */

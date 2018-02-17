@@ -154,6 +154,7 @@ enum class ExceptionCode : uint32_t
   queueConstructionFailed,
   threadConstructionFailed,
   allocatorConstructionFailed,
+  cliInvalidArgumentIndex,
 };
 
 class Exception : public Exception_Base<RESERVED_OS_MODULE_ID, ExceptionCode>

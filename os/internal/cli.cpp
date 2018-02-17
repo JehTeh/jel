@@ -44,6 +44,13 @@ using CliArgumentPool =
 
 CliArgumentPool* argumentPool;
 
+void initCliPool()
+{
+  argumentPool = new CliArgumentPool;
+}
+
+os::AllocatorStatisticsInterface& cliPoolIf() { return *argumentPool; }
+
 
 Vtt::Vtt(const std::shared_ptr<os::AsyncIoStream>& ios) : ios_(ios), printer_(ios),
   wb_(), rxs_(), fmts_(new char[formatScratchBufferSize])
@@ -626,22 +633,27 @@ ParameterString::Parameter ParameterString::operator[](size_t index)
       if(std::strchr(Symbols::specifiers_signedInts, *pos) != nullptr)
       {
         param.type = Argument::Type::int64_t_;
+        std::strncpy(param.formatString, "%lli", Parameter::maxFormatStringLength);
       }
       else if(std::strchr(Symbols::specifiers_unsignedInts, *pos) != nullptr)
       {
         param.type = Argument::Type::uint64_t_;
+        std::strncpy(param.formatString, "%llu", Parameter::maxFormatStringLength);
       }
       else if(std::strchr(Symbols::specifiers_float, *pos) != nullptr)
       {
         param.type = Argument::Type::double_;
+        std::strncpy(param.formatString, "%llf", Parameter::maxFormatStringLength);
       }
       else if(std::strchr(Symbols::specifiers_strings, *pos) != nullptr)
       {
         param.type = Argument::Type::string_;
+        std::strncpy(param.formatString, "%s", Parameter::maxFormatStringLength);
       }
       else
       {
         param.type = Argument::Type::invalid;
+        param.formatString[0] = '\0';
       }
       return param;
     }
@@ -651,19 +663,126 @@ ParameterString::Parameter ParameterString::operator[](size_t index)
     pos = std::strpbrk(pos, Symbols::delimiters);
   }
   //No parameter found.
-  return Parameter{true, Argument::Type::invalid };
+  return Parameter{true, Argument::Type::invalid, "" };
 }
 
-
-
-ArgumentContainer::ArgumentContainer(const Tokenizer& tokens, const size_t discardThreshold, 
-  const char* params)
+ArgumentContainer::ArgumentContainer() : numOfArgs_(0), firstArg{nullptr, nullptr}
 {
+}
+
+ArgumentContainer::~ArgumentContainer() noexcept
+{
+}
+
+ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenizer& tokens,
+  const size_t discardThreshold, const char* params)
+{
+  ParameterString ps(params);
+  if(discardThreshold > tokens.count())
+  {
+    return Status::insufficientArguments;
+  }
+  if((tokens.count() - discardThreshold) > ps.totalCount())
+  {
+    return Status::tooManyArguments;
+  }
+  if((tokens.count() - discardThreshold) < (ps.totalCount() - ps.optionalCount()))
+  {
+    return Status::insufficientArguments;
+  }
   if((tokens.count() - discardThreshold) >= config::cliMaximumArguments)
   {
-    throw CliException("", CliException::Id::maxArgumentsExceeded);
+    return Status::maxGlobalArgsExceeded;
   }
-  ParameterString ps(params);
+  for(size_t i = 0; i < (tokens.count() - discardThreshold); i++)
+  {
+    ParameterString::Parameter p = ps[i];
+    switch(p.type)
+    {
+      case Argument::Type::int64_t_:
+        {
+          int64_t temp;
+          if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
+          {
+            return Status::argumentTypeMismatch;
+          }
+          appendListItem(temp);
+        }
+        break;
+      case Argument::Type::uint64_t_:
+        {
+          uint64_t temp;
+          if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
+          {
+            return Status::argumentTypeMismatch;
+          }
+          appendListItem(temp);
+        }
+        break;
+      case Argument::Type::double_:
+        {
+          double temp;
+          if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
+          {
+            return Status::argumentTypeMismatch;
+          }
+          appendListItem(temp);
+        }
+        break;
+      case Argument::Type::string_:
+        {
+          //TODO
+          //appendListItem(temp);
+        }
+        break;
+      case Argument::Type::invalid:
+      default:
+        //
+        break;
+    }
+  }
+  argListValid_ = true;
+  return Status::success;
+}
+
+template<typename T>
+ArgumentContainer::ArgListItem& ArgumentContainer::appendListItem(T&& argval)
+{
+  std::unique_ptr<ArgListItem, void(*)(ArgListItem*)>* iptr = &firstArg;
+  while(iptr->get() != nullptr)
+  {
+    iptr = &iptr->get()->next;
+  }
+  *iptr = std::unique_ptr<ArgListItem, void(*)(ArgListItem*)>
+    (new (argumentPool->allocate(sizeof(ArgListItem))) ArgListItem(argval),
+     [](ArgListItem* i){ i->~ArgListItem(); argumentPool->deallocate(i);});
+  numOfArgs_++;
+  return *iptr->get();
+}
+
+const Argument& ArgumentContainer::operator[](size_t index) const
+{
+  if((numOfArgs_ == 0) || (index >= numOfArgs_))
+  {
+    throw os::Exception{os::ExceptionCode::cliInvalidArgumentIndex, 
+      "Invalid argument index requested (%d/%d).", index, numOfArgs_};
+  }
+  const Argument* aptr = &firstArg->arg;
+  ArgListItem* alptr = firstArg.get();
+  for(size_t i = 0; i < index; i++)
+  {
+    if(alptr->next.get() != nullptr)
+    {
+      alptr = alptr->next.get();
+      aptr = &alptr->arg;
+    }
+    else
+    {
+      throw os::Exception{os::ExceptionCode::cliInvalidArgumentIndex, 
+        "Corrupt CLI argument container detected."};
+    }
+  }
+  return *aptr;
 }
 
 } /** namespace cli */
