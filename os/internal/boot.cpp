@@ -276,6 +276,9 @@ void bootThread(void*)
       case cli::ArgumentContainer::Status::maxGlobalArgsExceeded:
         std::printf("Error: Global max args exceeded.\r\n");
         break;
+      case cli::ArgumentContainer::Status::noFreeStringsAvailable:
+        std::printf("Error: No free strings available.\r\n");
+        break;
       case cli::ArgumentContainer::Status::success:
         break;
     }
@@ -297,7 +300,7 @@ void bootThread(void*)
             std::printf("\t[%d]: Double.\r\n\tValue: %f\r\n", i, arg.asDouble());
             break;
           case cli::Argument::Type::string_:
-            std::printf("\t[%d]: String.\r\n\tValue: %s\r\n", i, arg.asString().c_str());
+            std::printf("\t[%d]: String.\r\n\tValue: '%s'\r\n", i, arg.asString().c_str());
             break;
           case cli::Argument::Type::invalid:
             std::printf("Invalid type.\r\n");
@@ -315,6 +318,7 @@ void bootThread(void*)
       SystemAllocator::systemAllocator()->totalAllocations(), 
       SystemAllocator::systemAllocator()->totalDeallocations(), 
       SystemAllocator::systemAllocator()->freeSpace_Bytes());
+    std::printf("String pool strings: %d\r\n", jelStringPool->itemsInPool());
   }
 }
 

@@ -666,7 +666,8 @@ ParameterString::Parameter ParameterString::operator[](size_t index)
   return Parameter{true, Argument::Type::invalid, "" };
 }
 
-ArgumentContainer::ArgumentContainer() : numOfArgs_(0), firstArg{nullptr, nullptr}
+ArgumentContainer::ArgumentContainer() : argListValid_(false), numOfArgs_(0), 
+  firstArg{nullptr, nullptr}
 {
 }
 
@@ -731,8 +732,15 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
         break;
       case Argument::Type::string_:
         {
-          //TODO
-          //appendListItem(temp);
+          auto scont = os::jelStringPool->acquire(Duration::zero());
+          if(scont.stored() == nullptr)
+          {
+            //Failed to grab a string from the global pool.
+            return Status::noFreeStringsAvailable;
+          }
+          String& s = *scont.stored();
+          s.replace(0, config::stringPoolStringSize - 1, tokens[i + discardThreshold]);
+          appendListItem(scont);
         }
         break;
       case Argument::Type::invalid:

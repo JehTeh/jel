@@ -140,6 +140,7 @@ public:
       return *this;
     }
     ObjectT* stored() { return item_.get(); };
+    const ObjectT* stored() const { return item_.get(); };
   private:
     friend ObjectPool;
     ObjectContainer(std::unique_ptr<ObjectT>& obj, ObjQ& q) : item_{std::move(obj)}, q_{&q} {}
@@ -166,6 +167,7 @@ public:
     }
     return ObjectContainer();
   }
+  size_t itemsInPool() const { return pool_.size(); }
 private:
   ObjQ pool_;
 };

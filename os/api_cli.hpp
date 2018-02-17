@@ -34,12 +34,15 @@
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
 #include "os/api_io.hpp"
+#include "os/api_allocator.hpp"
+#include "os/api_config.hpp"
 
 namespace jel
 {
 namespace cli
 {
 
+typedef os::ObjectPool<String, config::stringPoolStringCount> JelStringPool;
 typedef os::Status Status;
 typedef std::basic_string<char> CliString;
 
@@ -64,25 +67,26 @@ public:
     int64_t int64_t_;
     uint64_t uint64_t_;
     double double_;
-    const String* string_;
+    JelStringPool::ObjectContainer string_;
     Value(int64_t i) { int64_t_ = i; }
     Value(uint64_t ui) { uint64_t_ = ui; }
     Value(double dbl) { double_ = dbl; }
-    Value(const CliString& str) { string_ = &str; }
+    Value(JelStringPool::ObjectContainer& strc) : string_{std::move(strc)} {  }
+    ~Value() noexcept {};
   };
   const Type type;
   const Value value;
-  ~Argument() noexcept {}
+  ~Argument() noexcept { if(type == Type::string_) { value.string_.~ObjectContainer(); }}
   const int64_t& asInt() const { assert(type == Type::int64_t_); return value.int64_t_; }; 
   const uint64_t& asUInt() const { assert(type == Type::uint64_t_); return value.uint64_t_; };
   const double& asDouble() const { assert(type == Type::double_); return value.double_; };
-  const String& asString() const { assert(type == Type::string_); return *value.string_; };
+  const String& asString() const { assert(type == Type::string_); return *value.string_.stored(); };
 private:
   friend ArgumentContainer;
   Argument(const int64_t& int_) : type(Type::int64_t_), value{int_ } { }
   Argument(const uint64_t& uint_) : type(Type::uint64_t_), value{uint_ } { }
   Argument(const double& dbl_) : type(Type::double_), value{dbl_} { }
-  Argument(const String& str_) : type(Type::string_), value{str_} { }
+  Argument(JelStringPool::ObjectContainer& str_) : type(Type::string_), value{str_} { }
 };
 
 class ArgumentContainer
@@ -99,6 +103,7 @@ public:
     insufficientArguments,
     maxGlobalArgsExceeded,
     argumentTypeMismatch,
+    noFreeStringsAvailable,
   };
   struct ArgListItem
   {
