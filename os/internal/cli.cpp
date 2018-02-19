@@ -42,14 +42,62 @@ namespace cli
 using CliArgumentPool = 
   os::BlockAllocator<sizeof(Argument) + 8, config::cliMaximumArguments>;
 
-CliArgumentPool* argumentPool;
+std::unique_ptr<CliArgumentPool> argumentPool;
 
-void initCliPool()
+int cliCmdHelp(CommandIo& io);
+int cliCmdLogin(CommandIo& io);
+
+const CommandEntry cliCommandArray[] =
 {
-  argumentPool = new CliArgumentPool;
+  {
+    "help", cliCmdHelp, "%?s%?s",
+    "The help command performs multiple functions, depending on the arguments passed. These"
+    " include:\n"
+    "\t(0 Arguments): Prints the generic CLI user instructions. Also lists all command libraries "
+    "currently registered with the CLI. This command is called by using 'cli help'.\n"
+    "\t(1 Argument): Prints detailed information about a specific library, including all commands "
+    "included in that library. This command is called by using 'cli help [library_name]'.\n"
+    "\t(2 Arguments): Prints detailed information about a specific command contained in a specific "
+    "library. This command is called by using 'cli help [library_name] [command_name]'.\n"
+    "Note: The help command requires at least 2 free strings in the system string pool to function "
+    "correctly. Systems that do not support strings in commands cannot make use of the generic "
+    "help command.",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
+    "login", cliCmdLogin, "%s%s%?u",
+    "The login command is used to elevate the current CLI access level. It requires both a "
+    "username and password, which if correct will temporarily elevate the permission level.\n"
+    "Usage: 'cli login [username] [password] {custom integer timeout, in seconds}'\n"
+    "Note: A custom timeout of zero seconds will never expire and is not recommended. "
+    "If the login command is performed again with a new timeout, the latest entered timeout will "
+    "take precedence.",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+};
+
+const Library cliCmdLib =
+{
+  "cli",
+  "The CLI command library ('cli') is the default library registered with every CLI instance. "
+  "It provides basic utilities such as command lookup and help functionality, security login to "
+  "view and access secure commands, and some specialized testing functionality.",
+  sizeof(cliCommandArray)/sizeof(CommandEntry),
+  cliCommandArray
+};
+
+//Temporary used for debug
+os::AllocatorStatisticsInterface& cliPoolIf() { return *argumentPool; }
+
+void startSystemCli(std::shared_ptr<os::AsyncIoStream>& io)
+{
+  new CliInstance(io);
 }
 
-os::AllocatorStatisticsInterface& cliPoolIf() { return *argumentPool; }
+Status registerLibrary(const Library& library)
+{
+
+}
 
 
 Vtt::Vtt(const std::shared_ptr<os::AsyncIoStream>& ios) : ios_(ios), printer_(ios),
@@ -67,6 +115,12 @@ Status Vtt::write(const char* cStr, size_t length)
 {
   printer_.print(cStr, length);
   return Status::success;
+}
+
+Status Vtt::write(const char* format, va_list args) 
+{
+  int ret = vsnprintf(wrtbuf_.get(), config::cliMaximumStringLength, format, args);
+  printer_.print(wrtbuf_.get());
 }
 
 size_t Vtt::read(String& string, const Duration& timeout)
@@ -791,6 +845,150 @@ const Argument& ArgumentContainer::operator[](size_t index) const
     }
   }
   return *aptr;
+}
+
+CliInstance::CliInstance(std::shared_ptr<os::AsyncIoStream>& io) 
+{
+  if(activeCliInstance == nullptr)
+  {
+    //Initialize the argument memory pool used by the CLI.
+    argumentPool = std::make_unique<CliArgumentPool>();
+    activeCliInstance = this;
+    tptr_ = new os::Thread(reinterpret_cast<os::Thread::FunctionSignature>(&cliThreadDispatcher), 
+      &io, "CLI", cliThreadStackSize_Words, cliThreadPriority);
+  }
+  else
+  {
+
+  }
+}
+
+void CliInstance::cliThreadDispatcher(std::shared_ptr<os::AsyncIoStream>* io)
+{
+  activeCliInstance->cliThread(io);
+} 
+
+void CliInstance::cliThread(std::shared_ptr<os::AsyncIoStream>* io)
+{
+  istr_ = std::make_unique<String>();
+  istr_->reserve(config::cliMaximumStringLength);
+  vtt = std::make_unique<Vtt>(*io);
+  //Instantiate a visual text terminal on the I/O interface. This will be used for all I/O performed
+  //by the CLI.
+  //On startup, the CLI will always default to the minimum permission level.
+  while(true)
+  {
+    //Wait for some argument input.
+    while(true)
+    {
+      vtt->write("CLI awaiting input.\r\n");
+      if(vtt->read(istr_) > 0)
+      {
+        break;
+      }
+    }
+    //Tokenize the input.
+    Tokenizer tokens(*istr_);
+    //Search for and handle any special commands.
+    if(handleSpecialCommands(tokens)) { continue; }
+    //Search for the library name. If not found, restart loop and await new input.
+    if(!lookupLibrary(tokens[0])) { continue; }
+    //Search for the command name. If not found, restart loop and await new input.
+    if(!lookupCommand(tokens[1])) { continue; }
+    //Parse out arguments from tokens list and if successful execute the command.
+    executeCommand(tokens);
+  }
+}
+
+bool CliInstance::handleSpecialCommands(Tokenizer& tokens)
+{
+  (void)tokens;
+  //TODO placeholder for now.
+  return false;
+}
+
+bool CliInstance::lookupLibrary(const char* name)
+{
+  //Perform a lookup in the registered libraries list.
+  assert(name);
+  LibrariesListItem* lli = &libList_;
+  while(lli != nullptr)
+  {
+    if(std::strcmp(lli->libptr->name, name) == 0) { break; }
+    else { lli = lli->next; }
+  }
+  if(lli == nullptr)
+  {
+    //TODO err
+    return false;
+  }
+  return true;
+}
+
+bool CliInstance::lookupCommand(const char* name)
+{
+  //Lookup the command name in the active library.
+  assert(alptr_); assert(name);
+  const CommandEntry* cptr = nullptr;
+  for(const auto& cmd : *alptr_)
+  {
+    if(std::strcmp(cmd.name, name) == 0)
+    {
+      if(doesAplvlMeetSecRequirment(cmd.securityLevel))
+      {
+        cptr = &cmd;
+      }
+      break;
+    }
+  }
+  if(cptr == nullptr)
+  {
+    //TODO err
+    return false;
+  }
+  return true;
+}
+
+int CliInstance::executeCommand(Tokenizer& tokens)
+{
+  //If we have the command matched, we need to construct a CommandIo object, including an argument
+  //container, and execute the command if the IO object is valid.
+  assert(acptr_); 
+  CommandIo cmdIo(tokens, *acptr_, *vtt);
+  if(!cmdIo.ioObjectisValid())
+  {
+    //TODO err, io object creation failure
+    return 1;
+  }
+  try
+  {
+    if(acptr_->function(cmdIo) != 0)
+    {
+      //TODO err, report command status code.
+    }
+  }
+  catch(...)
+  {
+    //TODO catch specalized exceptions
+  }
+}
+
+Status CommandIo::print(const char* format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  vtt.write(format, args);
+  va_end(args);
+}
+
+int cliCmdHelp(CommandIo& io)
+{
+  io.print("TODO HELP");
+}
+
+int cliCmdLogin(CommandIo& io)
+{
+  io.print("TODO LOGIN");
 }
 
 } /** namespace cli */

@@ -523,6 +523,8 @@ public:
    * saved. The length parameter should be identical to what is returned by std::strlen(cStr); */
   Status print(const char* cStr, size_t length = 0);
   Config& editConfig() {return cfg_; }
+  /** Automatically output a newline sequence and reset the current line length to zero. */
+  void nextLine();
 private:
   std::shared_ptr<MtWriter> out_;
   Config cfg_;

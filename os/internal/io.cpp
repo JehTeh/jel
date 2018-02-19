@@ -323,6 +323,19 @@ Status PrettyPrinter::print(const char* cStr, size_t length)
   return Status::success;
 }
 
+void PrettyPrinter::nextLine()
+{
+  if(cfg_.carriageReturnNewline)
+  {
+    out_->write("\r\n");
+  }
+  else
+  {
+    out_->write("\n");
+  }
+  clen_ = 0;
+}
+
 } /** namespace os */
 } /** namespace jel */
 

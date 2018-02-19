@@ -33,8 +33,10 @@
 /** C/C++ Standard Library Headers */
 #include <cassert>
 #include <exception>
+#include <cstdarg>
 /** jel Library Headers */
 #include "os/api_cli.hpp"
+#include "os/api_threads.hpp"
 #include "os/internal/indef.hpp"
 
 namespace jel
@@ -62,9 +64,10 @@ public:
     size_t receiveBufferLength = 32;
     Duration pollingPeriod =  Duration::milliseconds(50);
   };
-  Status write(const char* cStr, size_t length);
-  size_t read(char* buffer, size_t bufferSize, const Duration& timeout); 
-  size_t read(String& string, const Duration& timeout); 
+  Status write(const char* cStr, size_t length = 0);
+  Status write(const char* format, va_list args);
+  size_t read(char* buffer, size_t bufferSize, const Duration& timeout = Duration::max()); 
+  size_t read(String& string, const Duration& timeout = Duration::max()); 
   Status prefix(const char* cStr);
   Vtt(const std::shared_ptr<os::AsyncIoStream>& ios);
   ~Vtt();
@@ -90,6 +93,7 @@ private:
   Config cfg_;
   String wb_;
   String rxs_;
+  std::unique_ptr<char[]> wrtbuf_;
   const char* pfx_;
   size_t cpos_;
   size_t sst_;
@@ -161,6 +165,36 @@ private:
   size_t pcnt_;
   size_t optcnt_;
   const char* const s_;
+};
+
+class CliInstance
+{
+public:
+  static constexpr size_t cliThreadStackSize_Words = 512;
+  static constexpr os::Thread::Priority cliThreadPriority = os::Thread::Priority::low;
+  CliInstance(std::shared_ptr<os::AsyncIoStream>& io);
+  ~CliInstance() noexcept;
+private:
+  struct LibrariesListItem
+  {
+    const Library* libptr;
+    std::unique_ptr<LibrariesListItem> next;
+  };
+  AccessPermission aplvl_ = AccessPermission::unrestricted;
+  os::Thread* tptr_;
+  std::unique_ptr<String> istr_;
+  std::unique_ptr<Vtt> vtt;
+  LibrariesListItem libList_;
+  Library* alptr_;
+  CommandEntry* acptr_;
+  static CliInstance* activeCliInstance;
+  bool handleSpecialCommands(Tokenizer& tokens);
+  bool lookupLibrary(const char* name);
+  bool lookupCommand(const char* name);
+  int executeCommand(Tokenizer& tokens);
+  bool doesAplvlMeetSecRequirment(const AccessPermission& lvlToCheckAgainst);
+  void cliThread(std::shared_ptr<os::AsyncIoStream>* io);
+  static void cliThreadDispatcher(std::shared_ptr<os::AsyncIoStream>* io);
 };
 
 } /** namespace cli */

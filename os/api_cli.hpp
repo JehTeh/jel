@@ -89,13 +89,16 @@ private:
   Argument(JelStringPool::ObjectContainer& str_) : type(Type::string_), value{str_} { }
 };
 
+class CommandIo;
+
 class ArgumentContainer
 {
 public:
   size_t totalArguments() const { return numOfArgs_; }
   const Argument& operator[](size_t idx) const; 
   bool isArgListValid() const { return argListValid_; };
-//private:
+private:
+  friend CommandIo;
   enum class Status
   {
     success,
@@ -133,6 +136,9 @@ struct FormatSpecifer
   bool enablePrefixes;
 };
 
+struct CommandEntry;
+class CliInstance;
+
 class CommandIo
 {
 public:
@@ -145,11 +151,13 @@ public:
   size_t scan(char* buffer, size_t bufferLen, const Duration& timeout = Duration::max());
   bool getConfirmation(const char* prompt = nullptr, const Duration& timeout = Duration::max());
   bool waitForContinue(const char* prompt = nullptr, const Duration& timeout = Duration::max());
+  bool ioObjectisValid() const;
   FormatSpecifer fmt;
   const ArgumentContainer args;
-protected:
+private:
+  friend CliInstance;
   Vtt& vtt;
-  CommandIo(const Tokenizer& tokens, Vtt& vtt);
+  CommandIo(const Tokenizer& tokens, const CommandEntry& cmd, Vtt& vtt);
 };
 
 enum class AccessPermission : uint8_t
@@ -221,7 +229,11 @@ struct CommandEntry
  *  @endcode
  *  Command lookup is performed by the CLI on a per-library basis, which requires each library to
  *  have a unique name. Furthermore, library names must start only with alphanumeric characters
- *  (0-9, A-Z, a-z) and cannot contain any spaces.
+ *  (0-9, A-Z, a-z) and cannot contain any spaces or special characters such as *,&,-, etc. Library
+ *  names containing special characters are reserved for the CLI implementation, as such they may be
+ *  accepted but must not be present in application library names. Furthermore, the following
+ *  library names are reserved and cannot be used by an application library:
+ *    -tty -cli -os -hw -jel
  *  */
 struct Library
 {
@@ -233,6 +245,9 @@ struct Library
   CIt begin() const { return CIt{entries}; }
   CIt end() const { return CIt{entries, numberOfEntries}; }
 };
+
+void startSystemCli(std::shared_ptr<os::AsyncIoStream>& io);
+Status registerLibrary(const Library& library);
 
 } /** namespace cli */
 } /** namespace jel */
