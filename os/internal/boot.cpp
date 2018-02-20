@@ -225,6 +225,7 @@ void initializeStandardIo()
       assert(false);
       break;
   }
+  jelStandardIo->write(AnsiFormatter::reset);
   jelStandardIo->write("\r\n"
                        "╔══════════════════════════════════════╗\r\n"
                        "║                 BOOT                 ║\r\n"
@@ -243,7 +244,7 @@ void bootThread(void*)
   hw::gpio::GpioController::initializeGpio();
   initializeStandardIo();
   jelStringPool = std::make_shared<ObjectPool<String, config::stringPoolStringCount>>();
-  cli::startSystemCli();
+  cli::startSystemCli(jelStandardIo);
   /** C++ Static object constructors are called here. */
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
@@ -251,16 +252,15 @@ void bootThread(void*)
   }
   while(true)
   {
-
-
-    std::printf("Apool Stats:\r\nAll: %d Deall: %d: FreeSpace: %d\r\n", 
-      cli::cliPoolIf().totalAllocations(), cli::cliPoolIf().totalDeallocations(), 
-      cli::cliPoolIf().freeSpace_Bytes());
-    std::printf("Heap Stats:\r\nAll: %d Deall: %d: FreeSpace: %d\r\n", 
-      SystemAllocator::systemAllocator()->totalAllocations(), 
-      SystemAllocator::systemAllocator()->totalDeallocations(), 
-      SystemAllocator::systemAllocator()->freeSpace_Bytes());
-    std::printf("String pool strings: %d\r\n", jelStringPool->itemsInPool());
+    ThisThread::sleepfor(Duration::seconds(1));
+    //std::printf("Apool Stats:\r\nAll: %d Deall: %d: FreeSpace: %d\r\n", 
+    //  cli::cliPoolIf().totalAllocations(), cli::cliPoolIf().totalDeallocations(), 
+    //  cli::cliPoolIf().freeSpace_Bytes());
+    //std::printf("Heap Stats:\r\nAll: %d Deall: %d: FreeSpace: %d\r\n", 
+    //  SystemAllocator::systemAllocator()->totalAllocations(), 
+    //  SystemAllocator::systemAllocator()->totalDeallocations(), 
+    //  SystemAllocator::systemAllocator()->freeSpace_Bytes());
+    //std::printf("String pool strings: %d\r\n", jelStringPool->itemsInPool());
   }
 }
 

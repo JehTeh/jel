@@ -119,6 +119,7 @@ private:
   size_t numOfArgs_;
   std::unique_ptr<ArgListItem, void(*)(ArgListItem*)> firstArg;
   ArgumentContainer();
+  ArgumentContainer(const Tokenizer& tokens, const size_t discThresh, const char* params);
   ~ArgumentContainer() noexcept;
   Status generateArgumentList(const Tokenizer& tokens, const size_t discardThreshold, 
     const char* params);
@@ -128,12 +129,12 @@ private:
 
 struct FormatSpecifer
 {
-  os::AnsiFormatter::Color color;
-  bool isBold;
-  bool isUnderlined;
-  bool automaticNewline;
-  bool automaticIndent;
-  bool enablePrefixes;
+  os::AnsiFormatter::Color color = os::AnsiFormatter::Color::white;
+  bool isBold = false;
+  bool isUnderlined = false;
+  bool automaticNewline = true;
+  bool enablePrefixes = false;
+  bool disableAllFormatting = false;
 };
 
 struct CommandEntry;
@@ -151,13 +152,17 @@ public:
   size_t scan(char* buffer, size_t bufferLen, const Duration& timeout = Duration::max());
   bool getConfirmation(const char* prompt = nullptr, const Duration& timeout = Duration::max());
   bool waitForContinue(const char* prompt = nullptr, const Duration& timeout = Duration::max());
-  bool ioObjectisValid() const;
   FormatSpecifer fmt;
+  const CommandEntry* cmdptr;
   const ArgumentContainer args;
 private:
+  static constexpr size_t formatBufferSize = 16;
   friend CliInstance;
-  Vtt& vtt;
+  Vtt& vtt_;
+  const bool isValid_;
+  FormatSpecifer preIoPpConfig_;
   CommandIo(const Tokenizer& tokens, const CommandEntry& cmd, Vtt& vtt);
+  void printFormatters();
 };
 
 enum class AccessPermission : uint8_t

@@ -135,7 +135,6 @@ AsyncIoStream::~AsyncIoStream() noexcept
   //and delete their derived objects accordingly.
 }
 
-constexpr char AnsiFormatter::EscapeSequences::csi[];
 const PrettyPrinter::Config PrettyPrinter::defaultConfig;
 
 PrettyPrinter::PrettyPrinter(const std::shared_ptr<MtWriter>& output, const Config& config) :
@@ -158,6 +157,7 @@ Status PrettyPrinter::print(const char* cStr, size_t length)
   /** Print a newline, optionally with carriage return, and indent to tabLevel. */
   auto printAutoNewline = [&](const bool addCr, const size_t tabLevel)
   {
+    if(!cfg_.automaticNewline) { clen_ = 0; return; }
     if(addCr) { out_->write("\r\n", 2); }
     else { out_->write("\n", 1); }
     clen_ = 0;
@@ -203,18 +203,18 @@ Status PrettyPrinter::print(const char* cStr, size_t length)
         cidnt_ = 0;
         clen_ = 0; //Reset current line length and indentation.
       }
-      else if(cStr[epos] == AnsiFormatter::EscapeSequences::csi[0])
+      else if(cStr[epos] == AnsiFormatter::escSeqPrefix[0])
       {
         //If this is an escape sequence, we need to advance to epos past the end of it. When
         //printed, an escape sequence needs to remain contiguous, and is invisible, so it does not
         //count towards the line length.
-        constexpr size_t csilen = constStringLen(AnsiFormatter::EscapeSequences::csi);
+        constexpr size_t csilen = constStringLen(AnsiFormatter::escSeqPrefix);
         bool isEscapeSeq = true;
         //Verify this is an actual escape sequence, not just an escape character. To do this,
         //check that this matches the escape sequence prefix.
         for(size_t i = 0; i < csilen; i++)
         {
-          if(cStr[epos + i] != AnsiFormatter::EscapeSequences::csi[i])
+          if(cStr[epos + i] != AnsiFormatter::escSeqPrefix[i])
           {
             isEscapeSeq = false;
             break;
@@ -335,6 +335,80 @@ void PrettyPrinter::nextLine()
   }
   clen_ = 0;
 }
+
+constexpr char AnsiFormatter::reset[];
+constexpr char AnsiFormatter::escSeqPrefix[];
+constexpr char AnsiFormatter::Bold::enable[];
+constexpr char AnsiFormatter::Bold::disable[];
+constexpr char AnsiFormatter::Underline::enable[];
+constexpr char AnsiFormatter::Underline::disable[];
+constexpr char AnsiFormatter::SlowBlink::enable[];
+constexpr char AnsiFormatter::SlowBlink::disable[];
+constexpr char AnsiFormatter::ColorCode::black[];
+constexpr char AnsiFormatter::ColorCode::red[];
+constexpr char AnsiFormatter::ColorCode::green[];
+constexpr char AnsiFormatter::ColorCode::yellow[];
+constexpr char AnsiFormatter::ColorCode::blue[];
+constexpr char AnsiFormatter::ColorCode::magenta[];
+constexpr char AnsiFormatter::ColorCode::cyan[];
+constexpr char AnsiFormatter::ColorCode::white[];
+constexpr char AnsiFormatter::ColorCode::default_[];
+constexpr char AnsiFormatter::BrightColorCode::black[];
+constexpr char AnsiFormatter::BrightColorCode::red[];
+constexpr char AnsiFormatter::BrightColorCode::green[];
+constexpr char AnsiFormatter::BrightColorCode::yellow[];
+constexpr char AnsiFormatter::BrightColorCode::blue[];
+constexpr char AnsiFormatter::BrightColorCode::magenta[];
+constexpr char AnsiFormatter::BrightColorCode::cyan[];
+constexpr char AnsiFormatter::BrightColorCode::white[];
+constexpr char AnsiFormatter::BackgroundColorCode::black[];
+constexpr char AnsiFormatter::BackgroundColorCode::red[];
+constexpr char AnsiFormatter::BackgroundColorCode::green[];
+constexpr char AnsiFormatter::BackgroundColorCode::yellow[];
+constexpr char AnsiFormatter::BackgroundColorCode::blue[];
+constexpr char AnsiFormatter::BackgroundColorCode::magenta[];
+constexpr char AnsiFormatter::BackgroundColorCode::cyan[];
+constexpr char AnsiFormatter::BackgroundColorCode::white[];
+constexpr char AnsiFormatter::BackgroundColorCode::default_[];
+constexpr char AnsiFormatter::BrightBackgroundColorCode::black[];
+constexpr char AnsiFormatter::BrightBackgroundColorCode::red[];
+constexpr char AnsiFormatter::BrightBackgroundColorCode::green[];
+constexpr char AnsiFormatter::BrightBackgroundColorCode::yellow[];
+constexpr char AnsiFormatter::BrightBackgroundColorCode::blue[];
+constexpr char AnsiFormatter::BrightBackgroundColorCode::magenta[];
+constexpr char AnsiFormatter::BrightBackgroundColorCode::cyan[];
+constexpr char AnsiFormatter::BrightBackgroundColorCode::white[];
+constexpr char AnsiFormatter::Erase::toEndOfLine[];
+constexpr char AnsiFormatter::Erase::toStartOfLine[];
+constexpr char AnsiFormatter::Erase::entireLine[];
+constexpr char AnsiFormatter::Erase::toEndOfScreen[];
+constexpr char AnsiFormatter::Erase::toStartOfScreen[];
+constexpr char AnsiFormatter::Erase::entireScreen[];
+constexpr char AnsiFormatter::Erase::entireScreenAndScrollback[];
+constexpr char AnsiFormatter::Cursor::up[];
+constexpr char AnsiFormatter::Cursor::down[];
+constexpr char AnsiFormatter::Cursor::forward[];
+constexpr char AnsiFormatter::Cursor::back[];
+constexpr char AnsiFormatter::Cursor::nextLine[];
+constexpr char AnsiFormatter::Cursor::previousLine[];
+constexpr char AnsiFormatter::Cursor::savePosition[];
+constexpr char AnsiFormatter::Cursor::restorePosition[];
+constexpr char AnsiFormatter::Cursor::pageUp[];
+constexpr char AnsiFormatter::Cursor::pageDown[];
+constexpr char AnsiFormatter::Input::upArrowKey[];
+constexpr char AnsiFormatter::Input::downArrowKey[];
+constexpr char AnsiFormatter::Input::rightArrowKey[];
+constexpr char AnsiFormatter::Input::leftArrowKey[];
+constexpr char AnsiFormatter::Input::shiftUpArrowKey[];
+constexpr char AnsiFormatter::Input::shiftDownArrowKey[];
+constexpr char AnsiFormatter::Input::shiftRightArrowKey[];
+constexpr char AnsiFormatter::Input::shiftLeftArrowKey[];
+constexpr char AnsiFormatter::Input::homeKey[];
+constexpr char AnsiFormatter::Input::insertKey[];
+constexpr char AnsiFormatter::Input::deleteKey[];
+constexpr char AnsiFormatter::Input::endKey[];
+constexpr char AnsiFormatter::Input::pageUpKey[];
+constexpr char AnsiFormatter::Input::pageDownKey[];
 
 } /** namespace os */
 } /** namespace jel */

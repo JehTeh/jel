@@ -64,13 +64,14 @@ public:
     size_t receiveBufferLength = 32;
     Duration pollingPeriod =  Duration::milliseconds(50);
   };
+  Vtt(const std::shared_ptr<os::AsyncIoStream>& ios);
+  ~Vtt() noexcept;
   Status write(const char* cStr, size_t length = 0);
   Status write(const char* format, va_list args);
   size_t read(char* buffer, size_t bufferSize, const Duration& timeout = Duration::max()); 
   size_t read(String& string, const Duration& timeout = Duration::max()); 
   Status prefix(const char* cStr);
-  Vtt(const std::shared_ptr<os::AsyncIoStream>& ios);
-  ~Vtt();
+  os::PrettyPrinter& printer() { return printer_; }
 private:
   static constexpr size_t formatScratchBufferSize = 16; 
   class HistoryBuffer
@@ -172,28 +173,34 @@ class CliInstance
 public:
   static constexpr size_t cliThreadStackSize_Words = 512;
   static constexpr os::Thread::Priority cliThreadPriority = os::Thread::Priority::low;
+  static CliInstance* activeCliInstance;
   CliInstance(std::shared_ptr<os::AsyncIoStream>& io);
   ~CliInstance() noexcept;
+  static Status registerLibrary(const Library& lib);
 private:
+  friend ArgumentContainer;
   struct LibrariesListItem
   {
     const Library* libptr;
     std::unique_ptr<LibrariesListItem> next;
+    LibrariesListItem() : libptr(nullptr), next(nullptr) {}
+    LibrariesListItem(const Library& lib) : libptr(&lib), next(nullptr) {}
   };
   AccessPermission aplvl_ = AccessPermission::unrestricted;
   os::Thread* tptr_;
   std::unique_ptr<String> istr_;
   std::unique_ptr<Vtt> vtt;
   LibrariesListItem libList_;
-  Library* alptr_;
-  CommandEntry* acptr_;
-  static CliInstance* activeCliInstance;
+  const Library* alptr_;
+  const CommandEntry* acptr_;
   bool handleSpecialCommands(Tokenizer& tokens);
   bool lookupLibrary(const char* name);
   bool lookupCommand(const char* name);
   int executeCommand(Tokenizer& tokens);
   bool doesAplvlMeetSecRequirment(const AccessPermission& lvlToCheckAgainst);
   void cliThread(std::shared_ptr<os::AsyncIoStream>* io);
+  void printError(const os::AnsiFormatter::Color color, const char* format, ...)
+    __attribute__((format(printf, 3, 4)));
   static void cliThreadDispatcher(std::shared_ptr<os::AsyncIoStream>* io);
 };
 

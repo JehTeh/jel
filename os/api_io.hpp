@@ -52,7 +52,8 @@
 /** C/C++ Standard Library Headers */
 #include <memory>
 #include <string>
-
+#include <cstring>
+#include <cassert>
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
@@ -240,13 +241,6 @@ private:
  * */
 struct AnsiFormatter
 {
-public:
-  /** Escape sequences are prefixed to various formatter operations. */
-  struct EscapeSequences
-  {
-    /** 'Control Sequence Introducer' - CSI escape sequence. */
-    static constexpr char csi[] = "\e[";
-  };
   /** Definitions for special ASCII characters. */
   struct ControlCharacters
   {
@@ -258,244 +252,184 @@ public:
     static constexpr char escape = '\033';
     static constexpr char del = '\177';
   };
-  /** @struct FixedControlSequences
-   *  @brief Pre-generated control sequences, used primarily for handling special input functions
-   *  from a terminal client.
-   *  */
-  struct FixedControlSequences
+  static constexpr char reset[] = "\e[0m";
+  static constexpr char escSeqPrefix[] = "\e[";
+  struct Bold
+  {
+    static constexpr char enable[] = "\e[1m";
+    static constexpr char disable[] = "\e[21m";
+  };
+  struct Underline
+  {
+    static constexpr char enable[] = "\e[4m";
+    static constexpr char disable[] = "\e[24m";
+  };
+  struct SlowBlink
+  {
+    static constexpr char enable[] = "\e[5m";
+    static constexpr char disable[] = "\e[25m";
+  };
+  enum class Color 
+  {
+    black,
+    brightBlack,
+    red,
+    brightRed,
+    green,
+    brightGreen,
+    yellow,
+    brightYellow,
+    blue,
+    brightBlue,
+    magenta,
+    brightMagenta,
+    cyan,
+    brightCyan,
+    white,
+    brightWhite,
+    default_
+  };
+  struct ColorCode
+  {
+    static constexpr char black[] =                 "\e[30m";
+    static constexpr char red[] =                   "\e[31m";
+    static constexpr char green[] =                 "\e[32m";
+    static constexpr char yellow[] =                "\e[33m";
+    static constexpr char blue[] =                  "\e[34m";
+    static constexpr char magenta[] =               "\e[35m";
+    static constexpr char cyan[] =                  "\e[36m";
+    static constexpr char white[] =                 "\e[37m";
+    static constexpr char default_[] =              "\e[39m";
+  };
+  struct BrightColorCode
+  {
+    static constexpr char black[] =                 "\e[90m";
+    static constexpr char red[] =                   "\e[91m";
+    static constexpr char green[] =                 "\e[92m";
+    static constexpr char yellow[] =                "\e[93m";
+    static constexpr char blue[] =                  "\e[94m";
+    static constexpr char magenta[] =               "\e[95m";
+    static constexpr char cyan[] =                  "\e[96m";
+    static constexpr char white[] =                 "\e[97m";
+  };
+  struct BackgroundColorCode
+  {
+    static constexpr char black[] =                 "\e[40m";
+    static constexpr char red[] =                   "\e[41m";
+    static constexpr char green[] =                 "\e[42m";
+    static constexpr char yellow[] =                "\e[43m";
+    static constexpr char blue[] =                  "\e[44m";
+    static constexpr char magenta[] =               "\e[45m";
+    static constexpr char cyan[] =                  "\e[46m";
+    static constexpr char white[] =                 "\e[47m";
+    static constexpr char default_[] =              "\e[49m";
+  };
+  struct BrightBackgroundColorCode
+  {
+    static constexpr char black[] =                 "\e[100m";
+    static constexpr char red[] =                   "\e[101m";
+    static constexpr char green[] =                 "\e[102m";
+    static constexpr char yellow[] =                "\e[103m";
+    static constexpr char blue[] =                  "\e[104m";
+    static constexpr char magenta[] =               "\e[105m";
+    static constexpr char cyan[] =                  "\e[106m";
+    static constexpr char white[] =                 "\e[107m";
+  };
+  struct Erase
+  {
+    static constexpr char toEndOfLine[] = "\e[0K";
+    static constexpr char toStartOfLine[] = "\e[1K";
+    static constexpr char entireLine[] = "\e[2K";
+    static constexpr char toEndOfScreen[] = "\e[0J";
+    static constexpr char toStartOfScreen[] = "\e[1J";
+    static constexpr char entireScreen[] = "\e[2J";
+    static constexpr char entireScreenAndScrollback[] = "\e[3J";
+  };
+  struct Cursor
+  {
+    static constexpr char up[] = "\e[1A";
+    static constexpr char down[] = "\e[1B";
+    static constexpr char forward[] = "\e[1C";
+    static constexpr char back[] = "\e[1D";
+    static constexpr char nextLine[] = "\e[1E";
+    static constexpr char previousLine[] = "\e[1F";
+    static constexpr char savePosition[] = "\e[s";
+    static constexpr char restorePosition[] = "\e[u";
+    static constexpr char pageUp[] = "\e[S";
+    static constexpr char pageDown[] = "\e[T";
+  };
+  struct Input
   {
     static constexpr char upArrowKey[] = "\e[A";
     static constexpr char downArrowKey[] = "\e[B";
     static constexpr char rightArrowKey[] = "\e[C";
     static constexpr char leftArrowKey[] = "\e[D";
-    static constexpr char shiftUpArrowKey[] = "\eOA";
-    static constexpr char shiftDownArrowKey[] = "\eOB";
-    static constexpr char shiftRightArrowKey[] = "\eOC";
-    static constexpr char shiftLeftArrowKey[] = "\eOD";
+    static constexpr char shiftUpArrowKey[] = "\e[OA";
+    static constexpr char shiftDownArrowKey[] = "\e[OB";
+    static constexpr char shiftRightArrowKey[] = "\e[OC";
+    static constexpr char shiftLeftArrowKey[] = "\e[OD";
     static constexpr char homeKey[] = "\e[1~";
     static constexpr char insertKey[] = "\e[2~";
     static constexpr char deleteKey[] = "\e[3~";
     static constexpr char endKey[] = "\e[4~";
     static constexpr char pageUpKey[] = "\e[5~";
     static constexpr char pageDownKey[] = "\e[6~";
-    static constexpr char highlightEnable[] = "\e[5m";
-    static constexpr char highlightDisable[] = "\e[25m";
-    static constexpr char underlineEnable[] = "\e[4m";
-    static constexpr char underlineDisable[] = "\e[24m";
-    static constexpr char eraseLine[] = "\e[2K\r";
-    static constexpr char eraseScreenAfter[] = "\e[0J\r";
-    static constexpr char resetFormatting[] = "\e[0m\r";
-    static constexpr char pageUp[] = "\e[S\r";
-    static constexpr char pageDown[] = "\e[T\r";
   };
-  /** @enum Csi
-   *  @brief 'Control Sequence Introducer' - CSI command sequences. 
-   *
-   *  These sequences generally take the form 
-   *  @code
-   *    EscapeSequences::csi + [n] + Csi::[s]
-   *  @endcode
-   *  where:
-   *    [n] is a numeric paramater modifying the sequence action.
-   *    [s] is the CSI sequence.
-   *  For example, a string composed of the members
-   *  @code
-   *    EscapeSequences::csi + 1 + Csi::CUD
-   *  @endcode
-   *  will send a cursor down (1 line) command.
-   *
-   *  It is recommended to use the csiComposer functions when producing CSI commands, although such
-   *  operations can also be done manually by following the above form if desired. Note that not
-   *  *all* CSI commands take exactly that form, some accept multiple numeric inputs. See the CSI
-   *  section at https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_sequences for details.
-   * */
-  enum class Csi : char
+  static const char* setCursorPosition(char* buffer, const size_t length, size_t hPos)
   {
-    CUU = 'A', /**< Cursor up. */
-    CUD = 'B', /**< Cursor down. */
-    CUF = 'C', /**< Cursor forward. */
-    CUB = 'D', /**< Cursor back. */
-    CNL = 'E', /**< Cursor next line. */
-    CPL = 'F', /**< Cursor previous line. */
-    CHA = 'G', /**< Cursor horizontal absolute. */
-    /** Erase in display.
-     * 0 = Erase from cursor to end of screen.
-     * 1 = Erase from cursor to beginning of screen.
-     * 2 = Clear entire screen. */
-    ED = 'J', 
-    /** Erase in line. Note - cursor position does not change.
-     * 0 = Erase from cursor to EOL.
-     * 1 = Erase from cursor to beginning of line.
-     * 2 = Clear entire line. */
-    EL = 'K',
-    SU = 'S',  /**< Scroll up. */
-    SD = 'T',  /**< Scroll down. */
-    /** Set SGR parameter. See the Sgr structure definition for details. */
-    SGR = 'm', 
-    SCP = 's', /**< Save cursor position. */
-    RCP = 'u' /**< Restore cursor position. */
-  };
-  /** @enum Sgr
-   *  @brief 'Select Graphic Rendition' - SGR parameters used for coloring and formatting text
-   *  output. 
-   *  
-   *  @note
-   *    The SGR parameters should be converted from integer format to character format before use
-   *    (i.e. Sgr::Reset should be printed as '0' not '\0'.)
-   * */
-  enum class Sgr : uint16_t
-  {
-    Reset = 0x30'00, /**< '0' */
-    Bold = 0x31'00, /**< '1' */
-    Faint = 0x32'00, /**< '2' */
-    Italic = 0x33'00, /**< '3' */
-    Underline = 0x34'00, /**< '4' */
-    SlowBlink = 0x35'00, /**< '5' */
-    RapidBlink = 0x36'00, /**< '6' */
-    ReverseVideo = 0x37'00, /**< '7' */
-    Conceal = 0x38'00, /**< '8' */
-    DefaultFont = 0x31'30, /**< '10' */
-    DefaultColorAndIntensity = 0x32'32, /**< '22' */
-    UnderlineOff = 0x32'34, /**< '24' */
-    BlinkOff = 0x32'35, /**< '25' */
-    InverseOff = 0x32'37, /**< '27' */
-    /** Must have the Color code overwrite the final character. */
-    SetForegroundColor = 0x33'30, /**< '30' */
-    DefaultForegroundColor = 0x33'39, /**< '39' */
-    /** Must have the Color code overwrite the final character. */
-    SetBackgroundColor = 0x34'30, /**< '40' */
-    DefaultBackgroundColor = 0x34'39, /**< '49' */
-    Framed = 0x35'31, /**< '51' */
-    Encircled = 0x35'32, /**< '52' */
-    Overlined = 0x35'33, /**< '53' */
-    NotFramedOrEncircled = 0x35'34, /**< '54' */
-    NotOverline = 0x35'35, /**< '55' */
-  };
-  /** @enum Color
-   *  @brief ANSI color codes that can be used with SGR commands. 
-   *  */
-  enum class Color : char
-  {
-    black = '0',
-    red = '1',
-    green = '2',
-    yellow = '3',
-    blue = '4',
-    magenta = '5',
-    cyan = '6',
-    white = '7' 
-  };
-  /** @enum EraseFunction
-   *  @brief A list of erase functions for use with the eraseIn[xxx] functions.
-   * */
-  enum class EraseFunction : char 
-  {
-    toEndOf = '0',
-    toBeginningOf = '1',
-    all = '2'
-  };
-  /** 
-   *  Writes an ANSI CSI sequence to a buffer that sets the cursor position using the given Csi
-   *  cursor control sequence. Optionally, an offset value can be provided to move the cursor
-   *  position multiple Csi operations worth of distance.
-   * */
-  String& cursorPosition(String& buffer, const Csi& controlSequence, uint8_t offset = 1)
-  {
-    buffer = EscapeSequences::csi;
-    buffer.append(std::to_string(offset));
-    buffer += static_cast<char>(controlSequence);
+    assert(length >= 8); assert(hPos < 999); if(hPos > 999) { hPos = 999; }
+    std::snprintf(buffer, length, "\e[%uG", hPos);
     return buffer;
   }
-  /** 
-   *  Writes an ANSI CSI sequence to a buffer that erases all or some of the screen from the current
-   *  cursor position.
-   * */
-  String& eraseInScreen(String& buffer, const EraseFunction function)
+  static const char* setForegroundColor(const Color color)
   {
-    buffer = EscapeSequences::csi;
-    buffer += static_cast<char>(function);
-    buffer += static_cast<char>(Csi::ED);
-    return buffer;
-  }
-  /** 
-   *  Writes an ANSI CSI sequence to a buffer that erases all or some of the current line the cursor
-   *  is on. Erasing is done relative to the cursor position within the line.
-   * */
-  String& eraseInLine(String& buffer, const EraseFunction function)
-  {
-    buffer = EscapeSequences::csi;
-    buffer += static_cast<char>(function);
-    buffer += static_cast<char>(Csi::EL);
-    return buffer;
-  }
-  /** 
-   *  Writes an ANSI CSI sequence to a buffer that sets the foreground/text color to the given
-   *  value.
-   * */
-  String& setForegroundColor(String& buffer, const Color color)
-  {
-    buffer = EscapeSequences::csi;
-    char fgCode = static_cast<uint16_t>(Sgr::SetForegroundColor) >> 8;
-    buffer += fgCode;
-    buffer += static_cast<char>(color);
-    buffer += static_cast<char>(Csi::SGR);
-    return buffer;
-  }
-  /** 
-   *  Writes an ANSI CSI sequence to a buffer that sets the background/screen color to the given
-   *  value.
-   * */
-  String& setBackgroundColor(String& buffer, const Color color)
-  {
-    buffer = EscapeSequences::csi;
-    char fgCode = static_cast<uint16_t>(Sgr::SetBackgroundColor) >> 8;
-    buffer += fgCode;
-    buffer += static_cast<char>(color);
-    buffer += static_cast<char>(Csi::SGR);
-    return buffer;
-  }
-  /** 
-   *  Writes an ANSI CSI sequence to a buffer that either enables or disables a 'bold' effect on
-   *  text.
-   * */
-  String& setBold(String& buffer, const bool enable)
-  {
-    char sgr[3];
-    buffer = EscapeSequences::csi;
-    if(enable) 
-    { 
-      sgr[0] = static_cast<uint16_t>(Sgr::Bold) >> 8; sgr[1] = '\0';
+    switch(color)
+    {
+      case Color::black: return ColorCode::black;
+      case Color::brightBlack: return BrightColorCode::black;
+      case Color::red: return ColorCode::red;
+      case Color::brightRed: return BrightColorCode::red;
+      case Color::green: return ColorCode::green;
+      case Color::brightGreen: return BrightColorCode::green;
+      case Color::yellow: return ColorCode::yellow;
+      case Color::brightYellow: return BrightColorCode::yellow;
+      case Color::blue: return ColorCode::blue;
+      case Color::brightBlue: return BrightColorCode::blue;
+      case Color::magenta: return ColorCode::magenta;
+      case Color::brightMagenta: return BrightColorCode::magenta;
+      case Color::cyan: return ColorCode::cyan;
+      case Color::brightCyan: return BrightColorCode::cyan;
+      case Color::white: return ColorCode::white;
+      case Color::brightWhite: return BrightColorCode::white;
+      case Color::default_: return ColorCode::default_;
     }
-    else 
-    { 
-      sgr[0] = static_cast<uint16_t>(Sgr::DefaultColorAndIntensity) >> 8; 
-      sgr[1] = static_cast<uint16_t>(Sgr::DefaultColorAndIntensity) & 0xFF; sgr[2] = '\0';
-    }
-    buffer += sgr; buffer += static_cast<char>(Csi::SGR);
-    return buffer;
-  };
-  /** 
-   *  Writes an ANSI CSI sequence to a buffer that either enables or disables a 'underline' effect
-   *  on text.
-   * */
-  String& setUnderline(String& buffer, const bool enable)
+    return nullptr;
+  }
+  static const char* setBackgroundColor(const Color color)
   {
-    char sgr[3];
-    buffer = EscapeSequences::csi;
-    if(enable) 
-    { 
-      sgr[0] = static_cast<uint16_t>(Sgr::Underline) >> 8; sgr[1] = '\0';
+    switch(color)
+    {
+      case Color::black: return BackgroundColorCode::black;
+      case Color::brightBlack: return BrightBackgroundColorCode::black;
+      case Color::red: return BackgroundColorCode::red;
+      case Color::brightRed: return BrightBackgroundColorCode::red;
+      case Color::green: return BackgroundColorCode::green;
+      case Color::brightGreen: return BrightBackgroundColorCode::green;
+      case Color::yellow: return BackgroundColorCode::yellow;
+      case Color::brightYellow: return BrightBackgroundColorCode::yellow;
+      case Color::blue: return BackgroundColorCode::blue;
+      case Color::brightBlue: return BrightBackgroundColorCode::blue;
+      case Color::magenta: return BackgroundColorCode::magenta;
+      case Color::brightMagenta: return BrightBackgroundColorCode::magenta;
+      case Color::cyan: return BackgroundColorCode::cyan;
+      case Color::brightCyan: return BrightBackgroundColorCode::cyan;
+      case Color::white: return BackgroundColorCode::white;
+      case Color::brightWhite: return BrightBackgroundColorCode::white;
+      case Color::default_: return BackgroundColorCode::default_;
     }
-    else 
-    { 
-      sgr[0] = static_cast<uint16_t>(Sgr::UnderlineOff) >> 8; 
-      sgr[1] = static_cast<uint16_t>(Sgr::UnderlineOff) & 0xFF; sgr[2] = '\0';
-    }
-    buffer += sgr; buffer += static_cast<char>(Csi::SGR);
-    return buffer;
-  };
+    return nullptr;
+  }
 };
-
 /** @class PrettyPrinter
  *  @brief Provides an automatic output formatting interface for printing to a CLI.
  *  
@@ -514,6 +448,7 @@ public:
     size_t maxIndentDepth = 4;
     bool stripFormatters = false;
     bool carriageReturnNewline = true;
+    bool automaticNewline = true;
   };
   static const Config defaultConfig;
   PrettyPrinter(const std::shared_ptr<MtWriter>& output, const Config& config = defaultConfig);
@@ -522,7 +457,7 @@ public:
   /** Prints a null-terminated C-string. If a length parameter is provided, a call to std::strlen is
    * saved. The length parameter should be identical to what is returned by std::strlen(cStr); */
   Status print(const char* cStr, size_t length = 0);
-  Config& editConfig() {return cfg_; }
+  Config& editConfig() { return cfg_; }
   /** Automatically output a newline sequence and reset the current line length to zero. */
   void nextLine();
 private:

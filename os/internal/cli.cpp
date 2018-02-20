@@ -44,8 +44,8 @@ using CliArgumentPool =
 
 std::unique_ptr<CliArgumentPool> argumentPool;
 
-int cliCmdHelp(CommandIo& io);
-int cliCmdLogin(CommandIo& io);
+int32_t cliCmdHelp(CommandIo& io);
+int32_t cliCmdLogin(CommandIo& io);
 
 const CommandEntry cliCommandArray[] =
 {
@@ -96,18 +96,22 @@ void startSystemCli(std::shared_ptr<os::AsyncIoStream>& io)
 
 Status registerLibrary(const Library& library)
 {
-
+  return CliInstance::registerLibrary(library);
 }
 
-
 Vtt::Vtt(const std::shared_ptr<os::AsyncIoStream>& ios) : ios_(ios), printer_(ios),
-  wb_(), rxs_(), fmts_(new char[formatScratchBufferSize])
+  wb_(), rxs_(), wrtbuf_(new char[cfg_.maxEntryLength]), fmts_(new char[formatScratchBufferSize])
 {
   assert(cfg_.maxEntryLength > 80);
   assert(cfg_.receiveBufferLength > 16);
   wb_.reserve(cfg_.maxEntryLength);
   rxs_.reserve(cfg_.receiveBufferLength);
   pfx_ = "";
+}
+
+Vtt::~Vtt() noexcept
+{
+
 }
 
 
@@ -120,7 +124,12 @@ Status Vtt::write(const char* cStr, size_t length)
 Status Vtt::write(const char* format, va_list args) 
 {
   int ret = vsnprintf(wrtbuf_.get(), config::cliMaximumStringLength, format, args);
+  if(ret == 0)
+  {
+
+  }
   printer_.print(wrtbuf_.get());
+  return Status::success;
 }
 
 size_t Vtt::read(String& string, const Duration& timeout)
@@ -144,7 +153,9 @@ size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
     {
       if((SteadyClock::now() - tStart) >= timeout)
       {
-        ios_->write(os::AnsiFormatter::FixedControlSequences::eraseLine);
+        auto lg = ios_->lockOutput();
+        ios_->write(os::AnsiFormatter::Erase::entireLine);
+        ios_->write('\r');
         buffer[0] = '\0'; return 0;
       }
     }
@@ -159,7 +170,9 @@ size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
       return wb_.length() > bufferSize ? bufferSize : wb_.length();
     }
   }
-  ios_->write(os::AnsiFormatter::FixedControlSequences::eraseLine);
+  auto lg = ios_->lockOutput();
+  ios_->write(os::AnsiFormatter::Erase::entireLine);
+  ios_->write('\r');
   buffer[0] = '\0'; return 0;
 }
 
@@ -230,7 +243,7 @@ size_t Vtt::handleControlCharacters()
 
 bool Vtt::parseEscapeSequence(const size_t sp)
 {
-  using efmt = os::AnsiFormatter::FixedControlSequences;
+  using efmt = os::AnsiFormatter::Input;
   constexpr size_t npos = std::string::npos; 
   if(rxs_.find(efmt::leftArrowKey, sp) != npos)
   {
@@ -293,11 +306,11 @@ bool Vtt::parseEscapeSequence(const size_t sp)
   }
   else if(rxs_.find(efmt::pageUpKey, sp) != npos)
   {
-    ios_->write(efmt::pageUp);
+    ios_->write(os::AnsiFormatter::Cursor::pageUp);
   }
   else if(rxs_.find(efmt::pageDownKey, sp) != npos)
   {
-    ios_->write(efmt::pageDown);
+    ios_->write(os::AnsiFormatter::Cursor::pageDown);
   }
   else if((rxs_.find(efmt::upArrowKey, sp) != npos) ||
     (rxs_.find(efmt::shiftUpArrowKey, sp) != npos))
@@ -414,15 +427,15 @@ void Vtt::regenerateOuput()
   }
   using fmt = os::AnsiFormatter;
   auto lg = ios_->lockOutput();
-  ios_->write(fmt::FixedControlSequences::eraseLine); //Erase the line.
-  ios_->write(fmt::FixedControlSequences::resetFormatting); //Clear any active formatting.
+  ios_->write(fmt::Erase::entireLine); //Erase the line.
+  ios_->write('\r'); //Erase the line.
+  ios_->write(fmt::reset); //Clear any active formatting.
   assert(pfx_); //Prefix string cannot be null!
   if(pfx_[0] != '\0') { ios_->write(pfx_); } //Print the prefix string.  
   if(imode_)
   {
-    std::sprintf(fmts_.get(), "%s100%c", fmt::EscapeSequences::csi, 
-      static_cast<char>(fmt::Csi::SGR));
-    ios_->write(fmts_.get()); //Highlight line background if in insert mode.
+    ios_->write(fmt::setBackgroundColor(fmt::Color::brightBlack)); //Highlight line background if 
+    //in insert mode.
   }
   else
   {
@@ -434,9 +447,9 @@ void Vtt::regenerateOuput()
     {
       if(i == cpos_)
       {
-        ios_->write(fmt::FixedControlSequences::underlineEnable);
+        ios_->write(fmt::Underline::enable);
         ios_->write(wb_[i]);
-        ios_->write(fmt::FixedControlSequences::underlineDisable);
+        ios_->write(fmt::Underline::disable);
       }
       else
       {
@@ -449,13 +462,13 @@ void Vtt::regenerateOuput()
       {
         if(i == sst_)
         {
-          ios_->write(fmt::FixedControlSequences::highlightEnable);
+          ios_->write(fmt::SlowBlink::enable);
           ios_->write(wb_[i]);
         }
         else if(i == cpos_)
         {
           ios_->write(wb_[i]);
-          ios_->write(fmt::FixedControlSequences::highlightDisable);
+          ios_->write(fmt::SlowBlink::disable);
         }
         else
         {
@@ -467,12 +480,12 @@ void Vtt::regenerateOuput()
         if(i == cpos_)
         {
           ios_->write(wb_[i]);
-          ios_->write(fmt::FixedControlSequences::highlightEnable);
+          ios_->write(fmt::SlowBlink::enable);
         }
         else if(i == sst_)
         {
           ios_->write(wb_[i]);
-          ios_->write(fmt::FixedControlSequences::highlightDisable);
+          ios_->write(fmt::SlowBlink::disable);
         }
         else
         {
@@ -483,9 +496,9 @@ void Vtt::regenerateOuput()
       {
         if(i == sst_)
         {
-          ios_->write(fmt::FixedControlSequences::highlightEnable);
+          ios_->write(fmt::SlowBlink::enable);
           ios_->write(wb_[i]);
-          ios_->write(fmt::FixedControlSequences::highlightDisable);
+          ios_->write(fmt::SlowBlink::disable);
         }
         else
         {
@@ -498,7 +511,7 @@ void Vtt::regenerateOuput()
       ios_->write(wb_[i]);
     }
   }
-  ios_->write(fmt::FixedControlSequences::resetFormatting); //Clear any active formatting.
+  ios_->write(fmt::reset); //Clear any active formatting.
   std::sprintf(fmts_.get(), "\e[%dG", cpos_ + std::strlen(pfx_) + 1);
   ios_->write(fmts_.get()); //Set cursor position.
 }
@@ -725,6 +738,13 @@ ArgumentContainer::ArgumentContainer() : argListValid_(false), numOfArgs_(0),
 {
 }
 
+ArgumentContainer::ArgumentContainer(const Tokenizer& tokens,
+  const size_t discardThreshold, const char* params) : argListValid_(false), numOfArgs_(0), 
+  firstArg{nullptr, nullptr}
+{
+  generateArgumentList(tokens, discardThreshold, params);
+}
+
 ArgumentContainer::~ArgumentContainer() noexcept
 {
 }
@@ -732,21 +752,30 @@ ArgumentContainer::~ArgumentContainer() noexcept
 ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenizer& tokens,
   const size_t discardThreshold, const char* params)
 {
+  using Color = os::AnsiFormatter::Color;
   ParameterString ps(params);
   if(discardThreshold > tokens.count())
   {
+    CliInstance::activeCliInstance->printError(Color::red,
+      "Insufficient arguments passed to command.\r\n");
     return Status::insufficientArguments;
   }
   if((tokens.count() - discardThreshold) > ps.totalCount())
   {
+    CliInstance::activeCliInstance->printError(Color::red,
+      "Too many arguments passed to command.\r\n");
     return Status::tooManyArguments;
   }
   if((tokens.count() - discardThreshold) < (ps.totalCount() - ps.optionalCount()))
   {
+    CliInstance::activeCliInstance->printError(Color::red,
+      "Insufficient arguments passed to command.\r\n");
     return Status::insufficientArguments;
   }
   if((tokens.count() - discardThreshold) >= config::cliMaximumArguments)
   {
+    CliInstance::activeCliInstance->printError(Color::red,
+      "The global maximum argument limit has been exceeded processing this command.\r\n");
     return Status::maxGlobalArgsExceeded;
   }
   for(size_t i = 0; i < (tokens.count() - discardThreshold); i++)
@@ -757,8 +786,19 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
       case Argument::Type::int64_t_:
         {
           int64_t temp;
+          if(std::strchr(tokens[i + discardThreshold], '.') != nullptr)
+          {
+            CliInstance::activeCliInstance->printError(Color::red,
+              "Failed to parse argument %d into a signed integer. Argument appears to be a "
+              "float.\r\n", discardThreshold + i);
+            return Status::argumentTypeMismatch;
+          }
           if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
           {
+            //Currently this error reporting is a dirty hack. Will fix after tidying exceptions so
+            //a more descriptive error can be pushed up to the CliInstance for reporting there.
+            CliInstance::activeCliInstance->printError(Color::red,
+              "Failed to parse argument %d into a signed integer.\r\n", discardThreshold + i);
             return Status::argumentTypeMismatch;
           }
           appendListItem(temp);
@@ -767,8 +807,24 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
       case Argument::Type::uint64_t_:
         {
           uint64_t temp;
+          if(std::strchr(tokens[i + discardThreshold], '.') != nullptr)
+          {
+            CliInstance::activeCliInstance->printError(Color::red,
+              "Failed to parse argument %d into a signed integer. Argument appears to be a "
+              "float.\r\n", discardThreshold + i);
+            return Status::argumentTypeMismatch;
+          }
+          if(std::strchr(tokens[i + discardThreshold], '-') != nullptr)
+          {
+            CliInstance::activeCliInstance->printError(Color::red,
+              "Failed to parse argument %d into a signed integer. Argument appears to be a "
+              "negative number.\r\n", discardThreshold + i);
+            return Status::argumentTypeMismatch;
+          }
           if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
           {
+            CliInstance::activeCliInstance->printError(Color::red,
+              "Failed to parse argument %d into an unsigned integer.\r\n", discardThreshold + i);
             return Status::argumentTypeMismatch;
           }
           appendListItem(temp);
@@ -779,6 +835,8 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
           double temp;
           if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
           {
+            CliInstance::activeCliInstance->printError(Color::red,
+              "Failed to parse argument %d into a floating point value.\r\n", discardThreshold + i);
             return Status::argumentTypeMismatch;
           }
           appendListItem(temp);
@@ -789,7 +847,8 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
           auto scont = os::jelStringPool->acquire(Duration::zero());
           if(scont.stored() == nullptr)
           {
-            //Failed to grab a string from the global pool.
+            CliInstance::activeCliInstance->printError(Color::red,
+              "Failed while parsing string argument. No free string memory available.\r\n");
             return Status::noFreeStringsAvailable;
           }
           String& s = *scont.stored();
@@ -799,7 +858,8 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
         break;
       case Argument::Type::invalid:
       default:
-        //
+        CliInstance::activeCliInstance->printError(Color::red,
+          "The parameter string for this command is invalid and cannot be parsed.\r\n");
         break;
     }
   }
@@ -847,6 +907,8 @@ const Argument& ArgumentContainer::operator[](size_t index) const
   return *aptr;
 }
 
+CliInstance* CliInstance::activeCliInstance;
+
 CliInstance::CliInstance(std::shared_ptr<os::AsyncIoStream>& io) 
 {
   if(activeCliInstance == nullptr)
@@ -854,13 +916,30 @@ CliInstance::CliInstance(std::shared_ptr<os::AsyncIoStream>& io)
     //Initialize the argument memory pool used by the CLI.
     argumentPool = std::make_unique<CliArgumentPool>();
     activeCliInstance = this;
+    libList_.libptr = &cliCmdLib;
     tptr_ = new os::Thread(reinterpret_cast<os::Thread::FunctionSignature>(&cliThreadDispatcher), 
       &io, "CLI", cliThreadStackSize_Words, cliThreadPriority);
   }
   else
   {
-
+    assert(false); //Only one CLI should be active.
   }
+}
+
+Status CliInstance::registerLibrary(const Library& lib)
+{
+  if(activeCliInstance == nullptr) { return Status::failure; }
+  LibrariesListItem* lliPtr = &activeCliInstance->libList_;
+  while(lliPtr != nullptr)
+  {
+    lliPtr = lliPtr->next.get();
+    if(lliPtr->next == nullptr)
+    {
+      lliPtr->next = std::make_unique<LibrariesListItem>(lib);
+      return Status::success;
+    }
+  }
+  return Status::failure;
 }
 
 void CliInstance::cliThreadDispatcher(std::shared_ptr<os::AsyncIoStream>* io)
@@ -872,17 +951,18 @@ void CliInstance::cliThread(std::shared_ptr<os::AsyncIoStream>* io)
 {
   istr_ = std::make_unique<String>();
   istr_->reserve(config::cliMaximumStringLength);
-  vtt = std::make_unique<Vtt>(*io);
   //Instantiate a visual text terminal on the I/O interface. This will be used for all I/O performed
   //by the CLI.
+  vtt = std::make_unique<Vtt>(*io);
   //On startup, the CLI will always default to the minimum permission level.
+  aplvl_ = AccessPermission::unrestricted;
   while(true)
   {
     //Wait for some argument input.
     while(true)
     {
       vtt->write("CLI awaiting input.\r\n");
-      if(vtt->read(istr_) > 0)
+      if(vtt->read(*istr_) > 0)
       {
         break;
       }
@@ -891,8 +971,20 @@ void CliInstance::cliThread(std::shared_ptr<os::AsyncIoStream>* io)
     Tokenizer tokens(*istr_);
     //Search for and handle any special commands.
     if(handleSpecialCommands(tokens)) { continue; }
+    if(tokens.count() < 1)
+    {
+      printError(os::AnsiFormatter::Color::red, 
+        "Commands must include a library and command name. Enter 'cli help' for more "
+        "information.\r\n"); continue;
+    }
     //Search for the library name. If not found, restart loop and await new input.
     if(!lookupLibrary(tokens[0])) { continue; }
+    if(tokens.count() < 2)
+    {
+      printError(os::AnsiFormatter::Color::red, 
+        "Commands must include a library and command name. Enter 'cli help' for more "
+        "information.\r\n"); continue;
+    }
     //Search for the command name. If not found, restart loop and await new input.
     if(!lookupCommand(tokens[1])) { continue; }
     //Parse out arguments from tokens list and if successful execute the command.
@@ -911,17 +1003,20 @@ bool CliInstance::lookupLibrary(const char* name)
 {
   //Perform a lookup in the registered libraries list.
   assert(name);
+  alptr_ = nullptr;
   LibrariesListItem* lli = &libList_;
   while(lli != nullptr)
   {
     if(std::strcmp(lli->libptr->name, name) == 0) { break; }
-    else { lli = lli->next; }
+    else { lli = lli->next.get(); }
   }
   if(lli == nullptr)
   {
-    //TODO err
+    printError(os::AnsiFormatter::Color::red, 
+      "Failed to find library '%s'. Try 'cli help' to list available libraries.\r\n", name);
     return false;
   }
+  alptr_ = lli->libptr;
   return true;
 }
 
@@ -929,6 +1024,7 @@ bool CliInstance::lookupCommand(const char* name)
 {
   //Lookup the command name in the active library.
   assert(alptr_); assert(name);
+  acptr_ = nullptr;
   const CommandEntry* cptr = nullptr;
   for(const auto& cmd : *alptr_)
   {
@@ -943,9 +1039,12 @@ bool CliInstance::lookupCommand(const char* name)
   }
   if(cptr == nullptr)
   {
-    //TODO err
+    printError(os::AnsiFormatter::Color::red, 
+      "Failed to find command '%s' in library '%s'. Try 'cli help %s' to list available commands"
+      " within the '%s library'.\r\n", name, alptr_->name, alptr_->name, alptr_->name);
     return false;
   }
+  acptr_ = cptr;
   return true;
 }
 
@@ -955,40 +1054,96 @@ int CliInstance::executeCommand(Tokenizer& tokens)
   //container, and execute the command if the IO object is valid.
   assert(acptr_); 
   CommandIo cmdIo(tokens, *acptr_, *vtt);
-  if(!cmdIo.ioObjectisValid())
+  if(!cmdIo.isValid_)
   {
-    //TODO err, io object creation failure
     return 1;
   }
+  int32_t cmdRet = 1;
   try
   {
-    if(acptr_->function(cmdIo) != 0)
+    cmdRet = acptr_->function(cmdIo);
+    if(cmdRet != 0)
     {
-      //TODO err, report command status code.
+      printError(os::AnsiFormatter::Color::yellow,
+        "Warning: Command returned status code %ld\r\n", cmdRet);
     }
   }
   catch(...)
   {
-    //TODO catch specalized exceptions
+    printError(os::AnsiFormatter::Color::yellow,
+      "Warning: Command threw an exception!\r\n");
   }
+  return cmdRet;
+}
+
+bool CliInstance::doesAplvlMeetSecRequirment(const AccessPermission& lvlToCheckAgainst)
+{
+  auto reqLvl = static_cast<uint8_t>(lvlToCheckAgainst);
+  auto curLvl = static_cast<uint8_t>(aplvl_);
+  if(reqLvl <= curLvl)
+  {
+    return true;
+  }
+  return false;
+}
+
+void CliInstance::printError(const os::AnsiFormatter::Color color, const char* format, ...)
+{
+  vtt->write(os::AnsiFormatter::setForegroundColor(color));
+  va_list args;
+  va_start(args, format);
+  vtt->write(format, args);
+  va_end(args);
+  vtt->write(os::AnsiFormatter::reset);
+}
+
+CommandIo::CommandIo(const Tokenizer& tokens, const CommandEntry& cmd, Vtt& vtt) :
+  fmt(), cmdptr(&cmd), args(tokens, 2, cmd.parameters), vtt_(vtt), isValid_(args.isArgListValid())
+{
+  preIoPpConfig_.disableAllFormatting = vtt_.printer().editConfig().stripFormatters;
+  preIoPpConfig_.automaticNewline = vtt_.printer().editConfig().automaticNewline;
+}
+
+CommandIo::~CommandIo() noexcept
+{
+  vtt_.printer().editConfig().stripFormatters = preIoPpConfig_.disableAllFormatting;
+  vtt_.printer().editConfig().automaticNewline = preIoPpConfig_.automaticNewline;
 }
 
 Status CommandIo::print(const char* format, ...)
 {
+  printFormatters(); 
   va_list args;
   va_start(args, format);
-  vtt.write(format, args);
+  Status st = vtt_.write(format, args);
   va_end(args);
+  vtt_.write(os::AnsiFormatter::reset);
+  return st;
 }
 
-int cliCmdHelp(CommandIo& io)
+void CommandIo::printFormatters()
 {
-  io.print("TODO HELP");
+  using afmtr = os::AnsiFormatter;
+  vtt_.printer().editConfig().stripFormatters= fmt.disableAllFormatting;
+  if(fmt.disableAllFormatting) { return; }
+  vtt_.printer().editConfig().automaticNewline = fmt.automaticNewline;
+  vtt_.write(afmtr::setForegroundColor(fmt.color));
+  if(fmt.isBold) { vtt_.write(afmtr::Bold::enable); }
+  else { vtt_.write(afmtr::Bold::disable); }
+  if(fmt.isUnderlined) { vtt_.write(afmtr::Underline::enable); }
+  else { vtt_.write(afmtr::Underline::disable); }
 }
 
-int cliCmdLogin(CommandIo& io)
+int32_t cliCmdHelp(CommandIo& io)
 {
-  io.print("TODO LOGIN");
+  io.print("TODO HELP\r\n");
+  return 0;
+}
+
+int32_t cliCmdLogin(CommandIo& io)
+{
+  io.print("TODO LOGIN\r\n");
+  return 0;
 }
 
 } /** namespace cli */
