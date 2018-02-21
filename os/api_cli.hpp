@@ -90,6 +90,7 @@ private:
 };
 
 class CommandIo;
+class CliInstance;
 
 class ArgumentContainer
 {
@@ -117,12 +118,14 @@ private:
   };
   bool argListValid_;
   size_t numOfArgs_;
+  CliInstance* cli_;
   std::unique_ptr<ArgListItem, void(*)(ArgListItem*)> firstArg;
   ArgumentContainer();
-  ArgumentContainer(const Tokenizer& tokens, const size_t discThresh, const char* params);
-  ~ArgumentContainer() noexcept;
-  Status generateArgumentList(const Tokenizer& tokens, const size_t discardThreshold, 
+  ArgumentContainer(CliInstance* cli, const Tokenizer& tokens, const size_t discThresh,
     const char* params);
+  ~ArgumentContainer() noexcept;
+  Status generateArgumentList(CliInstance* cli, const Tokenizer& tokens,
+    const size_t discardThreshold, const char* params);
   template<typename T>
   ArgListItem& appendListItem(T&& argval);
 };
@@ -152,6 +155,9 @@ public:
   size_t scan(char* buffer, size_t bufferLen, const Duration& timeout = Duration::max());
   bool getConfirmation(const char* prompt = nullptr, const Duration& timeout = Duration::max());
   bool waitForContinue(const char* prompt = nullptr, const Duration& timeout = Duration::max());
+  int64_t readSignedInt(const char* prompt = nullptr, const Duration& timeout = Duration::max());
+  uint64_t readUnsignedInt(const char* prompt = nullptr, const Duration& timeout = Duration::max());
+  double readDouble(const char* prompt = nullptr, const Duration& timeout = Duration::max());
   FormatSpecifer fmt;
   const CommandEntry* cmdptr;
   const ArgumentContainer args;
@@ -159,9 +165,10 @@ private:
   static constexpr size_t formatBufferSize = 16;
   friend CliInstance;
   Vtt& vtt_;
+  CliInstance* cli_;
   const bool isValid_;
   FormatSpecifer preIoPpConfig_;
-  CommandIo(const Tokenizer& tokens, const CommandEntry& cmd, Vtt& vtt);
+  CommandIo(CliInstance* cli, const Tokenizer& tokens, const CommandEntry& cmd, Vtt& vtt);
   void printFormatters();
 };
 

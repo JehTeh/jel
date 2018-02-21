@@ -68,6 +68,8 @@ public:
   ~Vtt() noexcept;
   Status write(const char* cStr, size_t length = 0);
   Status write(const char* format, va_list args);
+  Status colorizedWrite(const os::AnsiFormatter::Color color, const char* format, ...)
+    __attribute__((format(printf, 3, 4)));
   size_t read(char* buffer, size_t bufferSize, const Duration& timeout = Duration::max()); 
   size_t read(String& string, const Duration& timeout = Duration::max()); 
   Status prefix(const char* cStr);
@@ -78,16 +80,21 @@ private:
   {
   public:
     HistoryBuffer();
-    String& currentBuffer();
-    String& operator++();
-    String& operator--();
-    String& operator++(int index);
-    String& operator--(int index);
+    String& currentViewPos();
+    String& currentWritePos();
+    String& oldestWritePos();
+    void resetViewPos();
+    void nextViewPos();
+    void prevViewPos();
+    void nextWritePos();
   private:
     size_t bpos_;
+    size_t vpos_;
     os::JelStringPool::ObjectContainer buffers_[config::cliHistoryDepth];
-    void nextpos();
-    void prevpos();
+    void nextBpos();
+    void prevBpos();
+    void nextVpos();
+    void prevVpos();
   };
   std::shared_ptr<os::AsyncIoStream> ios_;
   os::PrettyPrinter printer_;
@@ -171,9 +178,9 @@ private:
 class CliInstance
 {
 public:
+  static constexpr os::AnsiFormatter::Color defaultErrorColor = os::AnsiFormatter::Color::brightRed;
   static constexpr size_t cliThreadStackSize_Words = 512;
   static constexpr os::Thread::Priority cliThreadPriority = os::Thread::Priority::low;
-  static CliInstance* activeCliInstance;
   CliInstance(std::shared_ptr<os::AsyncIoStream>& io);
   ~CliInstance() noexcept;
   static Status registerLibrary(const Library& lib);
@@ -189,7 +196,7 @@ private:
   AccessPermission aplvl_ = AccessPermission::unrestricted;
   os::Thread* tptr_;
   std::unique_ptr<String> istr_;
-  std::unique_ptr<Vtt> vtt;
+  std::unique_ptr<Vtt> vtt_;
   LibrariesListItem libList_;
   const Library* alptr_;
   const CommandEntry* acptr_;
@@ -199,8 +206,7 @@ private:
   int executeCommand(Tokenizer& tokens);
   bool doesAplvlMeetSecRequirment(const AccessPermission& lvlToCheckAgainst);
   void cliThread(std::shared_ptr<os::AsyncIoStream>* io);
-  void printError(const os::AnsiFormatter::Color color, const char* format, ...)
-    __attribute__((format(printf, 3, 4)));
+  static CliInstance* activeCliInstance;
   static void cliThreadDispatcher(std::shared_ptr<os::AsyncIoStream>* io);
 };
 

@@ -138,7 +138,6 @@ class ScopeGuard<F> ToScopeGuard(const Fentry& onEntry, const F& onExit)
   return ScopeGuard<F>(onEntry, onExit);
 }
 
-
 namespace os
 {
   enum class Status

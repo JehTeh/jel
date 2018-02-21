@@ -54,6 +54,15 @@ namespace os
 class AllocatorStatisticsInterface
 {
 public:
+  /** @struct AllocatorsTableEntry
+   *  @brief Linked list structure that can be iterated through to view all registered system
+   *  allocators.
+   * */
+  struct AllocatorsTableEntry
+  {
+    AllocatorsTableEntry* next;
+    AllocatorStatisticsInterface* statsIf;
+  };
   /** Allocator names longer than this (including a NULL terminator) will be truncated. */
   static constexpr size_t maxNameLength_chars = 32;
   /** Registers the allocator within the system allocators table. */
@@ -65,15 +74,12 @@ public:
   virtual size_t totalSpace_Bytes() const noexcept = 0;
   virtual size_t totalAllocations() const noexcept { return totalAllocations_; }
   virtual size_t totalDeallocations() const noexcept { return totalDeallocations_; }
+  virtual const char* name() const noexcept { return name_; }
+  static const AllocatorsTableEntry* systemAllocator() { return allocatorTableStart_; }
 protected:
   void recordAllocation() noexcept { totalAllocations_++; };
   void recordDeallocation() noexcept { totalDeallocations_++; };
 private:
-  struct AllocatorsTableEntry
-  {
-    AllocatorsTableEntry* next;
-    AllocatorStatisticsInterface* statsIf;
-  };
   std::atomic<size_t> totalAllocations_;
   std::atomic<size_t> totalDeallocations_;
   char name_[maxNameLength_chars];
@@ -150,6 +156,7 @@ public:
   template<typename ...Args>
   ObjectPool(Args&& ...args)
   {
+    minItms_ = count;
     for(size_t i = 0; i < count; i++)
     {
       std::unique_ptr<ObjectT> newObj = std::make_unique<ObjectT>(std::forward<Args>(args)...);
@@ -163,12 +170,16 @@ public:
     std::unique_ptr<ObjectT> objPtr;
     if(pool_.pop(objPtr, timeout) == Status::success)
     {
+      if(pool_.size() < minItms_) { minItms_ = pool_.size(); }
       return ObjectContainer(objPtr, pool_);
     }
     return ObjectContainer();
   }
   size_t itemsInPool() const { return pool_.size(); }
+  size_t minimumItemsInPool() const { return minItms_; };
+  size_t maxItemsInPool() const { return count; }
 private:
+  size_t minItms_;
   ObjQ pool_;
 };
 

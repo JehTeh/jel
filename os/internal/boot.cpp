@@ -186,6 +186,8 @@ namespace os
  * blow away the Io pointer that is assigned before C++ static initialization. */
 std::shared_ptr<AsyncIoStream> jelStandardIo;
 std::shared_ptr<JelStringPool> jelStringPool;
+
+extern const cli::Library cliCmdLib;
 /** 
  *  @brief The jel bootup thread, responsible for the majority of system initialization and starting
  *  the user application thread(s).
@@ -245,23 +247,13 @@ void bootThread(void*)
   initializeStandardIo();
   jelStringPool = std::make_shared<ObjectPool<String, config::stringPoolStringCount>>();
   cli::startSystemCli(jelStandardIo);
+  cli::registerLibrary(cliCmdLib);
   /** C++ Static object constructors are called here. */
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
     __init_array_start[i]();
   }
-  while(true)
-  {
-    ThisThread::sleepfor(Duration::seconds(1));
-    //std::printf("Apool Stats:\r\nAll: %d Deall: %d: FreeSpace: %d\r\n", 
-    //  cli::cliPoolIf().totalAllocations(), cli::cliPoolIf().totalDeallocations(), 
-    //  cli::cliPoolIf().freeSpace_Bytes());
-    //std::printf("Heap Stats:\r\nAll: %d Deall: %d: FreeSpace: %d\r\n", 
-    //  SystemAllocator::systemAllocator()->totalAllocations(), 
-    //  SystemAllocator::systemAllocator()->totalDeallocations(), 
-    //  SystemAllocator::systemAllocator()->freeSpace_Bytes());
-    //std::printf("String pool strings: %d\r\n", jelStringPool->itemsInPool());
-  }
+  ThisThread::deleteSelf();
 }
 
 } /** namespace os */

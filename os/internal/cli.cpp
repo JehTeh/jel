@@ -40,7 +40,7 @@ namespace cli
 {
 
 using CliArgumentPool = 
-  os::BlockAllocator<sizeof(Argument) + 8, config::cliMaximumArguments>;
+  os::BlockAllocator<sizeof(Argument) + 16, config::cliMaximumArguments>;
 
 std::unique_ptr<CliArgumentPool> argumentPool;
 
@@ -124,12 +124,24 @@ Status Vtt::write(const char* cStr, size_t length)
 Status Vtt::write(const char* format, va_list args) 
 {
   int ret = vsnprintf(wrtbuf_.get(), config::cliMaximumStringLength, format, args);
-  if(ret == 0)
-  {
-
-  }
   printer_.print(wrtbuf_.get());
-  return Status::success;
+  if((ret < static_cast<int>(config::cliMaximumStringLength - 1)) && (ret > 0))
+  {
+    return Status::success;
+  }
+  return Status::failure;
+}
+
+Status Vtt::colorizedWrite(const os::AnsiFormatter::Color color, const char* format, ...)
+{
+  auto lg = ios_->lockOutput();
+  write(os::AnsiFormatter::setForegroundColor(color));
+  va_list args;
+  va_start(args, format);
+  auto stat = write(format, args);
+  va_end(args);
+  write(os::AnsiFormatter::setForegroundColor(os::AnsiFormatter::Color::default_));
+  return stat;
 }
 
 size_t Vtt::read(String& string, const Duration& timeout)
@@ -174,6 +186,13 @@ size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
   ios_->write(os::AnsiFormatter::Erase::entireLine);
   ios_->write('\r');
   buffer[0] = '\0'; return 0;
+}
+
+Status Vtt::prefix(const char* cStr)
+{
+  if(cStr != nullptr) { pfx_ = cStr; }
+  else { pfx_ = ""; }
+  return Status::success;
 }
 
 size_t Vtt::loadRxs(const Duration& timeout)
@@ -317,15 +336,10 @@ bool Vtt::parseEscapeSequence(const size_t sp)
   {
     if(bufedtd_)
     {
-      ++hbuf_ = wb_;
-      hbuf_--;
+      hbuf_.currentViewPos() = wb_;
     }
-    auto* hbptr = &hbuf_.currentBuffer();
-    while((--hbuf_).length() == 0)
-    {
-      if(hbptr == &(hbuf_.currentBuffer())) { break; }
-    };
-    wb_ = hbuf_.currentBuffer();
+    hbuf_.prevViewPos();
+    wb_ = hbuf_.currentViewPos();
     cpos_ = wb_.length();
     smode_ = false; imode_ = false;
   }
@@ -334,15 +348,10 @@ bool Vtt::parseEscapeSequence(const size_t sp)
   {
     if(bufedtd_)
     {
-      --hbuf_ = wb_;
-      hbuf_++;
+      hbuf_.currentViewPos() = wb_;
     }
-    auto* hbptr = &hbuf_.currentBuffer();
-    while((++hbuf_).length() == 0)
-    {
-      if(hbptr == &(hbuf_.currentBuffer())) { break; }
-    };
-    wb_ = hbuf_.currentBuffer();
+    hbuf_.nextViewPos();
+    wb_ = hbuf_.currentViewPos();
     cpos_ = wb_.length();
     smode_ = false; imode_ = false;
   }
@@ -383,7 +392,9 @@ bool Vtt::terminateInput(const size_t sp)
   if((rxs_[sp] == fmt::carriageReturn) || (rxs_[sp] == fmt::newline))
   {
     terminated_ = true;
-    hbuf_++ = wb_;
+    hbuf_.currentWritePos() = wb_;
+    hbuf_.nextWritePos();
+    hbuf_.resetViewPos();
   }
   return true;
 }
@@ -543,38 +554,72 @@ Vtt::HistoryBuffer::HistoryBuffer()
   bpos_ = 0;
 }
 
-String& Vtt::HistoryBuffer::currentBuffer()
+String& Vtt::HistoryBuffer::currentViewPos()
+{
+  return *buffers_[vpos_].stored();
+}
+
+String& Vtt::HistoryBuffer::currentWritePos()
 {
   return *buffers_[bpos_].stored();
 }
 
-String& Vtt::HistoryBuffer::operator++()
+String& Vtt::HistoryBuffer::oldestWritePos()
 {
-  nextpos();
-  return *buffers_[bpos_].stored();
+  size_t sBpos = bpos_;
+  nextBpos();
+  while(buffers_[bpos_].stored()->length() == 0)
+  {
+    nextBpos();
+  }
+  if(bpos_ == sBpos)
+  {
+    prevBpos();
+  }
+  String* sptr = buffers_[bpos_].stored();
+  bpos_ = sBpos;
+  return *sptr;
 }
 
-String& Vtt::HistoryBuffer::operator--()
+void Vtt::HistoryBuffer::resetViewPos()
 {
-  prevpos();
-  return *buffers_[bpos_].stored();
+  vpos_ = bpos_;
 }
 
-String& Vtt::HistoryBuffer::operator++(int)
+void Vtt::HistoryBuffer::nextViewPos()
 {
-  String& s = *buffers_[bpos_].stored();
-  nextpos();
-  return s;
+  size_t sVpos = vpos_;
+  nextVpos();
+  while(buffers_[vpos_].stored()->length() == 0)
+  {
+    nextVpos();
+  }
+  if(sVpos == vpos_)
+  {
+    nextVpos();
+  }
 }
 
-String& Vtt::HistoryBuffer::operator--(int)
+void Vtt::HistoryBuffer::prevViewPos()
 {
-  String& s = *buffers_[bpos_].stored();
-  prevpos();
-  return s;
+  size_t sVpos = vpos_;
+  prevVpos();
+  while(buffers_[vpos_].stored()->length() == 0)
+  {
+    prevVpos();
+  }
+  if(sVpos == vpos_)
+  {
+    prevVpos();
+  }
 }
 
-void Vtt::HistoryBuffer::nextpos()
+void Vtt::HistoryBuffer::nextWritePos()
+{
+  nextBpos();
+}
+
+void Vtt::HistoryBuffer::nextBpos()
 {
   bpos_++;
   if(bpos_ >= config::cliHistoryDepth)
@@ -583,12 +628,30 @@ void Vtt::HistoryBuffer::nextpos()
   }
 }
 
-void Vtt::HistoryBuffer::prevpos()
+void Vtt::HistoryBuffer::prevBpos()
 {
   bpos_--;
   if(bpos_ >= config::cliHistoryDepth)
   {
     bpos_ = config::cliHistoryDepth - 1;
+  }
+}
+
+void Vtt::HistoryBuffer::nextVpos()
+{
+  vpos_++;
+  if(vpos_ >= config::cliHistoryDepth)
+  {
+    vpos_ = 0;
+  }
+}
+
+void Vtt::HistoryBuffer::prevVpos()
+{
+  vpos_--;
+  if(vpos_ >= config::cliHistoryDepth)
+  {
+    vpos_ = config::cliHistoryDepth - 1;
   }
 }
 
@@ -733,48 +796,48 @@ ParameterString::Parameter ParameterString::operator[](size_t index)
   return Parameter{true, Argument::Type::invalid, "" };
 }
 
-ArgumentContainer::ArgumentContainer() : argListValid_(false), numOfArgs_(0), 
+ArgumentContainer::ArgumentContainer() : argListValid_(false), numOfArgs_(0), cli_(nullptr),
   firstArg{nullptr, nullptr}
 {
 }
 
-ArgumentContainer::ArgumentContainer(const Tokenizer& tokens,
+ArgumentContainer::ArgumentContainer(CliInstance* cli, const Tokenizer& tokens,
   const size_t discardThreshold, const char* params) : argListValid_(false), numOfArgs_(0), 
-  firstArg{nullptr, nullptr}
+  cli_(cli), firstArg{nullptr, nullptr}
 {
-  generateArgumentList(tokens, discardThreshold, params);
+  generateArgumentList(cli, tokens, discardThreshold, params);
 }
 
 ArgumentContainer::~ArgumentContainer() noexcept
 {
 }
 
-ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenizer& tokens,
-  const size_t discardThreshold, const char* params)
+ArgumentContainer::Status ArgumentContainer::generateArgumentList(CliInstance* cli,
+  const Tokenizer& tokens, const size_t discardThreshold, const char* params)
 {
-  using Color = os::AnsiFormatter::Color;
+  cli_ = cli;
   ParameterString ps(params);
   if(discardThreshold > tokens.count())
   {
-    CliInstance::activeCliInstance->printError(Color::red,
+    cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
       "Insufficient arguments passed to command.\r\n");
     return Status::insufficientArguments;
   }
   if((tokens.count() - discardThreshold) > ps.totalCount())
   {
-    CliInstance::activeCliInstance->printError(Color::red,
+    cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
       "Too many arguments passed to command.\r\n");
     return Status::tooManyArguments;
   }
   if((tokens.count() - discardThreshold) < (ps.totalCount() - ps.optionalCount()))
   {
-    CliInstance::activeCliInstance->printError(Color::red,
+    cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
       "Insufficient arguments passed to command.\r\n");
     return Status::insufficientArguments;
   }
   if((tokens.count() - discardThreshold) >= config::cliMaximumArguments)
   {
-    CliInstance::activeCliInstance->printError(Color::red,
+    cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
       "The global maximum argument limit has been exceeded processing this command.\r\n");
     return Status::maxGlobalArgsExceeded;
   }
@@ -786,19 +849,20 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
       case Argument::Type::int64_t_:
         {
           int64_t temp;
-          if(std::strchr(tokens[i + discardThreshold], '.') != nullptr)
+          if(std::strpbrk(tokens[i + discardThreshold], ".eE") != nullptr)
           {
-            CliInstance::activeCliInstance->printError(Color::red,
-              "Failed to parse argument %d into a signed integer. Argument appears to be a "
-              "float.\r\n", discardThreshold + i);
+            cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
+              "Failed to parse argument %d [%s] into a signed integer. Argument appears to be a "
+              "float.\r\n", discardThreshold + i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
           {
             //Currently this error reporting is a dirty hack. Will fix after tidying exceptions so
             //a more descriptive error can be pushed up to the CliInstance for reporting there.
-            CliInstance::activeCliInstance->printError(Color::red,
-              "Failed to parse argument %d into a signed integer.\r\n", discardThreshold + i);
+            cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
+              "Failed to parse argument %d [%s] into a signed integer.\r\n", discardThreshold + i,
+              tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           appendListItem(temp);
@@ -807,24 +871,25 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
       case Argument::Type::uint64_t_:
         {
           uint64_t temp;
-          if(std::strchr(tokens[i + discardThreshold], '.') != nullptr)
+          if(std::strpbrk(tokens[i + discardThreshold], ".eE") != nullptr)
           {
-            CliInstance::activeCliInstance->printError(Color::red,
-              "Failed to parse argument %d into a signed integer. Argument appears to be a "
-              "float.\r\n", discardThreshold + i);
+            cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
+              "Failed to parse argument %d [%s] into an unsigned integer. Argument appears to be a "
+              "float.\r\n", discardThreshold + i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           if(std::strchr(tokens[i + discardThreshold], '-') != nullptr)
           {
-            CliInstance::activeCliInstance->printError(Color::red,
-              "Failed to parse argument %d into a signed integer. Argument appears to be a "
-              "negative number.\r\n", discardThreshold + i);
+            cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
+              "Failed to parse argument %d [%s] into an unsigned integer. Argument appears to be a "
+              "negative number.\r\n", discardThreshold + i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
           {
-            CliInstance::activeCliInstance->printError(Color::red,
-              "Failed to parse argument %d into an unsigned integer.\r\n", discardThreshold + i);
+            cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
+              "Failed to parse argument %d [%s] into an unsigned integer.\r\n",
+              discardThreshold + i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           appendListItem(temp);
@@ -835,8 +900,9 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
           double temp;
           if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
           {
-            CliInstance::activeCliInstance->printError(Color::red,
-              "Failed to parse argument %d into a floating point value.\r\n", discardThreshold + i);
+            cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
+              "Failed to parse argument %d [%s] into a floating point value.\r\n",
+              discardThreshold + i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           appendListItem(temp);
@@ -847,7 +913,7 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
           auto scont = os::jelStringPool->acquire(Duration::zero());
           if(scont.stored() == nullptr)
           {
-            CliInstance::activeCliInstance->printError(Color::red,
+            cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
               "Failed while parsing string argument. No free string memory available.\r\n");
             return Status::noFreeStringsAvailable;
           }
@@ -858,7 +924,7 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(const Tokenize
         break;
       case Argument::Type::invalid:
       default:
-        CliInstance::activeCliInstance->printError(Color::red,
+        cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
           "The parameter string for this command is invalid and cannot be parsed.\r\n");
         break;
     }
@@ -914,7 +980,7 @@ CliInstance::CliInstance(std::shared_ptr<os::AsyncIoStream>& io)
   if(activeCliInstance == nullptr)
   {
     //Initialize the argument memory pool used by the CLI.
-    argumentPool = std::make_unique<CliArgumentPool>();
+    argumentPool = std::make_unique<CliArgumentPool>("CLI_Arg_Pool");
     activeCliInstance = this;
     libList_.libptr = &cliCmdLib;
     tptr_ = new os::Thread(reinterpret_cast<os::Thread::FunctionSignature>(&cliThreadDispatcher), 
@@ -932,12 +998,17 @@ Status CliInstance::registerLibrary(const Library& lib)
   LibrariesListItem* lliPtr = &activeCliInstance->libList_;
   while(lliPtr != nullptr)
   {
-    lliPtr = lliPtr->next.get();
+    if(std::strcmp(lliPtr->libptr->name, lib.name) == 0)
+    {
+      //Library is already registered.
+      return Status::failure;
+    }
     if(lliPtr->next == nullptr)
     {
       lliPtr->next = std::make_unique<LibrariesListItem>(lib);
       return Status::success;
     }
+    lliPtr = lliPtr->next.get();
   }
   return Status::failure;
 }
@@ -953,7 +1024,7 @@ void CliInstance::cliThread(std::shared_ptr<os::AsyncIoStream>* io)
   istr_->reserve(config::cliMaximumStringLength);
   //Instantiate a visual text terminal on the I/O interface. This will be used for all I/O performed
   //by the CLI.
-  vtt = std::make_unique<Vtt>(*io);
+  vtt_ = std::make_unique<Vtt>(*io);
   //On startup, the CLI will always default to the minimum permission level.
   aplvl_ = AccessPermission::unrestricted;
   while(true)
@@ -961,8 +1032,8 @@ void CliInstance::cliThread(std::shared_ptr<os::AsyncIoStream>* io)
     //Wait for some argument input.
     while(true)
     {
-      vtt->write("CLI awaiting input.\r\n");
-      if(vtt->read(*istr_) > 0)
+      vtt_->write("CLI awaiting input.\r\n");
+      if(vtt_->read(*istr_) > 0)
       {
         break;
       }
@@ -973,7 +1044,7 @@ void CliInstance::cliThread(std::shared_ptr<os::AsyncIoStream>* io)
     if(handleSpecialCommands(tokens)) { continue; }
     if(tokens.count() < 1)
     {
-      printError(os::AnsiFormatter::Color::red, 
+      vtt_->colorizedWrite(defaultErrorColor, 
         "Commands must include a library and command name. Enter 'cli help' for more "
         "information.\r\n"); continue;
     }
@@ -981,9 +1052,12 @@ void CliInstance::cliThread(std::shared_ptr<os::AsyncIoStream>* io)
     if(!lookupLibrary(tokens[0])) { continue; }
     if(tokens.count() < 2)
     {
-      printError(os::AnsiFormatter::Color::red, 
-        "Commands must include a library and command name. Enter 'cli help' for more "
-        "information.\r\n"); continue;
+      vtt_->colorizedWrite(defaultErrorColor, 
+        "Commands must include a library and command name. Enter 'cli help %s' for more "
+        "information", alptr_->name);
+      vtt_->colorizedWrite(defaultErrorColor, 
+        " about the commands in the '%s' library.\r\n", alptr_->name);
+      continue;
     }
     //Search for the command name. If not found, restart loop and await new input.
     if(!lookupCommand(tokens[1])) { continue; }
@@ -1012,7 +1086,7 @@ bool CliInstance::lookupLibrary(const char* name)
   }
   if(lli == nullptr)
   {
-    printError(os::AnsiFormatter::Color::red, 
+    vtt_->colorizedWrite(defaultErrorColor, 
       "Failed to find library '%s'. Try 'cli help' to list available libraries.\r\n", name);
     return false;
   }
@@ -1039,9 +1113,9 @@ bool CliInstance::lookupCommand(const char* name)
   }
   if(cptr == nullptr)
   {
-    printError(os::AnsiFormatter::Color::red, 
+    vtt_->colorizedWrite(defaultErrorColor, 
       "Failed to find command '%s' in library '%s'. Try 'cli help %s' to list available commands"
-      " within the '%s library'.\r\n", name, alptr_->name, alptr_->name, alptr_->name);
+      " within the '%s' library.\r\n", name, alptr_->name, alptr_->name, alptr_->name);
     return false;
   }
   acptr_ = cptr;
@@ -1053,7 +1127,7 @@ int CliInstance::executeCommand(Tokenizer& tokens)
   //If we have the command matched, we need to construct a CommandIo object, including an argument
   //container, and execute the command if the IO object is valid.
   assert(acptr_); 
-  CommandIo cmdIo(tokens, *acptr_, *vtt);
+  CommandIo cmdIo(this, tokens, *acptr_, *vtt_);
   if(!cmdIo.isValid_)
   {
     return 1;
@@ -1064,13 +1138,13 @@ int CliInstance::executeCommand(Tokenizer& tokens)
     cmdRet = acptr_->function(cmdIo);
     if(cmdRet != 0)
     {
-      printError(os::AnsiFormatter::Color::yellow,
+      vtt_->colorizedWrite(os::AnsiFormatter::Color::yellow,
         "Warning: Command returned status code %ld\r\n", cmdRet);
     }
   }
   catch(...)
   {
-    printError(os::AnsiFormatter::Color::yellow,
+    vtt_->colorizedWrite(os::AnsiFormatter::Color::yellow,
       "Warning: Command threw an exception!\r\n");
   }
   return cmdRet;
@@ -1087,18 +1161,9 @@ bool CliInstance::doesAplvlMeetSecRequirment(const AccessPermission& lvlToCheckA
   return false;
 }
 
-void CliInstance::printError(const os::AnsiFormatter::Color color, const char* format, ...)
-{
-  vtt->write(os::AnsiFormatter::setForegroundColor(color));
-  va_list args;
-  va_start(args, format);
-  vtt->write(format, args);
-  va_end(args);
-  vtt->write(os::AnsiFormatter::reset);
-}
-
-CommandIo::CommandIo(const Tokenizer& tokens, const CommandEntry& cmd, Vtt& vtt) :
-  fmt(), cmdptr(&cmd), args(tokens, 2, cmd.parameters), vtt_(vtt), isValid_(args.isArgListValid())
+CommandIo::CommandIo(CliInstance* cli, const Tokenizer& tokens, const CommandEntry& cmd, Vtt& vtt) :
+  fmt(), cmdptr(&cmd), args(cli, tokens, 2, cmd.parameters), vtt_(vtt), cli_(cli),
+  isValid_(args.isArgListValid())
 {
   preIoPpConfig_.disableAllFormatting = vtt_.printer().editConfig().stripFormatters;
   preIoPpConfig_.automaticNewline = vtt_.printer().editConfig().automaticNewline;
@@ -1119,6 +1184,94 @@ Status CommandIo::print(const char* format, ...)
   va_end(args);
   vtt_.write(os::AnsiFormatter::reset);
   return st;
+}
+
+size_t CommandIo::scan(char* buffer, size_t bufferLen, const Duration& timeout)
+{
+  (void)buffer; (void)bufferLen; (void)timeout;
+  return 0;
+}
+
+bool CommandIo::getConfirmation(const char* prompt, const Duration& timeout)
+{
+  (void)prompt; (void)timeout;
+  return false;
+}
+
+bool CommandIo::waitForContinue(const char* prompt, const Duration& timeout)
+{
+  constexpr size_t bufLen = 8;
+  Timestamp startT = SteadyClock::now();
+  char buf[bufLen];
+  auto sg = ToScopeGuard([&](){ vtt_.prefix(prompt); }, [&](){vtt_.prefix(nullptr);});
+  while((SteadyClock::now() - startT) < timeout)
+  {
+    vtt_.read(buf, bufLen, timeout - (SteadyClock::now() - startT));
+    if(std::strpbrk(buf, "\r\n"))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+int64_t CommandIo::readSignedInt(const char* prompt, const Duration& timeout)
+{
+  constexpr size_t bufLen = 32;
+  Timestamp startT = SteadyClock::now();
+  char buf[bufLen];
+  auto sg = ToScopeGuard([&](){ vtt_.prefix(prompt); }, [&](){vtt_.prefix(nullptr);});
+  while((SteadyClock::now() - startT) < timeout)
+  {
+    int64_t rval;
+    vtt_.read(buf, bufLen, timeout - (SteadyClock::now() - startT));
+    if(std::strpbrk(buf, ".") != nullptr) { continue; }
+    if(std::sscanf(buf, "%lld", &rval) == 1)
+    {
+      return rval;
+    }
+  }
+  throw os::Exception{os::ExceptionCode::cliArgumentReadTimeout,
+    "Failed to read a signed integer within the specified timeout.\r\n"};
+}
+
+uint64_t CommandIo::readUnsignedInt(const char* prompt, const Duration& timeout)
+{
+  constexpr size_t bufLen = 32;
+  Timestamp startT = SteadyClock::now();
+  char buf[bufLen];
+  auto sg = ToScopeGuard([&](){ vtt_.prefix(prompt); }, [&](){vtt_.prefix(nullptr);});
+  while((SteadyClock::now() - startT) < timeout)
+  {
+    uint64_t rval;
+    vtt_.read(buf, bufLen, timeout - (SteadyClock::now() - startT));
+    if(std::strpbrk(buf, "-.") != nullptr) { continue; }
+    if(std::sscanf(buf, "%llu", &rval) == 1)
+    {
+      return rval;
+    }
+  }
+  throw os::Exception{os::ExceptionCode::cliArgumentReadTimeout,
+    "Failed to read an unsigned integer within the specified timeout.\r\n"};
+}
+
+double CommandIo::readDouble(const char* prompt, const Duration& timeout)
+{
+  constexpr size_t bufLen = 32;
+  Timestamp startT = SteadyClock::now();
+  char buf[bufLen];
+  auto sg = ToScopeGuard([&](){ vtt_.prefix(prompt); }, [&](){vtt_.prefix(nullptr);});
+  while((SteadyClock::now() - startT) < timeout)
+  {
+    double rval;
+    vtt_.read(buf, bufLen, timeout - (SteadyClock::now() - startT));
+    if(std::sscanf(buf, "%lf", &rval) == 1)
+    {
+      return rval;
+    }
+  }
+  throw os::Exception{os::ExceptionCode::cliArgumentReadTimeout,
+    "Failed to read a double within the specified timeout.\r\n"};
 }
 
 void CommandIo::printFormatters()

@@ -43,6 +43,7 @@ CXXSOURCE += $(addprefix os\,\
 		internal\system.cpp \
 		internal\io.cpp \
 		internal\cli.cpp \
+		internal\cli_cmds.cpp \
 		internal\config.cpp \
 		)
 
