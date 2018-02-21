@@ -151,6 +151,7 @@ public:
   CommandIo(CommandIo&&) = delete;
   CommandIo& operator=(const CommandIo&) = delete;
   CommandIo& operator=(CommandIo&&) = delete;
+  os::AsyncLock lockOuput(const Duration& timeout = Duration::max());
   Status print(const char* format, ...) __attribute__((format(printf, 2, 3)));
   size_t scan(char* buffer, size_t bufferLen, const Duration& timeout = Duration::max());
   bool getConfirmation(const char* prompt = nullptr, const Duration& timeout = Duration::max());

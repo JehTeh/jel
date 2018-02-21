@@ -1175,6 +1175,11 @@ CommandIo::~CommandIo() noexcept
   vtt_.printer().editConfig().automaticNewline = preIoPpConfig_.automaticNewline;
 }
 
+os::AsyncLock CommandIo::lockOuput(const Duration& timeout)
+{
+  return vtt_.lockOutput(timeout);
+}
+
 Status CommandIo::print(const char* format, ...)
 {
   printFormatters(); 
@@ -1289,6 +1294,7 @@ void CommandIo::printFormatters()
 
 int32_t cliCmdHelp(CommandIo& io)
 {
+  auto lg = io.lockOuput();
   io.print("TODO HELP\r\n");
   return 0;
 }

@@ -66,6 +66,8 @@ public:
   };
   Vtt(const std::shared_ptr<os::AsyncIoStream>& ios);
   ~Vtt() noexcept;
+  os::AsyncLock lockOutput(const Duration& timeout = Duration::max()) 
+    { return ios_->lockOutput(timeout); }
   Status write(const char* cStr, size_t length = 0);
   Status write(const char* format, va_list args);
   Status colorizedWrite(const os::AnsiFormatter::Color color, const char* format, ...)
