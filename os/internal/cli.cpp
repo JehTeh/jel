@@ -70,8 +70,8 @@ const CommandEntry cliCommandArray[] =
     "username and password, which if correct will temporarily elevate the permission level.\n"
     "Usage: 'cli login [username] [password] {custom integer timeout, in seconds}'\n"
     "Note: A custom timeout of zero seconds will never expire and is not recommended. "
-    "If the login command is performed again with a new timeout, the latest entered timeout will "
-    "take precedence.",
+    "If the login command is performed again with a new timeout, the newly entered timeout will "
+    "take precedence and begin counting immediately.",
     cli::AccessPermission::unrestricted, nullptr
   },
 };
@@ -114,7 +114,6 @@ Vtt::~Vtt() noexcept
 
 }
 
-
 Status Vtt::write(const char* cStr, size_t length)
 {
   printer_.print(cStr, length);
@@ -123,7 +122,7 @@ Status Vtt::write(const char* cStr, size_t length)
 
 Status Vtt::write(const char* format, va_list args) 
 {
-  int ret = vsnprintf(wrtbuf_.get(), config::cliMaximumStringLength, format, args);
+  int ret = vsnprintf(wrtbuf_.get(), config::cliMaximumStringLength - 1, format, args);
   printer_.print(wrtbuf_.get());
   if((ret < static_cast<int>(config::cliMaximumStringLength - 1)) && (ret > 0))
   {
@@ -950,11 +949,7 @@ ArgumentContainer::ArgListItem& ArgumentContainer::appendListItem(T&& argval)
 
 const Argument& ArgumentContainer::operator[](size_t index) const
 {
-  if((numOfArgs_ == 0) || (index >= numOfArgs_))
-  {
-    throw os::Exception{os::ExceptionCode::cliInvalidArgumentIndex, 
-      "Invalid argument index requested (%d/%d).", index, numOfArgs_};
-  }
+  assert((numOfArgs_ != 0) && (index < numOfArgs_));
   const Argument* aptr = &firstArg->arg;
   ArgListItem* alptr = firstArg.get();
   for(size_t i = 0; i < index; i++)
@@ -966,8 +961,7 @@ const Argument& ArgumentContainer::operator[](size_t index) const
     }
     else
     {
-      throw os::Exception{os::ExceptionCode::cliInvalidArgumentIndex, 
-        "Corrupt CLI argument container detected."};
+      assert(false); //CLI argument container appears corrupt?
     }
   }
   return *aptr;
@@ -1191,6 +1185,26 @@ Status CommandIo::print(const char* format, ...)
   return st;
 }
 
+Status CommandIo::constPrint(const char* cString, const size_t length)
+{
+  return vtt_.write(cString, length);
+}
+
+Status CommandIo::constPrint(String& string)
+{
+  return vtt_.write(string.c_str(), string.length());
+}
+
+size_t CommandIo::currentLineLength() const 
+{
+  return vtt_.printer().currentLength();
+}
+
+const os::PrettyPrinter::Config& CommandIo::printerConfig() const 
+{
+  return vtt_.printer().editConfig();
+}
+
 size_t CommandIo::scan(char* buffer, size_t bufferLen, const Duration& timeout)
 {
   (void)buffer; (void)bufferLen; (void)timeout;
@@ -1294,14 +1308,129 @@ void CommandIo::printFormatters()
 
 int32_t cliCmdHelp(CommandIo& io)
 {
+  const CliInstance::LibrariesListItem* lli = CliInstance::getLibraryList();
   auto lg = io.lockOuput();
-  io.print("TODO HELP\r\n");
+  if(io.args.totalArguments() == 0)
+  {
+    //Print generic help.
+    io.constPrint("The CLI is used to execute arbitrarily defined commands across different "
+      "system modules. Each module registers a library of commands that can be called "
+      "from the CLI using the format 'cli [library] [command]'. "
+      "Detailed help, including a list of commands in a library, can be seen by calling "
+      "'cli help [library]'. For a full list of commands within a library, use "
+      "'cli help [library] [command]'.\r\n");
+    bool& bold = io.fmt.isBold;
+    bold = true; io.print("Registered Libraries:\r\n"); bold = false;
+    while(lli != nullptr)
+    {
+      assert(lli->libptr != nullptr);
+      const Library& lib = *lli->libptr;
+      bold = true; io.print("\t%s: ", lib.name); bold = false;
+      if(std::strlen(lib.helpString) > 60) { io.print("%.60s...\r\n", lib.helpString); }
+      else { io.print("%s\r\n", lib.helpString); }
+      lli = lli->next.get();
+    }
+    return 0;
+  }
+  else if(io.args.totalArguments() == 1)
+  {
+    //Print library specific help.
+    while(lli != nullptr)
+    {
+      if(io.args[0].asString() == lli->libptr->name)
+      {
+        const Library& lib = *lli->libptr;
+        bool& bold = io.fmt.isBold;
+        bold = true; io.print("Library: "); bold = false;
+        io.print("%s\r\n", lib.name);
+        io.constPrint(lib.helpString);
+        if(io.currentLineLength() > 0) { io.print("\r\n"); }
+        bold = true; io.print("Commands (%u):\r\n", lib.numberOfEntries); bold = false;
+        for(const auto& cmd : lib)
+        {
+          bold = true; io.print("\t%s: ", cmd.name); bold = false;
+          io.print("%.60s...\r\n", cmd.helpString);
+        }
+        return 0;
+      }
+      lli = lli->next.get();
+    }
+    io.fmt.color = CliInstance::defaultErrorColor;
+    io.print("Failed lookup for library named '%s'.\r\n", io.args[0].asString().c_str());
+    return 1;
+  } 
+  else if(io.args.totalArguments() == 2)
+  {
+    //Print command specific help.
+    while(lli != nullptr)
+    {
+      if(io.args[0].asString() == lli->libptr->name)
+      {
+        for(const auto& cmd : *lli->libptr)
+        {
+          if(io.args[1].asString() == cmd.name)
+          {
+            bool& bold = io.fmt.isBold;
+            bold = true; io.print("Library: "); bold = false;
+            io.print("%s\r\n", lli->libptr->name);
+            bold = true; io.print("Command: "); bold = false;
+            io.print("%s\r\n", cmd.name);
+            if(cmd.parameters == 0)
+            {
+              bold = true; io.print("Accepted parameters: (none)\r\n"); bold = false;
+            }
+            else
+            {
+              bold = true; io.print("Accepted parameters (%s):\r\n", cmd.parameters); bold = false;
+            }
+            ParameterString ps(cmd.parameters);
+            for(size_t i = 0; i < ps.totalCount(); i++)
+            {
+              switch(ps[i].type)
+              {
+                case Argument::Type::int64_t_:
+                  io.print("\t[%d]: Signed Integer", i);
+                  break;
+                case Argument::Type::uint64_t_:
+                  io.print("\t[%d]: Unsigned Integer", i);
+                  break;
+                case Argument::Type::double_:
+                  io.print("\t[%d]: Double/Float", i);
+                  break;
+                case Argument::Type::string_:
+                  io.print("\t[%d]: String", i);
+                  break;
+                case Argument::Type::invalid:
+                  io.print("\t[%d]: This argument appears invalid!", i);
+                  break;
+              }
+              if(ps[i].isOptional) { io.print(" (optional).\r\n"); }
+              else { io.print(".\r\n"); }
+            }
+            io.constPrint(cmd.helpString);
+            if(io.currentLineLength() > 0) { io.print("\r\n"); }
+            return 0;
+          }
+        }
+      }
+      lli = lli->next.get();
+    }
+    io.fmt.color = CliInstance::defaultErrorColor;
+    io.print("Failed lookup for command named '%s'.\r\n", io.args[1].asString().c_str());
+    return 2;
+  }
+  else
+  {
+    io.fmt.color = CliInstance::defaultErrorColor;
+    io.print("Illegal argument count.\r\n");
+    return 3;
+  }
   return 0;
 }
 
 int32_t cliCmdLogin(CommandIo& io)
 {
-  io.print("TODO LOGIN\r\n");
+  io.print("Login support is disabled in this build.\r\n");
   return 0;
 }
 

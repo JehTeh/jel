@@ -460,6 +460,7 @@ public:
   Config& editConfig() { return cfg_; }
   /** Automatically output a newline sequence and reset the current line length to zero. */
   void nextLine();
+  size_t currentLength() const { return clen_; }
 private:
   std::shared_ptr<MtWriter> out_;
   Config cfg_;

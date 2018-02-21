@@ -154,7 +154,6 @@ enum class ExceptionCode : uint32_t
   queueConstructionFailed,
   threadConstructionFailed,
   allocatorConstructionFailed,
-  cliInvalidArgumentIndex,
   cliArgumentReadTimeout,
 };
 

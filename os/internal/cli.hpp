@@ -180,14 +180,6 @@ private:
 class CliInstance
 {
 public:
-  static constexpr os::AnsiFormatter::Color defaultErrorColor = os::AnsiFormatter::Color::brightRed;
-  static constexpr size_t cliThreadStackSize_Words = 512;
-  static constexpr os::Thread::Priority cliThreadPriority = os::Thread::Priority::low;
-  CliInstance(std::shared_ptr<os::AsyncIoStream>& io);
-  ~CliInstance() noexcept;
-  static Status registerLibrary(const Library& lib);
-private:
-  friend ArgumentContainer;
   struct LibrariesListItem
   {
     const Library* libptr;
@@ -195,6 +187,15 @@ private:
     LibrariesListItem() : libptr(nullptr), next(nullptr) {}
     LibrariesListItem(const Library& lib) : libptr(&lib), next(nullptr) {}
   };
+  static constexpr os::AnsiFormatter::Color defaultErrorColor = os::AnsiFormatter::Color::brightRed;
+  static constexpr size_t cliThreadStackSize_Words = 512;
+  static constexpr os::Thread::Priority cliThreadPriority = os::Thread::Priority::low;
+  CliInstance(std::shared_ptr<os::AsyncIoStream>& io);
+  ~CliInstance() noexcept;
+  static const LibrariesListItem* getLibraryList() { return &activeCliInstance->libList_; };
+  static Status registerLibrary(const Library& lib);
+private:
+  friend ArgumentContainer;
   AccessPermission aplvl_ = AccessPermission::unrestricted;
   os::Thread* tptr_;
   std::unique_ptr<String> istr_;
