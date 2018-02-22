@@ -41,4 +41,4 @@
 build_*
 
 #Include certain precompiled libraries
-!./ThirdParty/tivaware/driverlib/gcc/libdriver.a
+!ThirdParty/tivaware/driverlib/gcc/libdriver.a
