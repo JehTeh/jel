@@ -59,6 +59,7 @@ GLOBAL_TARGET_LIST =
 default : all
 
 include ./make/targets/tm4c123gh6pm.make
+include ./make/targets/stm32f302rct6.make
 
 all : $(GLOBAL_TARGET_LIST)
 

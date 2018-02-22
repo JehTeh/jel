@@ -47,3 +47,12 @@ CXXSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
 TM4C123GH6PM_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\
    	port.c \
 		)
+
+STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\
+   	port.c \
+		)
+
+STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\STM Cube MX\jel_base\,\
+   	Src\usart.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_uart.c \
+		)

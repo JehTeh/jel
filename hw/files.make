@@ -52,3 +52,11 @@ TM4C123GH6PM_CXXSOURCE += $(addprefix hw\targets\tm4c\,\
 		sysclock.cpp \
 		uart.cpp \
 		)
+
+STM32F302RCT6_CXXSOURCE += $(addprefix hw\targets\stm32f3\,\
+		startup.cpp \
+		irq.cpp \
+		gpio.cpp \
+		sysclock.cpp \
+		uart.cpp \
+		)
