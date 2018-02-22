@@ -47,6 +47,7 @@ namespace jel
 namespace os
 {
 
+
 GenericThread_Base::GenericThread_Base()
 {
   /** Nothing is done here. All initialization is performed in the startThread() function to ensure
@@ -78,6 +79,11 @@ void GenericThread_Base::dispatcher(void* threadInf)
 {
   Thread::ThreadInfo* inf = reinterpret_cast<Thread::ThreadInfo*>(threadInf);
   inf->handle_ = xTaskGetCurrentTaskHandle();
+  {
+    LockGuard lg(ThreadStatistics::mapLock.get());
+    void* hdl = inf->handle_;
+    ThreadStatistics::map->insert({hdl, {hdl, inf->name_}});
+  }
   try
   {
     inf->userFunc_(inf->userArgPtr_);
@@ -164,6 +170,51 @@ void ThisThread::yield() noexcept
 void ThisThread::deleteSelf() noexcept
 {
   vTaskDelete(nullptr);
+}
+
+#ifdef ENABLE_THREAD_STATISTICS
+std::unique_ptr<RecursiveMutex> ThreadStatistics::mapLock;
+std::unique_ptr<std::unordered_map<void*, ThreadStatistics>> ThreadStatistics::map;
+#endif
+
+void ThreadStatistics::initializeThreadStats()
+{
+#ifdef ENABLE_THREAD_STATISTICS
+  mapLock = std::make_unique<RecursiveMutex>();
+  map = std::make_unique<std::unordered_map<void*, ThreadStatistics>>();
+#endif
+}
+
+void ThreadStatistics::threadEntry()
+{
+#ifdef ENABLE_THREAD_STATISTICS
+  void* hdl = xTaskGetCurrentTaskHandle();
+  try
+  {
+    LockGuard lg(mapLock.get());
+    map->at(hdl).lastEntry = SteadyClock::now();
+  }
+  catch(const std::out_of_range& e)
+  {
+    assert(false);
+  }
+#endif
+}
+
+void ThreadStatistics::threadExit()
+{
+#ifdef ENABLE_THREAD_STATISTICS
+  void* hdl = xTaskGetCurrentTaskHandle();
+  try
+  {
+    LockGuard lg(mapLock.get());
+    map->at(hdl).totalRuntime += SteadyClock::now() - map->at(hdl).lastEntry;
+  }
+  catch(const std::out_of_range& e)
+  {
+    assert(false);
+  }
+#endif
 }
 
 } /** namespace os */

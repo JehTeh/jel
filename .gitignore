@@ -39,3 +39,6 @@
 
 #build outputs
 build_*
+
+#Include certain precompiled libraries
+!./ThirdParty/tivaware/driverlib/gcc/libdriver.a

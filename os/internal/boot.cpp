@@ -170,6 +170,7 @@ void _resetVector(void)
  * */
 int main(int, char**)
 {
+  jel::os::ThreadStats::initializeThreadStats();
   TaskHandle_t h = nullptr;
   xTaskCreate(&jel::os::bootThread, "BOOT", 2048, &h, 
     configMAX_PRIORITIES | portPRIVILEGE_BIT, nullptr);

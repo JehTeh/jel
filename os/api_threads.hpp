@@ -35,10 +35,13 @@
 
 /** C/C++ Standard Library Headers */
 #include <memory>
+#include <unordered_map>
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
 #include "os/api_locks.hpp"
+
+#define ENABLE_THREAD_STATISTICS
 
 namespace jel
 {
@@ -127,6 +130,23 @@ public:
   static void sleepfor(const Duration& time) noexcept;
   static void yield() noexcept;
   static void deleteSelf() noexcept;
+};
+
+
+struct ThreadStatistics
+{
+  void* handle;
+  const char* name;
+  Timestamp lastEntry;
+  Duration totalRuntime;
+  static void initializeThreadStats();
+  static void threadEntry();
+  static void threadExit();
+#ifdef ENABLE_THREAD_STATISTICS
+  static std::unique_ptr<RecursiveMutex> mapLock;
+  static std::unique_ptr<std::unordered_map<void*, ThreadStatistics>> map;
+#endif
+  ThreadStatistics(void* handle, const char* name);
 };
 
 } /** namespace os */
