@@ -30,7 +30,6 @@
 #include <cstdint>
 #include <cassert>
 /** jel Library Headers */
-#include "hw/targets/tm4c/tiva_shared.hpp"
 #include "hw/api_irq.hpp"
 /** Vector Table Include */
 #ifdef HW_TARGET_STM32F302RCT6

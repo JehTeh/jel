@@ -44,6 +44,13 @@
 #define configKERNEL_INTERRUPT_PRIORITY             (7 << 5)    
 /* Priority 5, or 0xA0 as only the top three bits are implemented. */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY        (5 << 5)  
+
+#elif defined(HW_TARGET_STM32F302RCT6)
+#define configCPU_CLOCK_HZ                          ((uint32_t)64000000)
+#define configTOTAL_HEAP_SIZE                       ((size_t)(24576))
+#define configMINIMAL_STACK_SIZE                    ((unsigned short)256)
+#define configKERNEL_INTERRUPT_PRIORITY             (7 << 5)    
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY        (5 << 5)  
 #else
 #error "No hardware target has been defined. JEL must be built for an explicit hardware target."
 #endif

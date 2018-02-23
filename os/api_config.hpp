@@ -90,12 +90,20 @@ constexpr size_t cliHistoryDepth = 3;
  * */
 constexpr size_t cliMaximumArguments = 8;
 constexpr size_t cliMaximumStringLength = 128;
+#elif defined(HW_TARGET_STM32F302RCT6)
+constexpr size_t stringPoolStringCount = 24;
+constexpr size_t stringPoolStringSize = 256;
+constexpr bool optimizeStringMemory = true;
+constexpr size_t cliHistoryDepth = 8;
+constexpr size_t cliMaximumArguments = 12;
+constexpr size_t cliMaximumStringLength = 128;
 #else
 constexpr size_t stringPoolStringCount = 24;
 constexpr size_t stringPoolStringSize = 256;
 constexpr bool optimizeStringMemory = true;
 constexpr size_t cliHistoryDepth = 8;
 constexpr size_t cliMaximumArguments = 12;
+constexpr size_t cliMaximumStringLength = 128;
 #endif
 
 static_assert(stringPoolStringCount > (cliHistoryDepth + 4),

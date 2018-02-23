@@ -50,6 +50,19 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_tm4c123gh6pm =
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
   jelRuntimeConfiguration_tm4c123gh6pm;
+#elif defined(HW_TARGET_STM32F302RCT6)
+const JelRuntimeConfiguration jelRuntimeConfiguration_stm32f302rct6=
+{
+  "stm32f302rct6_default", SerialPortType::uart0,
+  {
+    hw::uart::UartInstance::uart0, hw::uart::Baudrate::bps128kBit, hw::uart::Parity::none,
+    hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
+    hw::uart::BlockingMode::isr
+  },
+};
+
+extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
+  jelRuntimeConfiguration_stm32f302rct6;
 #else
 const JelRuntimeConfiguration jelRuntimeConfiguration_nocfg =
 {

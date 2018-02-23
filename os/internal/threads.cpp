@@ -177,6 +177,11 @@ std::unique_ptr<RecursiveMutex> ThreadStatistics::mapLock;
 std::unique_ptr<std::unordered_map<void*, ThreadStatistics>> ThreadStatistics::map;
 #endif
 
+ThreadStatistics::ThreadStatistics(void*, const char* name)
+{
+
+}
+
 void ThreadStatistics::initializeThreadStats()
 {
 #ifdef ENABLE_THREAD_STATISTICS

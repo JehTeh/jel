@@ -52,7 +52,27 @@ STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\por
    	port.c \
 		)
 
-STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\STM Cube MX\jel_base\,\
+STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\STM-Cube-MX\jel_base\,\
    	Src\usart.c \
+   	Src\gpio.c \
+   	Src\tim.c \
+   	Src\system_stm32f3xx.c \
+   	Src\stm32f3xx_it.c \
+   	Src\stm32f3xx_hal_msp.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_rcc_ex.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_uart_ex.c \
    	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_uart.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_tim_ex.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_rcc.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_cortex.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_i2c_ex.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_tim.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_i2c.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_pwr.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_flash.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_dma.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_pwr_ex.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_gpio.c \
+   	Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_flash_ex.c \
 		)
