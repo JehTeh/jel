@@ -51,6 +51,7 @@ namespace startup
   void enableFpu() __attribute__((weak));
   void enableMpu() __attribute__((weak));
   void customDispatcher() noexcept __attribute__((weak));
+  void customDispatcherPostDataInit() noexcept __attribute__((weak));
 
   void defaultInitializeClocks()
   {
@@ -68,6 +69,11 @@ namespace startup
   }
 
   void customDispatcher() noexcept
+  {
+    /** Nothing can be done here in the generic function. */
+  }
+
+  void customDispatcherPostDataInit() noexcept
   {
     /** Nothing can be done here in the generic function. */
   }

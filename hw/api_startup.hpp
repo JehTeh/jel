@@ -47,6 +47,7 @@ namespace startup
   void enableFpu();
   void enableMpu();
   void customDispatcher() noexcept;
+  void customDispatcherPostDataInit() noexcept;
 } /** namespace startup */
 } /** namespace hw */
 } /** namespace jel */

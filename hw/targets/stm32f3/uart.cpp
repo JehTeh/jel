@@ -111,11 +111,13 @@ void BasicUart::loadTxBuffer(const char c)
 bool BasicUart::isRxBufferReady()
 {
 //  return UARTCharsAvail(hw_->base) > 0 ? true : false;
+  return false;
 }
 
 bool BasicUart::isTxBufferReady()
 {
 //  return !UARTBusy(hw_->base);
+  return false;
 }
 
 void BasicUart::setRxIsrEnable(const bool enableIsr)

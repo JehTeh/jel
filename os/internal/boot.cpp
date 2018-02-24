@@ -140,6 +140,7 @@ void _resetVector(void)
   hw::startup::enableFpu();
   initBss();
   initData();
+  hw::startup::customDispatcherPostDataInit();
   hw::irq::InterruptController::enableGlobalInterrupts();
   os::SystemAllocator::constructSystemAllocator();
   hw::sysclock::SystemSteadyClockSource::startClock();

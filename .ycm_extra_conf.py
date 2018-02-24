@@ -77,10 +77,16 @@ flags = [
 '-I',
 './../',
 '-DHW_TARGET_STM32F302RCT6',
+'-DUSE_HAL_DRIVER',
+'-DSTM32F302xC',
 '-I',
 './ThirdParty/STM-Cube-MX/jel_base/Inc',
 '-I',
 './ThirdParty/STM-Cube-MX/jel_base/Drivers/STM32F3xx_HAL_Driver/Inc',
+'-I',
+'./ThirdParty/STM-Cube-MX/jel_base/Drivers/CMSIS/Device/ST/STM32F3xx/Include',
+'-I',
+'./ThirdParty/STM-Cube-MX/jel_base/Drivers/CMSIS/Include',
 ]
 # Set this to the absolute path to the folder (NOT the file!) containing the
 # compile_commands.json file to use that instead of 'flags'. See here for

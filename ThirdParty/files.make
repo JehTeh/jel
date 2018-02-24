@@ -54,6 +54,7 @@ STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\por
 
 STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\STM-Cube-MX\jel_base\,\
    	Src\usart.c \
+   	Src\main.c \
    	Src\gpio.c \
    	Src\tim.c \
    	Src\system_stm32f3xx.c \
