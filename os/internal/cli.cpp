@@ -176,7 +176,8 @@ size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
     if(terminated_)
     {
       ios_->write("\r\n");
-      std::strncpy(buffer, wb_.c_str(), bufferSize - 1);
+      wb_.append("\r\n");
+      std::strncpy(buffer, wb_.c_str(), bufferSize - 2);
       buffer[bufferSize - 1] = '\0'; //Ensure buffer is null terminated.
       return wb_.length() > bufferSize ? bufferSize : wb_.length();
     }
@@ -654,12 +655,13 @@ void Vtt::HistoryBuffer::prevVpos()
   }
 }
 
-Tokenizer::Tokenizer(String& str, const char delimiter) : tc_(0), s_(str)
+Tokenizer::Tokenizer(String& str, const char* delimiters) : tc_(0), s_(str)
 {
   if(s_.length() == 0) { return; }
   for(size_t i = 0; i < s_.length();)
   {
-    if((s_[i] == delimiter) || (s_[i] == '"'))
+    //If this character is in the list of delimiters, replace will a null.
+    if((std::strchr(delimiters, s_[i]) != nullptr) || (s_[i] == '"'))
     { 
       if(s_[i] == '"')
       {
@@ -684,7 +686,9 @@ Tokenizer::Tokenizer(String& str, const char delimiter) : tc_(0), s_(str)
     else
     {
       tc_++;
-      while((s_[i] != delimiter) && (s_[i] != '"') && (i < s_.length())) { i++; }
+      //Advance while this is not a delimiter character.
+      while((std::strchr(delimiters, s_[i]) == nullptr) && (s_[i] != '"') && (i < s_.length())) 
+      { i++; }
     }
   }
 }

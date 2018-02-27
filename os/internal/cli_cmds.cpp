@@ -131,7 +131,7 @@ int32_t cliCmdRmon(cli::CommandIo& io)
         io.print("\r\n");
         lc++;
       }
-      if(io.waitForContinue(nullptr, pollPeriod))
+      if(io.waitForContinue("Press 'enter' to exit.", pollPeriod))
       {
         break;
       }

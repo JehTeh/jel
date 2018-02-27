@@ -134,7 +134,7 @@ private:
 class Tokenizer
 {
 public:
-  Tokenizer(String& str, const char delimiter = ' ');
+  Tokenizer(String& str, const char* delimiters = "\r\n\e ");
   const char* operator[](size_t index) const;
   size_t count() const { return tc_; }
 private:
