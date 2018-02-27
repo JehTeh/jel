@@ -26,6 +26,13 @@
 
 #pragma once
 
+#define ENABLE_THREAD_STATISTICS
+#ifdef ENABLE_THREAD_STATISTICS
+extern void jel_threadExit(volatile void*);
+extern void jel_threadEntry(volatile void*);
+extern void jel_threadCreate(volatile void*);
+#endif
+
 #include <stdint.h>
 
 #ifdef HW_TARGET_TM4C123GH6PM
@@ -53,6 +60,12 @@
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY        (5 << 5)  
 #else
 #error "No hardware target has been defined. JEL must be built for an explicit hardware target."
+#endif
+
+#ifdef ENABLE_THREAD_STATISTICS
+#define traceTASK_CREATE(x) jel_threadCreate(x)
+#define traceTASK_SWITCHED_IN() jel_threadEntry(pxCurrentTCB)
+#define traceTASK_SWITCHED_OUT() jel_threadExit(pxCurrentTCB)
 #endif
 
 #define configTICK_RATE_HZ                          ((portTickType)100)

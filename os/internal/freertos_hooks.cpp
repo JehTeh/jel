@@ -30,7 +30,7 @@
 #include <cstdint>
 /** jel Library Headers */
 #include "os/internal/indef.hpp"
-
+#include "os/api_threads.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +39,9 @@ void vApplicationIdleHook(void);
 void vApplicationTickHook(void);
 void vApplicationGetIdleTaskMemory(StaticTask_t **tcbSpace, StackType_t **stackSpace, 
   uint32_t *stackSize);
+void jel_threadCreate(volatile void* handle);
+void jel_threadEntry(volatile void* handle);
+void jel_threadExit(volatile void* handle);
 #ifdef __cplusplus
 }
 #endif
@@ -61,4 +64,37 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **tcbSpace, StackType_t **stackS
   *tcbSpace = &xIdleTaskTCB;
   *stackSpace  = &uxIdleTaskStack[0];
   *stackSize = configMINIMAL_STACK_SIZE;
+#ifdef ENABLE_THREAD_STATISTICS
+  using namespace jel::os;
+  static Thread::ThreadInfo ti =
+  {
+    Thread::Priority::minimum,
+    Thread::ExceptionHandlerPolicy::terminate,
+    &xIdleTaskTCB,
+    nullptr, nullptr, 
+    "idle",
+    configMINIMAL_STACK_SIZE * 4,
+    nullptr,
+    nullptr,
+    true,
+    jel::Duration::zero(),
+    jel::SteadyClock::zero()
+  };
+  Thread::schedulerAddIdleTask(&xIdleTaskTCB, &ti);
+#endif
+}
+
+void jel_threadCreate(volatile void* handle)
+{
+  jel::os::Thread::schedulerThreadCreation(const_cast<void*>(handle));
+}
+
+void jel_threadEntry(volatile void* handle)
+{
+  jel::os::Thread::schedulerEntry(const_cast<void*>(handle));
+}
+
+void jel_threadExit(volatile void* handle)
+{
+  jel::os::Thread::schedulerExit(const_cast<void*>(handle));
 }

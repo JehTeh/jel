@@ -51,6 +51,7 @@
 #include <cstdint>
 #include <cstring>
 #include <cassert>
+#include <clocale>
 /** jel Library Headers */
 #include "os/internal/indef.hpp"
 #include "os/api_threads.hpp"
@@ -140,6 +141,7 @@ void _resetVector(void)
   hw::startup::enableFpu();
   initBss();
   initData();
+  std::setlocale(0, "C");
   hw::startup::customDispatcherPostDataInit();
   hw::irq::InterruptController::enableGlobalInterrupts();
   os::SystemAllocator::constructSystemAllocator();
@@ -171,10 +173,9 @@ void _resetVector(void)
  * */
 int main(int, char**)
 {
-  jel::os::ThreadStatistics::initializeThreadStats();
-  TaskHandle_t h = nullptr;
-  xTaskCreate(&jel::os::bootThread, "BOOT", 2048, &h, 
-    configMAX_PRIORITIES | portPRIVILEGE_BIT, nullptr);
+  std::unique_ptr<jel::os::Thread> btThread = 
+    std::make_unique<jel::os::Thread>(&jel::os::bootThread, nullptr, "BOOT", 2048);
+  btThread->detach();
   vTaskStartScheduler();
   return 1;
 }
@@ -254,6 +255,10 @@ void bootThread(void*)
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
     __init_array_start[i]();
+  }
+  while(true)
+  {
+    ThisThread::sleepfor(Duration::seconds(1));
   }
   ThisThread::deleteSelf();
 }

@@ -65,13 +65,20 @@ void GenericThread_Base::startThread(Thread* threadObject)
   }
   else
   {
+    //Create with minimum priority. This allows us to insert thread into the ireg_ before it
+    //executes.
     if(xTaskCreate(reinterpret_cast<void(*)(void*)>(&dispatcher), 
-         inf->name_, inf->maxStack_, inf, static_cast<uint32_t>(inf->priority_),
+         inf->name_, inf->maxStack_bytes_ / 4 + (inf->maxStack_bytes_ % 4), inf, 
+         static_cast<uint32_t>(Thread::Priority::minimum),
          &inf->handle_) != pdPASS)
     {
       throw Exception{ExceptionCode::threadConstructionFailed, 
         "Failed to allocate the required memory when constructing a new Thread."};
     }
+#ifdef ENABLE_THREAD_STATISTICS
+    Thread::ireg_->insert({inf->handle_, inf});
+#endif
+    vTaskPrioritySet(inf->handle_, static_cast<uint32_t>(inf->priority_));
   }
 }
 
@@ -79,11 +86,10 @@ void GenericThread_Base::dispatcher(void* threadInf)
 {
   Thread::ThreadInfo* inf = reinterpret_cast<Thread::ThreadInfo*>(threadInf);
   inf->handle_ = xTaskGetCurrentTaskHandle();
-  {
-    LockGuard lg(ThreadStatistics::mapLock.get());
-    void* hdl = inf->handle_;
-    ThreadStatistics::map->insert({hdl, {hdl, inf->name_}});
-  }
+#ifdef ENABLE_THREAD_STATISTICS
+  inf->totalRuntime_ = Duration::zero();
+  inf->lastEntry_ = SteadyClock::now();
+#endif
   try
   {
     inf->userFunc_(inf->userArgPtr_);
@@ -122,19 +128,34 @@ void GenericThread_Base::dispatcher(void* threadInf)
   }
   if(inf->isDetached_)
   {
+#ifdef ENABLE_THREAD_STATISTICS
+    Thread::ireg_->erase(inf->handle_);
+#endif
     delete inf;
   }
 }
 
-Thread::Thread(FunctionSignature userFunction, void* args, const char* name, const size_t stackSize,
-  const Priority priority, const ExceptionHandlerPolicy ehPolicy)
+#ifdef ENABLE_THREAD_STATISTICS
+std::unique_ptr<Thread::InfoRegistry> Thread::ireg_;
+#endif
+
+Thread::Thread(FunctionSignature userFunction, void* args, const char* name, 
+  const size_t stackSize_bytes, const Priority priority, const ExceptionHandlerPolicy ehPolicy)
 {
   //Allocate and configure inf_ structure. This needs to be seperate from the thread object so that
   //if the thread is detached the inf_ still exists.
   inf_ = std::make_unique<ThreadInfo>(); 
   inf_->userFunc_ = userFunction; inf_->userArgPtr_ = args; inf_->name_ = name;
-  inf_->maxStack_ = stackSize; inf_->priority_ = priority; inf_->ehPolicy_ = ehPolicy;
+  inf_->maxStack_bytes_ = stackSize_bytes; inf_->priority_ = priority; inf_->ehPolicy_ = ehPolicy;
   inf_->isDetached_ = false; inf_->cbMem_ = nullptr; inf_->stackMem_ = nullptr;
+#ifdef ENABLE_THREAD_STATISTICS
+  inf_->totalRuntime_ = Duration::zero();
+  inf_->lastEntry_ = Timestamp::min();
+  if(Thread::ireg_ == nullptr)
+  {
+    Thread::ireg_ = std::make_unique<Thread::InfoRegistry>();
+  }
+#endif
   startThread(this);
 }
 
@@ -142,6 +163,9 @@ Thread::~Thread() noexcept
 {
   if(inf_ != nullptr)
   {
+#ifdef ENABLE_THREAD_STATISTICS
+    ireg_->erase(inf_->handle_);
+#endif
     if(inf_->handle_ != nullptr)
     {
       vTaskDelete(inf_->handle_);
@@ -150,12 +174,55 @@ Thread::~Thread() noexcept
   }
 }
 
+#ifdef ENABLE_THREAD_STATISTICS
+void Thread::schedulerEntry(Handle handle)
+{
+  //(*ireg_)[handle]->lastEntry_ = SteadyClock::now();
+  try
+  {
+    ireg_->at(handle)->lastEntry_ = SteadyClock::now();
+  }
+  catch(const std::out_of_range& e)
+  {
+    //Nothing is purposely done here.
+    asm("nop");
+  }
+}
+
+void Thread::schedulerExit(Handle handle)
+{
+  //ThreadInfo* i = (*ireg_)[handle];
+  try
+  {
+    ThreadInfo* i = ireg_->at(handle);
+    i->totalRuntime_ += SteadyClock::now() - i->lastEntry_;
+  }
+  catch(const std::out_of_range& e)
+  {
+    //Nothing is purposely done here.
+    asm("nop");
+  }
+}
+
+void Thread::schedulerThreadCreation(Handle)
+{
+}
+
+void Thread::schedulerAddIdleTask(Handle h, ThreadInfo* inf)
+{
+  if(ireg_ == nullptr)
+  {
+    ireg_ = std::make_unique<InfoRegistry>();
+  }
+  ireg_->insert({h, inf});
+}
+#endif
+
 void Thread::detach()
 {
   inf_->isDetached_ = true;
   inf_.release();
 }
-
 
 void ThisThread::sleepfor(const Duration& time) noexcept
 {
@@ -172,55 +239,6 @@ void ThisThread::deleteSelf() noexcept
   vTaskDelete(nullptr);
 }
 
-#ifdef ENABLE_THREAD_STATISTICS
-std::unique_ptr<RecursiveMutex> ThreadStatistics::mapLock;
-std::unique_ptr<std::unordered_map<void*, ThreadStatistics>> ThreadStatistics::map;
-#endif
-
-ThreadStatistics::ThreadStatistics(void*, const char* name)
-{
-
-}
-
-void ThreadStatistics::initializeThreadStats()
-{
-#ifdef ENABLE_THREAD_STATISTICS
-  mapLock = std::make_unique<RecursiveMutex>();
-  map = std::make_unique<std::unordered_map<void*, ThreadStatistics>>();
-#endif
-}
-
-void ThreadStatistics::threadEntry()
-{
-#ifdef ENABLE_THREAD_STATISTICS
-  void* hdl = xTaskGetCurrentTaskHandle();
-  try
-  {
-    LockGuard lg(mapLock.get());
-    map->at(hdl).lastEntry = SteadyClock::now();
-  }
-  catch(const std::out_of_range& e)
-  {
-    assert(false);
-  }
-#endif
-}
-
-void ThreadStatistics::threadExit()
-{
-#ifdef ENABLE_THREAD_STATISTICS
-  void* hdl = xTaskGetCurrentTaskHandle();
-  try
-  {
-    LockGuard lg(mapLock.get());
-    map->at(hdl).totalRuntime += SteadyClock::now() - map->at(hdl).lastEntry;
-  }
-  catch(const std::out_of_range& e)
-  {
-    assert(false);
-  }
-#endif
-}
 
 } /** namespace os */
 } /** namespace jel */

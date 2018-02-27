@@ -173,6 +173,7 @@ public:
     { time_point::operator= (rhs); return *this; }
   inline Timestamp& operator=(const time_point&& rhs) 
     { time_point::operator= (rhs); return *this; }
+  inline constexpr Duration toDuration() const { return Duration{this->time_since_epoch()}; }
 };
 
 }

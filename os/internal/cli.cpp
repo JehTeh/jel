@@ -978,7 +978,7 @@ CliInstance::CliInstance(std::shared_ptr<os::AsyncIoStream>& io)
     activeCliInstance = this;
     libList_.libptr = &cliCmdLib;
     tptr_ = new os::Thread(reinterpret_cast<os::Thread::FunctionSignature>(&cliThreadDispatcher), 
-      &io, "CLI", cliThreadStackSize_Words, cliThreadPriority);
+      &io, "CLI", cliThreadStackSize_Bytes, cliThreadPriority);
   }
   else
   {
@@ -1187,12 +1187,18 @@ Status CommandIo::print(const char* format, ...)
 
 Status CommandIo::constPrint(const char* cString, const size_t length)
 {
-  return vtt_.write(cString, length);
+  printFormatters();
+  auto stat = vtt_.write(cString, length);
+  vtt_.write(os::AnsiFormatter::reset);
+  return stat;
 }
 
 Status CommandIo::constPrint(String& string)
 {
-  return vtt_.write(string.c_str(), string.length());
+  printFormatters();
+  auto stat = vtt_.write(string.c_str(), string.length());
+  vtt_.write(os::AnsiFormatter::reset);
+  return stat;
 }
 
 size_t CommandIo::currentLineLength() const 

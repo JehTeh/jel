@@ -33,6 +33,7 @@
 #include "os/internal/indef.hpp"
 #include "os/api_cli.hpp"
 #include "os/api_allocator.hpp"
+#include "os/api_threads.hpp"
 #include "hw/api_exceptions.hpp"
 
 namespace jel
@@ -41,12 +42,20 @@ namespace os
 {
 
 int32_t cliCmdMemuse(cli::CommandIo& io);
+int32_t cliCmdRmon(cli::CommandIo& io);
 
 const cli::CommandEntry cliCommandArray[] =
 {
   {
     "memuse", cliCmdMemuse, "",
     "Reports the current memory usage of various heaps and memory pools in the system.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
+    "rmon", cliCmdRmon, "%?u",
+    "Reports the current CPU usage and other thread statistics. By default, the output is "
+    "refreshed every 3 seconds. A custom refresh rate, in seconds, can optionally be included to "
+    "change this behaviour.",
     cli::AccessPermission::unrestricted, nullptr
   },
 };
@@ -78,6 +87,61 @@ int32_t cliCmdMemuse(cli::CommandIo& io)
     "jel String pool use:\r\n\tFree items: %u\r\n\tMin. Free Items: %u\r\n\tTotal Items: %u\r\n", 
     jelStringPool->itemsInPool(), jelStringPool->minimumItemsInPool(), 
     jelStringPool->maxItemsInPool());
+  return 0;
+}
+
+int32_t cliCmdRmon(cli::CommandIo& io)
+{
+#ifndef ENABLE_THREAD_STATISTICS
+  io.print("Thread statistics are not enabled on this build.");
+#else
+  io.fmt.automaticNewline = false;
+  Duration pollPeriod = Duration::seconds(3);
+  if(io.args.totalArguments() > 0)
+  {
+    pollPeriod = Duration::seconds(io.args[0].asUInt());
+  }
+  io.print("Displaying system CPU usage (%llds refresh). Press enter to exit.\r\n", 
+    pollPeriod.toSeconds());
+  constexpr size_t pBufLen = 32;
+  char pBuf[pBufLen];
+  while(true)
+  {
+    {
+      auto lg = io.lockOuput();
+      size_t lc = 0;
+      io.constPrint(AnsiFormatter::Erase::toEndOfScreen);
+      io.fmt.isBold = true;
+      io.constPrint(
+        " Handle         | Thread Name             | Total Time (ms)         | CPU(%)    \r\n");
+      io.fmt.isBold = false;
+      lc++;
+      for(const auto& tip : Thread::registry())
+      {
+        Thread::ThreadInfo& ti = *tip.second;
+        std::sprintf(pBuf, "%p", ti.handle_);
+        io.print(" %-15s|", pBuf);
+        io.print(" %-24s|", ti.name_);
+        std::sprintf(pBuf, "%lld", ti.totalRuntime_.toMilliseconds());
+        io.print(" %-24s|", pBuf);
+        std::sprintf(pBuf, "%.2f",
+          static_cast<float>(ti.totalRuntime_.toMilliseconds()) / 
+          static_cast<float>(Timestamp{SteadyClock::now()}.toDuration().toMilliseconds()) * 100.0);
+        io.print(" %-10s", pBuf);
+        io.print("\r\n");
+        lc++;
+      }
+      if(io.waitForContinue(nullptr, pollPeriod))
+      {
+        break;
+      }
+      for(size_t i = 0; i < lc; i++)
+      {
+        io.constPrint(AnsiFormatter::Cursor::up);
+      }
+    }
+  }
+#endif
   return 0;
 }
 

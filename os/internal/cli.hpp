@@ -188,7 +188,7 @@ public:
     LibrariesListItem(const Library& lib) : libptr(&lib), next(nullptr) {}
   };
   static constexpr os::AnsiFormatter::Color defaultErrorColor = os::AnsiFormatter::Color::brightRed;
-  static constexpr size_t cliThreadStackSize_Words = 512;
+  static constexpr size_t cliThreadStackSize_Bytes = 2048;
   static constexpr os::Thread::Priority cliThreadPriority = os::Thread::Priority::low;
   CliInstance(std::shared_ptr<os::AsyncIoStream>& io);
   ~CliInstance() noexcept;

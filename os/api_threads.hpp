@@ -58,12 +58,12 @@ protected:
   void startThread(Thread* threadObject);
   static void dispatcher(void* threadInf);
 };
- 
 
 class Thread : private GenericThread_Base
 {
 public:
   using FunctionSignature = void (*)(void*);
+  using Handle = void*;
   /** @enum Priority
    *  @brief Possible priorities for thread execution. 
    * */
@@ -100,14 +100,6 @@ public:
      * be made to signal that an uncaught exception occurred. */
     terminate
   };
-  Thread(FunctionSignature userFunction, void* args, const char* name, const size_t stackSize = 256,
-    const Priority priority = Priority::normal, 
-    const ExceptionHandlerPolicy ehPolicy = ExceptionHandlerPolicy::haltThread); 
-  ~Thread() noexcept;
-  void detach();
-protected:
-  friend GenericThread_Base;
-  using Handle = void*;
   struct ThreadInfo
   {
     Priority priority_;
@@ -116,12 +108,36 @@ protected:
     void(*userFunc_)(void*);
     void* userArgPtr_;
     const char* name_;
-    size_t maxStack_;
+    size_t maxStack_bytes_;
     std::unique_ptr<ThreadControlStructureMemory> cbMem_;
     std::unique_ptr<uint8_t[]> stackMem_;
     bool isDetached_;
+#ifdef ENABLE_THREAD_STATISTICS
+    Duration totalRuntime_;
+    Timestamp lastEntry_;
+#endif
   };
+#ifdef ENABLE_THREAD_STATISTICS
+  using InfoRegistry = std::unordered_map<Handle, ThreadInfo*>;
+#endif
+  Thread(FunctionSignature userFunction, void* args, const char* name, 
+    const size_t stackSize_bytes = 256, const Priority priority = Priority::normal, 
+    const ExceptionHandlerPolicy ehPolicy = ExceptionHandlerPolicy::haltThread); 
+  ~Thread() noexcept;
+  void detach();
+#ifdef ENABLE_THREAD_STATISTICS
+  static const InfoRegistry& registry() { return *ireg_; }
+  static void schedulerEntry(Handle handle);
+  static void schedulerExit(Handle handle);
+  static void schedulerThreadCreation(Handle handle);
+  static void schedulerAddIdleTask(Handle handle, ThreadInfo* info);
+#endif
+protected:
+  friend GenericThread_Base;
   std::unique_ptr<ThreadInfo> inf_;
+#ifdef ENABLE_THREAD_STATISTICS
+  static std::unique_ptr<InfoRegistry> ireg_;
+#endif
 };
 
 class ThisThread
@@ -130,23 +146,6 @@ public:
   static void sleepfor(const Duration& time) noexcept;
   static void yield() noexcept;
   static void deleteSelf() noexcept;
-};
-
-
-struct ThreadStatistics
-{
-  void* handle;
-  const char* name;
-  Timestamp lastEntry;
-  Duration totalRuntime;
-  static void initializeThreadStats();
-  static void threadEntry();
-  static void threadExit();
-#ifdef ENABLE_THREAD_STATISTICS
-  static std::unique_ptr<RecursiveMutex> mapLock;
-  static std::unique_ptr<std::unordered_map<void*, ThreadStatistics>> map;
-#endif
-  ThreadStatistics(void* handle, const char* name);
 };
 
 } /** namespace os */
