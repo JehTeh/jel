@@ -157,6 +157,11 @@ size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
   wb_ = ""; cpos_ = 0; cshandled_ = false; imode_ = false; smode_ = false; terminated_ = false;
   bufedtd_ = false;
   const Timestamp tStart = SteadyClock::now();
+  if(pfx_[0] != '\0') 
+  { 
+    ios_->write("\r"); 
+    ios_->write(pfx_); 
+  }
   while((SteadyClock::now() - tStart) < timeout)
   {
     //Read characters into the receive scratch buffer.
@@ -442,7 +447,11 @@ void Vtt::regenerateOuput()
   ios_->write('\r'); //Erase the line.
   ios_->write(fmt::reset); //Clear any active formatting.
   assert(pfx_); //Prefix string cannot be null!
-  if(pfx_[0] != '\0') { ios_->write(pfx_); } //Print the prefix string.  
+  //Print the prefix string.
+  if(pfx_[0] != '\0') 
+  { 
+    ios_->write(pfx_); 
+  } 
   if(imode_)
   {
     ios_->write(fmt::setBackgroundColor(fmt::Color::brightBlack)); //Highlight line background if 
