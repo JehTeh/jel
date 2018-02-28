@@ -34,7 +34,7 @@
 
 extern "C"
 {
-extern void _start(void) __attribute__((noreturn));
+extern void _jelEntry(void) __attribute__((noreturn));
 extern void vPortSVCHandler(void);
 extern void xPortPendSVHandler(void);
 extern void xPortSysTickHandler(void);
@@ -54,12 +54,12 @@ extern void faultIsr();
 
 using IsrPtr = void(*)(void);
 
-static volatile uint32_t bootStack[128] __attribute__((aligned(8), section (".noinit"), used));
+static volatile uint32_t bootStack[192] __attribute__((aligned(8), section (".noinit"), used));
 
 static IsrPtr __attribute__((section (".vectorTable"), used)) vectorTable[] =
 {
   reinterpret_cast<IsrPtr>(reinterpret_cast<uint32_t>(bootStack + (sizeof(bootStack) / 4))),
-  &_start,                                            // The reset handler
+  &_jelEntry,                                            // The reset handler
   &faultIsr,                                          // The NMI handler
   &faultIsr,                                          // The hard fault handler
   &faultIsr,                                          // The MPU fault handler

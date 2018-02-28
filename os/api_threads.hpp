@@ -50,6 +50,14 @@ namespace os
 
 class Thread;
 
+class ThisThread
+{
+public:
+  static void sleepfor(const Duration& time) noexcept;
+  static void yield() noexcept;
+  static void deleteSelf(bool performCompleteErasure = false) noexcept;
+};
+
 class GenericThread_Base
 {
 protected:
@@ -112,6 +120,8 @@ public:
     std::unique_ptr<ThreadControlStructureMemory> cbMem_;
     std::unique_ptr<uint8_t[]> stackMem_;
     bool isDetached_;
+    bool isDeleted_;
+    size_t minStackBeforeDeletion_bytes_;
 #ifdef ENABLE_THREAD_STATISTICS
     Duration totalRuntime_;
     Timestamp lastEntry_;
@@ -133,6 +143,7 @@ public:
   static void schedulerAddIdleTask(Handle handle, ThreadInfo* info);
 #endif
 protected:
+  friend ThisThread;
   friend GenericThread_Base;
   std::unique_ptr<ThreadInfo> inf_;
 #ifdef ENABLE_THREAD_STATISTICS
@@ -140,13 +151,6 @@ protected:
 #endif
 };
 
-class ThisThread
-{
-public:
-  static void sleepfor(const Duration& time) noexcept;
-  static void yield() noexcept;
-  static void deleteSelf() noexcept;
-};
 
 } /** namespace os */
 } /** namespace jel */

@@ -46,6 +46,7 @@ std::unique_ptr<CliArgumentPool> argumentPool;
 
 int32_t cliCmdHelp(CommandIo& io);
 int32_t cliCmdLogin(CommandIo& io);
+int32_t cliCmdTest_inputs(cli::CommandIo& io);
 
 const CommandEntry cliCommandArray[] =
 {
@@ -72,6 +73,11 @@ const CommandEntry cliCommandArray[] =
     "Note: A custom timeout of zero seconds will never expire and is not recommended. "
     "If the login command is performed again with a new timeout, the newly entered timeout will "
     "take precedence and begin counting immediately.",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
+    "test_inputs", cliCmdTest_inputs, "",
+    "A test command used to validate CLI io.xxx() input functions.\r\n",
     cli::AccessPermission::unrestricted, nullptr
   },
 };
@@ -865,7 +871,7 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(CliInstance* c
           {
             cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
               "Failed to parse argument %d [%s] into a signed integer. Argument appears to be a "
-              "float.\r\n", discardThreshold + i, tokens[i + discardThreshold]);
+              "float.\r\n", i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
@@ -873,7 +879,7 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(CliInstance* c
             //Currently this error reporting is a dirty hack. Will fix after tidying exceptions so
             //a more descriptive error can be pushed up to the CliInstance for reporting there.
             cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
-              "Failed to parse argument %d [%s] into a signed integer.\r\n", discardThreshold + i,
+              "Failed to parse argument %d [%s] into a signed integer.\r\n", i,
               tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
@@ -887,21 +893,23 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(CliInstance* c
           {
             cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
               "Failed to parse argument %d [%s] into an unsigned integer. Argument appears to be a "
-              "float.\r\n", discardThreshold + i, tokens[i + discardThreshold]);
+              "float.\r\n", i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           if(std::strchr(tokens[i + discardThreshold], '-') != nullptr)
           {
             cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
               "Failed to parse argument %d [%s] into an unsigned integer. Argument appears to be a "
-              "negative number.\r\n", discardThreshold + i, tokens[i + discardThreshold]);
+              "negative number.\r\n", i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
-          if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
+          auto x = std::sscanf(tokens[i + discardThreshold], p.formatString, &temp);
+          if(x != 1)
+          //if(std::sscanf(tokens[i + discardThreshold], p.formatString, &temp) != 1)
           {
             cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
               "Failed to parse argument %d [%s] into an unsigned integer.\r\n",
-              discardThreshold + i, tokens[i + discardThreshold]);
+              i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           appendListItem(temp);
@@ -914,7 +922,7 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(CliInstance* c
           {
             cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
               "Failed to parse argument %d [%s] into a floating point value.\r\n",
-              discardThreshold + i, tokens[i + discardThreshold]);
+              i, tokens[i + discardThreshold]);
             return Status::argumentTypeMismatch;
           }
           appendListItem(temp);
@@ -1226,13 +1234,33 @@ const os::PrettyPrinter::Config& CommandIo::printerConfig() const
 
 size_t CommandIo::scan(char* buffer, size_t bufferLen, const Duration& timeout)
 {
-  (void)buffer; (void)bufferLen; (void)timeout;
-  return 0;
+  return vtt_.read(buffer, bufferLen, timeout);
 }
 
 bool CommandIo::getConfirmation(const char* prompt, const Duration& timeout)
 {
-  (void)prompt; (void)timeout;
+  constexpr size_t bufLen = 8;
+  Timestamp startT = SteadyClock::now();
+  char buf[bufLen];
+  auto sg = ToScopeGuard([&](){ vtt_.prefix(prompt); }, [&](){vtt_.prefix(nullptr);});
+  while((SteadyClock::now() - startT) < timeout)
+  {
+    vtt_.read(buf, bufLen, timeout - (SteadyClock::now() - startT));
+    for(size_t i = 0; i < bufLen; i++)
+    {
+      if(buf[i] == '\0') { break; }
+      else if((buf[i] >= 0x41) && (buf[i] <= 0x5A))
+      {
+        buf[i] = buf[i] + 32;
+      }
+    }
+    if(std::strstr(buf, "yes") != nullptr) { return true; }
+    if(std::strstr(buf, "y") != nullptr) { return true; }
+    if(std::strstr(buf, "true") != nullptr) { return true; }
+    if(std::strstr(buf, "no") != nullptr) { return false; }
+    if(std::strstr(buf, "n") != nullptr) { return false; }
+    if(std::strstr(buf, "false") != nullptr) { return false; }
+  }
   return false;
 }
 
@@ -1257,7 +1285,7 @@ int64_t CommandIo::readSignedInt(const char* prompt, const Duration& timeout)
 {
   constexpr size_t bufLen = 32;
   Timestamp startT = SteadyClock::now();
-  char buf[bufLen];
+  char buf[bufLen]; buf[0] = '\0';
   auto sg = ToScopeGuard([&](){ vtt_.prefix(prompt); }, [&](){vtt_.prefix(nullptr);});
   while((SteadyClock::now() - startT) < timeout)
   {
@@ -1277,13 +1305,13 @@ uint64_t CommandIo::readUnsignedInt(const char* prompt, const Duration& timeout)
 {
   constexpr size_t bufLen = 32;
   Timestamp startT = SteadyClock::now();
-  char buf[bufLen];
+  char buf[bufLen]; buf[0] = '\0';
   auto sg = ToScopeGuard([&](){ vtt_.prefix(prompt); }, [&](){vtt_.prefix(nullptr);});
   while((SteadyClock::now() - startT) < timeout)
   {
     uint64_t rval;
     vtt_.read(buf, bufLen, timeout - (SteadyClock::now() - startT));
-    if(std::strpbrk(buf, "-.") != nullptr) { continue; }
+    if(std::strpbrk(buf, "-.eE") != nullptr) { continue; }
     if(std::sscanf(buf, "%llu", &rval) == 1)
     {
       return rval;
@@ -1297,7 +1325,7 @@ double CommandIo::readDouble(const char* prompt, const Duration& timeout)
 {
   constexpr size_t bufLen = 32;
   Timestamp startT = SteadyClock::now();
-  char buf[bufLen];
+  char buf[bufLen]; buf[0] = '\0';
   auto sg = ToScopeGuard([&](){ vtt_.prefix(prompt); }, [&](){vtt_.prefix(nullptr);});
   while((SteadyClock::now() - startT) < timeout)
   {
@@ -1451,6 +1479,68 @@ int32_t cliCmdLogin(CommandIo& io)
 {
   io.print("Login support is disabled in this build.\r\n");
   return 0;
+}
+
+int32_t cliCmdTest_inputs(cli::CommandIo& io)
+{
+  io.print("Testing input read commands. Up to 10 seconds are allotted for reading the value.\r\n");
+  while(true)
+  {
+    try
+    {
+      int64_t i64 = io.readSignedInt("Enter a signed integer: ", Duration::seconds(10));
+      io.print("A value of %lld was entered.\r\n", i64);
+      uint64_t u64 = io.readUnsignedInt("Enter an unsigned integer: ", Duration::seconds(10));
+      io.print("A value of %llu was entered.\r\n", u64);
+      double dbl = io.readDouble("Enter a floating point value: ", Duration::seconds(10));
+      io.print("A value of %lf was entered.\r\n", dbl);
+      if(io.getConfirmation("Please enter 'yes' or 'no': ", Duration::seconds(10)))
+      {
+        io.print("Confirmation was received.\r\n");
+      }
+      else
+      {
+        io.print("No confirmation was received.\r\n");
+      }
+      constexpr size_t bLen = 32;
+      char buf[bLen]; buf[0] = '\0';
+      io.print("Enter arbitrary input.\r\n");
+      auto controlToSpace = [](char* buf, size_t bLen)
+      {
+        for(size_t i = 0; i < bLen; i++)
+        {
+          if(buf[i] == '\0') { break; }
+          if((buf[i] < 0x20) || (buf[i] == 0x7F))
+          {
+            buf[i] = static_cast<char>(249);
+          }
+        }
+      };
+      if(io.scan(buf, bLen, Duration::seconds(10)))
+      {
+        controlToSpace(buf, bLen);
+        io.print("'%s' was entered.\r\n", buf);
+      }
+      else
+      {
+        controlToSpace(buf, bLen);
+        io.print("No input was entered.\r\n");
+      }
+    }
+    catch(const os::Exception& e)
+    {
+      if(e.error == os::ExceptionCode::cliArgumentReadTimeout)
+      {
+        io.print("A timeout occurred waiting for user input.\r\n");
+        return 1;
+      }
+    }
+    if(!io.waitForContinue("To re-run these tests, press enter within 10 seconds.", 
+        Duration::seconds(10)))
+    {
+      return 0;
+    }
+  }
 }
 
 } /** namespace cli */

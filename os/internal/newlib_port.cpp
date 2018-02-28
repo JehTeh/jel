@@ -87,7 +87,6 @@ int _unlink(const char*);
 int _lseek(int, int, int);
 int _read(int, char*, int);
 int _write(int file, char *ptr, int len);
-void* _sbrk(int increment);
 void __libc_fini_array(void);
 #ifdef __cplusplus
 }
@@ -253,43 +252,46 @@ int _isatty(int)
 int _stat(const char* name, struct stat* st)
 {
   (void)name; (void)st;
-  return 0;
+  return -1;
 }
 
 int _fstat(int file, struct stat* st)
 {
   (void)file; (void)st;
-  return 0;
+  errno = EINVAL;
+  return -1;
 }
 
 int _open(const char* name, int flags, int mode)
 {
   (void)name; (void)flags; (void)mode;
-  return 0;
+  errno = ENFILE;
+  return -1;
 }
 
 int _close(int file)
 {
   (void)file;
-  return 0;
+  errno = EINVAL;
+  return -1;
 }
 
 int _link(const char* from, const char* to)
 {
   (void)from; (void)to;
-  return 0;
+  return -1;
 }
 
 int _unlink(const char* name)
 {
   (void)name;
-  return 0;
+  return -1;
 }
 
 int _lseek(int file, int offset, int smode)
 {
   (void)file; (void)offset; (void)smode;
-  return 0;
+  return -1;
 }
 
 int _read(int file, char* buffer, int len)
@@ -301,7 +303,7 @@ int _read(int file, char* buffer, int len)
     case STDIN_FILENO:
       return os::jelStandardIo->read(buffer, len, Duration::max());
     default:
-      return 0;
+      return -1;
   }
 }
 
@@ -315,18 +317,9 @@ int _write(int file, char *ptr, int len)
       os::jelStandardIo->write(ptr, len, Duration::max());
       return len;
     default:
-      return len;
+      return 0;
   }
 }
-
-//Newlibs allocation is completely overriden and replaced by the system allocation scheme. _sbrk
-//should not be used.
-void* _sbrk(int increment)
-{
-  (void)increment;
-  return nullptr;
-}
-
 
 namespace __cxxabiv1
 {
@@ -338,7 +331,7 @@ void __libc_fini_array(void)
 
 }
 
-void *__dso_handle = 0;
+//void *__dso_handle = 0;
 
 #ifdef __clang__
 #pragma clang diagnostic pop

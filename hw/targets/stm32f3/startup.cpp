@@ -43,10 +43,10 @@ extern void _resetVector(void) __attribute__((noreturn));
 extern void SystemInit(void);
 extern void SystemClock_Config(void);
 
-void _start(void) __attribute__((noreturn));
+void _jelEntry(void) __attribute__((noreturn));
 }
 
-void _start(void) 
+void _jelEntry(void) 
 {
   _resetVector();
 }

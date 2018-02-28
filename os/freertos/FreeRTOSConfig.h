@@ -42,7 +42,7 @@ extern void jel_threadCreate(volatile void*);
 #define configTOTAL_HEAP_SIZE                       ((size_t)(24576))
 /** Minimum task stack size, in 32b words. A value of  (1024 bytes) was found sufficient in
  * testing for most tasks, including the idle task. */
-#define configMINIMAL_STACK_SIZE                    ((unsigned short)256)
+#define configMINIMAL_STACK_SIZE                    ((unsigned short)128)
 /** Interrupt priority configuration, from TI. NOTE: When enabling hardware interrupts, ensure they
  * are mapped to a priority equal to or below this to avoid corrupting RTOS routines! The only time
  * an interrupt can be mapped to a higher priority is when it explicitly avoids using any and all

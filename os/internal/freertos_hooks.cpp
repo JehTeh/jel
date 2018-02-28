@@ -76,7 +76,7 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **tcbSpace, StackType_t **stackS
     configMINIMAL_STACK_SIZE * 4,
     nullptr,
     nullptr,
-    true,
+    true, false, 0,
     jel::Duration::zero(),
     jel::SteadyClock::zero()
   };

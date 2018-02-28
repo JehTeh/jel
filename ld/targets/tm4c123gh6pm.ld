@@ -121,11 +121,13 @@ SECTIONS
   . = ALIGN(4);
   .bss :
   {
+    __bss_start__ = .;
     _sbss = .;
     *(.bss)
     *(.bss*)
     *(COMMON)
     . = ALIGN(4);
+    __bss_end__ = .;
     _ebss = .;
   } >RAM
   /* Remove information from the standard libraries */

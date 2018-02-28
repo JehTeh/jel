@@ -75,6 +75,7 @@ extern void (*__preinit_array_start []) (void);
 extern void (*__preinit_array_end []) (void);
 extern void (*__init_array_start []) (void);
 extern void (*__init_array_end []) (void);
+extern void _init(void);
 
 extern volatile const uint32_t _sidata; /**< Start of initialization for .data, located in ROM. */
 extern volatile uint32_t _sdata; /**< Start of .data section, located in RAM. */
@@ -133,6 +134,7 @@ inline static void initData()
  *    bootloader routines.
  *
  *  */
+
 void _resetVector(void)
 {
   using namespace jel;
@@ -141,7 +143,6 @@ void _resetVector(void)
   hw::startup::enableFpu();
   initBss();
   initData();
-  std::setlocale(0, "C");
   hw::startup::customDispatcherPostDataInit();
   hw::irq::InterruptController::enableGlobalInterrupts();
   os::SystemAllocator::constructSystemAllocator();
@@ -153,6 +154,7 @@ void _resetVector(void)
   {
     __init_array_start[i]();
   }
+  _init();
   main(0, nullptr);
   std::terminate();
 }
@@ -203,9 +205,7 @@ extern const cli::Library cliCmdLib;
 void initializeStandardIo()
 {
   using namespace hw::uart;
-  BasicUart_Base::Config uartConfig;
-  uartConfig.baud = Baudrate::bps256kBit;
-  uartConfig.instance = UartInstance::uart0;
+  BasicUart_Base::Config uartConfig = config::jelRuntimeConfiguration.stdioUartConfiguration;
   BasicUart* uart = nullptr;
   switch(config::jelRuntimeConfiguration.stdioPortType)
   {
@@ -241,8 +241,6 @@ void initializeStandardIo()
   jelStandardIo->write("' has been loaded successfully.\r\n");
 };
 
-char buf[128];
-
 void bootThread(void*)
 {
   //Initialize GPIO hardware and the serial I/O port
@@ -255,10 +253,6 @@ void bootThread(void*)
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
     __init_array_start[i]();
-  }
-  while(true)
-  {
-    ThisThread::sleepfor(Duration::seconds(1));
   }
   ThisThread::deleteSelf();
 }

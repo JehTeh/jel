@@ -364,10 +364,10 @@ struct AnsiFormatter
     static constexpr char downArrowKey[] = "\e[B";
     static constexpr char rightArrowKey[] = "\e[C";
     static constexpr char leftArrowKey[] = "\e[D";
-    static constexpr char shiftUpArrowKey[] = "\e[OA";
-    static constexpr char shiftDownArrowKey[] = "\e[OB";
-    static constexpr char shiftRightArrowKey[] = "\e[OC";
-    static constexpr char shiftLeftArrowKey[] = "\e[OD";
+    static constexpr char shiftUpArrowKey[] = "\eOA";
+    static constexpr char shiftDownArrowKey[] = "\eOB";
+    static constexpr char shiftRightArrowKey[] = "\eOC";
+    static constexpr char shiftLeftArrowKey[] = "\eOD";
     static constexpr char homeKey[] = "\e[1~";
     static constexpr char insertKey[] = "\e[2~";
     static constexpr char deleteKey[] = "\e[3~";

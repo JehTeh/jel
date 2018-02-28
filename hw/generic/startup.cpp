@@ -33,10 +33,10 @@
 extern "C"
 {
 extern void _resetVector(void) __attribute__((noreturn));
-void _start(void) __attribute__((noreturn, weak));
+extern void _jelEntry(void) __attribute__((noreturn));
 }
 
-void _start(void) 
+__attribute__((weak)) void _jelEntry()
 {
   _resetVector();
 }

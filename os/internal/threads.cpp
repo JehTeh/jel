@@ -147,7 +147,8 @@ Thread::Thread(FunctionSignature userFunction, void* args, const char* name,
   inf_ = std::make_unique<ThreadInfo>(); 
   inf_->userFunc_ = userFunction; inf_->userArgPtr_ = args; inf_->name_ = name;
   inf_->maxStack_bytes_ = stackSize_bytes; inf_->priority_ = priority; inf_->ehPolicy_ = ehPolicy;
-  inf_->isDetached_ = false; inf_->cbMem_ = nullptr; inf_->stackMem_ = nullptr;
+  inf_->isDetached_ = false; inf_->isDeleted_ = false; 
+  inf_->cbMem_ = nullptr; inf_->stackMem_ = nullptr;
 #ifdef ENABLE_THREAD_STATISTICS
   inf_->totalRuntime_ = Duration::zero();
   inf_->lastEntry_ = Timestamp::min();
@@ -234,11 +235,21 @@ void ThisThread::yield() noexcept
   taskYIELD();
 }
 
-void ThisThread::deleteSelf() noexcept
+void ThisThread::deleteSelf(bool performCompleteErasure) noexcept
 {
+  if(performCompleteErasure)
+  {
+    Thread::ThreadInfo* iptr = Thread::ireg_->at(xTaskGetCurrentTaskHandle());
+    delete(iptr);
+  }
+  else
+  {
+    Thread::ireg_->at(xTaskGetCurrentTaskHandle())->isDeleted_ = true;
+    Thread::ireg_->at(xTaskGetCurrentTaskHandle())->minStackBeforeDeletion_bytes_ = 
+      uxTaskGetStackHighWaterMark(nullptr) * 4;
+  }
   vTaskDelete(nullptr);
 }
-
 
 } /** namespace os */
 } /** namespace jel */

@@ -38,10 +38,10 @@ extern "C"
 {
 extern void _resetVector(void) __attribute__((noreturn));
 
-void _start(void) __attribute__((noreturn));
+void _jelEntry(void) __attribute__((noreturn));
 }
 
-void _start(void) 
+void _jelEntry(void) 
 {
   /** No stack specific init is required on the tiva. */
   _resetVector();

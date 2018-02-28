@@ -42,7 +42,8 @@ namespace os
 {
 
 int32_t cliCmdMemuse(cli::CommandIo& io);
-int32_t cliCmdRmon(cli::CommandIo& io);
+int32_t cliCmdCpuuse(cli::CommandIo& io);
+int32_t cliCmdStackuse(cli::CommandIo& io);
 
 const cli::CommandEntry cliCommandArray[] =
 {
@@ -52,10 +53,17 @@ const cli::CommandEntry cliCommandArray[] =
     cli::AccessPermission::unrestricted, nullptr
   },
   {
-    "rmon", cliCmdRmon, "%?u",
+    "cpuuse", cliCmdCpuuse, "%?u",
     "Reports the current CPU usage and other thread statistics. By default, the output is "
     "refreshed every 3 seconds. A custom refresh rate, in seconds, can optionally be included to "
-    "change this behaviour.",
+    "change this behaviour.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
+    "stackuse", cliCmdStackuse, "%?s",
+    "Takes a snapshot of the current thread stack usage. Note that this can cause issues in "
+    "systems that require precision timing, as the scheduler may be paused for a while. To "
+    "ensure that you have actually read this message, call this command with a '-c' parameter.\n",
     cli::AccessPermission::unrestricted, nullptr
   },
 };
@@ -90,7 +98,7 @@ int32_t cliCmdMemuse(cli::CommandIo& io)
   return 0;
 }
 
-int32_t cliCmdRmon(cli::CommandIo& io)
+int32_t cliCmdCpuuse(cli::CommandIo& io)
 {
 #ifndef ENABLE_THREAD_STATISTICS
   io.print("Thread statistics are not enabled on this build.");
@@ -99,7 +107,14 @@ int32_t cliCmdRmon(cli::CommandIo& io)
   Duration pollPeriod = Duration::seconds(3);
   if(io.args.totalArguments() > 0)
   {
-    pollPeriod = Duration::seconds(io.args[0].asUInt());
+    if(Duration::seconds(io.args[0].asUInt()) > Duration::zero())
+    {
+      pollPeriod = Duration::seconds(io.args[0].asUInt());
+    }
+    else
+    {
+      pollPeriod = Duration::seconds(1);
+    }
   }
   io.print("Displaying system CPU usage (%llds refresh). Press enter to exit.\r\n", 
     pollPeriod.toSeconds());
@@ -119,9 +134,24 @@ int32_t cliCmdRmon(cli::CommandIo& io)
       for(const auto& tip : Thread::registry())
       {
         Thread::ThreadInfo& ti = *tip.second;
+        if(tip.second == nullptr)
+        {
+          return 1;
+        }
         std::sprintf(pBuf, "%p", ti.handle_);
         io.print(" %-15s|", pBuf);
-        io.print(" %-24s|", ti.name_);
+        if(ti.isDeleted_)
+        {
+          constexpr char ds[] = " (deleted)";
+          constexpr size_t dsl = constStringLen(ds);
+          std::strncpy(pBuf, ti.name_, pBufLen - dsl);
+          std::strcat(pBuf, ds);
+          io.print(" %-24s|", pBuf);
+        }
+        else
+        {
+          io.print(" %-24s|", ti.name_);
+        }
         std::sprintf(pBuf, "%lld", ti.totalRuntime_.toMilliseconds());
         io.print(" %-24s|", pBuf);
         std::sprintf(pBuf, "%.2f",
@@ -143,6 +173,68 @@ int32_t cliCmdRmon(cli::CommandIo& io)
   }
 #endif
   return 0;
+}
+
+int32_t cliCmdStackuse(cli::CommandIo& io)
+{
+  if(io.args.totalArguments() < 1)
+  {
+    io.print("Please read the command help before using this command.\r\n");
+    return 1;
+  }
+  if(io.args[0].asString() != "-c")
+  {
+    io.print("Please read the command help before using this command.\r\n");
+    return 2;
+  }
+#ifndef ENABLE_THREAD_STATISTICS
+  io.print("Thread statistics tracking must be enabled to use this command.\r\n");
+  return 3;
+#else
+  io.fmt.isBold = true;
+  io.constPrint(
+    " Handle         | Thread Name             | Min Stack Free (B) | Stack Size (B)\r\n");
+  io.fmt.isBold = false;
+  constexpr size_t pBufLen = 32;
+  char pBuf[pBufLen];
+  for(const auto& tip : Thread::registry())
+  {
+    Thread::ThreadInfo& ti = *tip.second;
+    if(tip.second == nullptr)
+    {
+      return 1;
+    }
+    std::sprintf(pBuf, "%p", ti.handle_);
+    io.print(" %-15s|", pBuf);
+    if(ti.isDeleted_)
+    {
+      constexpr char ds[] = " (deleted)";
+      constexpr size_t dsl = constStringLen(ds);
+      std::strncpy(pBuf, ti.name_, pBufLen - dsl);
+      std::strcat(pBuf, ds);
+      io.print(" %-24s|", pBuf);
+    }
+    else
+    {
+      io.print(" %-24s|", ti.name_);
+    }
+    if(ti.isDeleted_)
+    {
+      std::sprintf(pBuf, "%d", ti.minStackBeforeDeletion_bytes_);
+      io.print(" %-19s|", pBuf);
+    }
+    else
+    {
+      size_t minFree_Words = uxTaskGetStackHighWaterMark(ti.handle_);
+      std::sprintf(pBuf, "%d", minFree_Words * 4);
+      io.print(" %-19s|", pBuf);
+    }
+    std::sprintf(pBuf, "%d", ti.maxStack_bytes_);
+    io.print(" %-14s", pBuf);
+    io.print("\r\n");
+  }
+  return 0;
+#endif
 }
 
 } /** namespace os */
