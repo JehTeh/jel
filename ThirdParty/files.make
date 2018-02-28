@@ -51,8 +51,8 @@ TM4C123GH6PM_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\port
 STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\
    	port.c \
 		)
-
-STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\STM-Cube-MX\jel_base\,\
+#STM HAL source files
+STM32F302RCT6_HAL_CSOURCE += $(addprefix ThirdParty\STM-Cube-MX\jel_base\,\
    	Src\usart.c \
    	Src\main.c \
    	Src\gpio.c \

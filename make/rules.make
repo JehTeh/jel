@@ -91,13 +91,21 @@ $(TARGET_NAME) : $(OUTPUT_BINARY_FILE)
 		@echo "Library created successfully."
 endef
 
+# TEMPLRECIPE_TARGET_LIBRARY_ONLY
+# Expands into a recipe that builds *only* the library files for a target, and does not require any
+# linking.
+define TEMPLRECIPE_TARGET_LIBRARY_ONLY
+$(TARGET_NAME) : $(OUTPUT_LIBRARY_FILE)
+		@echo "$(OUTPUT_LIBRARY_FILE) built successfully."
+endef
+
 # TEMPLRECIPE_BINARY
 # Expands to a recipe that produces a flashable binary file of only the core jel library and
 # hardware drivers. Useful for testing jel changes in isolation or evaluating the library
 # stand-alone on a target.
 #
 define TEMPLRECIPE_BINARY
-$(OUTPUT_BINARY_FILE) : $(OUTPUT_LIBRARY_FILE) 
+$(OUTPUT_BINARY_FILE) : $(OUTPUT_LIBRARY_FILE) $(CUSTOM_BINARY_DEPS)
 		@if not exist "$(OUTPUT_DIRECTORY_INFO)" mkdir "$(OUTPUT_DIRECTORY_INFO)"
 		@echo "Linking elf..."
 		@$$(LD) -o $(OUTPUT_ELF_FILE) $(ALL_OBJECT_FILES) -L$(OUTPUT_DIRECTORY_EXEC) -T $(LINKER_SCRIPT) $(LDFLAGS) -Wl,-Map,$(OUTPUT_DIRECTORY_INFO)\$(TARGET_NAME)_mapfile$(FILEEXTENSION_MAP)

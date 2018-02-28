@@ -55,6 +55,7 @@ TARGET_CXXSOURCE = $(CXXSOURCE) $(TM4C123GH6PM_CXXSOURCE)
 ALL_OBJECT_FILES += $(strip $(patsubst %.s, $(OUTPUT_DIRECTORY_OBJECTS)\\%.o, $(TARGET_ASOURCE)))
 ALL_OBJECT_FILES += $(strip $(patsubst %.c, $(OUTPUT_DIRECTORY_OBJECTS)\\%.o, $(TARGET_CSOURCE)))
 ALL_OBJECT_FILES += $(strip $(patsubst %.cpp, $(OUTPUT_DIRECTORY_OBJECTS)\\%.o, $(TARGET_CXXSOURCE)))
+CUSTOM_BINARY_DEPS = 
 
 #Evaluation of template recipe rules found in the ./make/rules.make file. 
 $(eval $(TEMPLRECIPE_INFO))
@@ -93,6 +94,7 @@ TARGET_CXXSOURCE = $(CXXSOURCE) $(TM4C123GH6PM_CXXSOURCE)
 ALL_OBJECT_FILES += $(strip $(patsubst %.s, $(OUTPUT_DIRECTORY_OBJECTS)\\%.o, $(TARGET_ASOURCE)))
 ALL_OBJECT_FILES += $(strip $(patsubst %.c, $(OUTPUT_DIRECTORY_OBJECTS)\\%.o, $(TARGET_CSOURCE)))
 ALL_OBJECT_FILES += $(strip $(patsubst %.cpp, $(OUTPUT_DIRECTORY_OBJECTS)\\%.o, $(TARGET_CXXSOURCE)))
+CUSTOM_BINARY_DEPS = 
 
 #Evaluation of template recipe rules found in the ./make/rules.make file. 
 $(eval $(TEMPLRECIPE_INFO))
