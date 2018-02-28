@@ -730,6 +730,15 @@ const char* Tokenizer::operator[](size_t index) const
   return nullptr;
 }
 
+constexpr char ParameterString::Symbols::delimiters[];
+constexpr char ParameterString::Symbols::optionals[];
+constexpr char ParameterString::Symbols::ignored[];
+constexpr char ParameterString::Symbols::specifiers_char[];
+constexpr char ParameterString::Symbols::specifiers_strings[];
+constexpr char ParameterString::Symbols::specifiers_signedInts[];
+constexpr char ParameterString::Symbols::specifiers_unsignedInts[];
+constexpr char ParameterString::Symbols::specifiers_float[];
+
 ParameterString::ParameterString(const char* pstr) : pcnt_(0), optcnt_(0), s_(pstr)
 {
   if(s_ == nullptr) { return; }
