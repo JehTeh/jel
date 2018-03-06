@@ -51,6 +51,7 @@ inline TickType_t toTicks(const Duration& d) noexcept
 {
   //Assumption is made that TickType_t is an integer type.
   constexpr uint64_t usPerTick = 1'000'000 / configTICK_RATE_HZ;
+  if(d < Duration::zero()) { return 0; }
   uint64_t t_us = d.toMicroseconds();
   if(t_us > 0)
   {

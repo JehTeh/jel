@@ -31,6 +31,8 @@
 #include <cassert>
 /** jel Library Headers */
 #include "hw/api_gpio.hpp"
+/** STM HAL Headers */
+#include "gpio.h"
 
 namespace jel
 {
@@ -41,7 +43,7 @@ namespace gpio
 
 void GpioController::initializeGpio()
 {
-  
+  MX_GPIO_Init();
 }
 
 

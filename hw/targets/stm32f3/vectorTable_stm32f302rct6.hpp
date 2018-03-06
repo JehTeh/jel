@@ -32,10 +32,71 @@
 
 extern "C"
 {
-extern void _start(void) __attribute__((noreturn));
+void faultIsrWrapper(void);
+ 
+extern void _jelEntry(void) __attribute__((noreturn));
 extern void vPortSVCHandler(void);
 extern void xPortPendSVHandler(void);
 extern void xPortSysTickHandler(void);
+extern void DebugMon_Handler(void);
+extern void WWDG_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void PVD_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void TAMP_STAMP_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void RTC_WKUP_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void FLASH_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void RCC_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void EXTI0_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void EXTI1_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void EXTI2_TSC_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void EXTI3_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void EXTI4_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA1_Channel1_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA1_Channel2_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA1_Channel3_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA1_Channel4_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA1_Channel5_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA1_Channel6_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA1_Channel7_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void ADC1_2_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void USB_HP_CAN_TX_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void USB_LP_CAN_RX0_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void CAN_RX1_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void CAN_SCE_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void EXTI9_5_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void TIM1_BRK_TIM15_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void TIM1_UP_TIM16_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void TIM1_TRG_COM_TIM17_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void TIM1_CC_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void TIM2_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void TIM3_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void TIM4_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void I2C1_EV_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void I2C1_ER_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void I2C2_EV_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void I2C2_ER_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void SPI1_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void SPI2_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void USART1_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void USART2_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void USART3_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void EXTI15_10_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void RTC_Alarm_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void USBWakeUp_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void SPI3_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void UART4_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void UART5_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void TIM6_DAC_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA2_Channel1_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA2_Channel2_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA2_Channel3_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA2_Channel4_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void DMA2_Channel5_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void COMP1_2_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void COMP4_6_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void USB_HP_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void USB_LP_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void USBWakeUp_RMP_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
+extern void FPU_IRQHandler(void) __attribute__((weak, alias ("faultIsrWrapper")));
 }
 
 extern void isrEntry_Uart0() noexcept __attribute__((interrupt ("IRQ")));
@@ -52,167 +113,118 @@ extern void faultIsr();
 
 using IsrPtr = void(*)(void);
 
-static volatile uint32_t bootStack[128] __attribute__((aligned(8), section (".noinit"), used));
+static volatile uint32_t bootStack[192] __attribute__((aligned(8), section (".noinit"), used));
 
 static IsrPtr __attribute__((section (".vectorTable"), used)) vectorTable[] =
 {
   reinterpret_cast<IsrPtr>(reinterpret_cast<uint32_t>(bootStack + (sizeof(bootStack) / 4))),
-  &_start,                                            // The reset handler
-  &faultIsr,                                          // The NMI handler
-  &faultIsr,                                          // The hard fault handler
-  &faultIsr,                                          // The MPU fault handler
-  &faultIsr,                                          // The bus fault handler
-  &faultIsr,                                          // The usage fault handler
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  &vPortSVCHandler,                                   // SVCall handler
-  phantomIsr,                                         // Debug monitor handler
-  nullptr,                                            // Reserved
-  &xPortPendSVHandler,                                // The PendSV handler
-  &xPortSysTickHandler,                               // The SysTick handler
-  phantomIsr,                                         // GPIO Port A
-  phantomIsr,                                         // GPIO Port B
-  phantomIsr,                                         // GPIO Port C
-  phantomIsr,                                         // GPIO Port D
-  phantomIsr,                                         // GPIO Port E
-  isrEntry_Uart0,                                     // UART0 Rx and Tx
-  phantomIsr,                                         // UART1 Rx and Tx
-  phantomIsr,                                         // SSI0 Rx and Tx
-  phantomIsr,                                         // I2C0 Master and Slave
-  phantomIsr,                                         // PWM Fault
-  phantomIsr,                                         // PWM Generator 0
-  phantomIsr,                                         // PWM Generator 1
-  phantomIsr,                                         // PWM Generator 2
-  phantomIsr,                                         // Quadrature Encoder 0
-  phantomIsr,                                         // ADC Sequence 0
-  phantomIsr,                                         // ADC Sequence 1
-  phantomIsr,                                         // ADC Sequence 2
-  phantomIsr,                                         // ADC Sequence 3
-  phantomIsr,                                         // Watchdog timer
-  phantomIsr,                                         // Timer 0 subtimer A
-  phantomIsr,                                         // Timer 0 subtimer B
-  phantomIsr,                                         // Timer 1 subtimer A
-  phantomIsr,                                         // Timer 1 subtimer B
-  phantomIsr,                                         // Timer 2 subtimer A
-  phantomIsr,                                         // Timer 2 subtimer B
-  phantomIsr,                                         // Analog Comparator 0
-  phantomIsr,                                         // Analog Comparator 1
-  phantomIsr,                                         // Analog Comparator 2
-  phantomIsr,                                         // System Control (PLL, OSC, BO)
-  phantomIsr,                                         // FLASH Control
-  phantomIsr,                                         // GPIO Port F
-  phantomIsr,                                         // GPIO Port G
-  phantomIsr,                                         // GPIO Port H
-  phantomIsr,                                         // UART2 Rx and Tx
-  phantomIsr,                                         // SSI1 Rx and Tx
-  phantomIsr,                                         // Timer 3 subtimer A
-  phantomIsr,                                         // Timer 3 subtimer B
-  phantomIsr,                                         // I2C1 Master and Slave
-  phantomIsr,                                         // Quadrature Encoder 1
-  phantomIsr,                                         // CAN0
-  phantomIsr,                                         // CAN1
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  phantomIsr,                                         // Hibernate
-  phantomIsr,                                         // USB0
-  phantomIsr,                                         // PWM Generator 3
-  phantomIsr,                                         // uDMA Software Transfer
-  phantomIsr,                                         // uDMA Error
-  phantomIsr,                                         // ADC1 Sequence 0
-  phantomIsr,                                         // ADC1 Sequence 1
-  phantomIsr,                                         // ADC1 Sequence 2
-  phantomIsr,                                         // ADC1 Sequence 3
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  phantomIsr,                                         // GPIO Port J
-  phantomIsr,                                         // GPIO Port K
-  phantomIsr,                                         // GPIO Port L
-  phantomIsr,                                         // SSI2 Rx and Tx
-  phantomIsr,                                         // SSI3 Rx and Tx
-  phantomIsr,                                         // UART3 Rx and Tx
-  phantomIsr,                                         // UART4 Rx and Tx
-  phantomIsr,                                         // UART5 Rx and Tx
-  phantomIsr,                                         // UART6 Rx and Tx
-  phantomIsr,                                         // UART7 Rx and Tx
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  phantomIsr,                                         // I2C2 Master and Slave
-  phantomIsr,                                         // I2C3 Master and Slave
-  phantomIsr,                                         // Timer 4 subtimer A
-  phantomIsr,                                         // Timer 4 subtimer B
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  phantomIsr,                                         // Timer 5 subtimer A
-  phantomIsr,                                         // Timer 5 subtimer B
-  phantomIsr,                                         // Wide Timer 0 subtimer A
-  phantomIsr,                                         // Wide Timer 0 subtimer B
-  phantomIsr,                                         // Wide Timer 1 subtimer A
-  phantomIsr,                                         // Wide Timer 1 subtimer B
-  phantomIsr,                                         // Wide Timer 2 subtimer A
-  phantomIsr,                                         // Wide Timer 2 subtimer B
-  phantomIsr,                                         // Wide Timer 3 subtimer A
-  phantomIsr,                                         // Wide Timer 3 subtimer B
-  phantomIsr,                                         // Wide Timer 4 subtimer A
-  phantomIsr,                                         // Wide Timer 4 subtimer B
-  phantomIsr,                                         // Wide Timer 5 subtimer A
-  phantomIsr,                                         // Wide Timer 5 subtimer B
-  phantomIsr,                                         // FPU
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  phantomIsr,                                         // I2C4 Master and Slave
-  phantomIsr,                                         // I2C5 Master and Slave
-  phantomIsr,                                         // GPIO Port M
-  phantomIsr,                                         // GPIO Port N
-  phantomIsr,                                         // Quadrature Encoder 2
-  nullptr,                                            // Reserved
-  nullptr,                                            // Reserved
-  phantomIsr,                                         // GPIO Port P (Summary or P0)
-  phantomIsr,                                         // GPIO Port P1
-  phantomIsr,                                         // GPIO Port P2
-  phantomIsr,                                         // GPIO Port P3
-  phantomIsr,                                         // GPIO Port P4
-  phantomIsr,                                         // GPIO Port P5
-  phantomIsr,                                         // GPIO Port P6
-  phantomIsr,                                         // GPIO Port P7
-  phantomIsr,                                         // GPIO Port Q (Summary or Q0)
-  phantomIsr,                                         // GPIO Port Q1
-  phantomIsr,                                         // GPIO Port Q2
-  phantomIsr,                                         // GPIO Port Q3
-  phantomIsr,                                         // GPIO Port Q4
-  phantomIsr,                                         // GPIO Port Q5
-  phantomIsr,                                         // GPIO Port Q6
-  phantomIsr,                                         // GPIO Port Q7
-  phantomIsr,                                         // GPIO Port R
-  phantomIsr,                                         // GPIO Port S
-  phantomIsr,                                         // PWM 1 Generator 0
-  phantomIsr,                                         // PWM 1 Generator 1
-  phantomIsr,                                         // PWM 1 Generator 2
-  phantomIsr,                                         // PWM 1 Generator 3
-  phantomIsr                                          // PWM 1 Fault
+  &_jelEntry,         
+  &faultIsr,          
+  &faultIsr,          
+  &faultIsr,          
+  &faultIsr,          
+  &faultIsr,          
+  0,
+  0,
+  0,
+  0,
+  vPortSVCHandler,
+  DebugMon_Handler,
+  0,
+  xPortPendSVHandler,
+  xPortSysTickHandler,
+  WWDG_IRQHandler,
+  PVD_IRQHandler,
+  TAMP_STAMP_IRQHandler,
+  RTC_WKUP_IRQHandler,
+  FLASH_IRQHandler,
+  RCC_IRQHandler,
+  EXTI0_IRQHandler,
+  EXTI1_IRQHandler,
+  EXTI2_TSC_IRQHandler,
+  EXTI3_IRQHandler,
+  EXTI4_IRQHandler,
+  DMA1_Channel1_IRQHandler,
+  DMA1_Channel2_IRQHandler,
+  DMA1_Channel3_IRQHandler,
+  DMA1_Channel4_IRQHandler,
+  DMA1_Channel5_IRQHandler,
+  DMA1_Channel6_IRQHandler,
+  DMA1_Channel7_IRQHandler,
+  ADC1_2_IRQHandler,
+  USB_HP_CAN_TX_IRQHandler,
+  USB_LP_CAN_RX0_IRQHandler,
+  CAN_RX1_IRQHandler,
+  CAN_SCE_IRQHandler,
+  EXTI9_5_IRQHandler,
+  TIM1_BRK_TIM15_IRQHandler,
+  TIM1_UP_TIM16_IRQHandler,
+  TIM1_TRG_COM_TIM17_IRQHandler,
+  TIM1_CC_IRQHandler,
+  TIM2_IRQHandler,
+  TIM3_IRQHandler,
+  TIM4_IRQHandler,
+  I2C1_EV_IRQHandler,
+  I2C1_ER_IRQHandler,
+  I2C2_EV_IRQHandler,
+  I2C2_ER_IRQHandler,
+  SPI1_IRQHandler,
+  SPI2_IRQHandler,
+  USART1_IRQHandler,
+  USART2_IRQHandler,
+  USART3_IRQHandler,
+  EXTI15_10_IRQHandler,
+  RTC_Alarm_IRQHandler,
+  USBWakeUp_IRQHandler,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  SPI3_IRQHandler,
+  UART4_IRQHandler,
+  UART5_IRQHandler,
+  TIM6_DAC_IRQHandler,
+  0,
+  DMA2_Channel1_IRQHandler,
+  DMA2_Channel2_IRQHandler,
+  DMA2_Channel3_IRQHandler,
+  DMA2_Channel4_IRQHandler,
+  DMA2_Channel5_IRQHandler,
+  0,
+  0,
+  0,
+  COMP1_2_IRQHandler,
+  COMP4_6_IRQHandler,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  USB_HP_IRQHandler,
+  USB_LP_IRQHandler,
+  USBWakeUp_RMP_IRQHandler,
+  0,
+  0,
+  0,
+  0,
+  FPU_IRQHandler
 };
+
+
 }
 }
 }
+
+void faultIsrWrapper(void)
+{
+  jel::hw::irq::faultIsr();
+}
+
 

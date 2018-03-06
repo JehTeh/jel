@@ -153,11 +153,11 @@ public:
   };
   BasicUart_Base(const Config& config);
   virtual ~BasicUart_Base() noexcept {}
-  size_t read(char* buffer, const size_t bufferLen) final override;
-  void write(const char* cStr, const size_t length_chars) final override;
-  void write(const char c) final override;
-  bool isBusy(const Duration& timeout) final override;
-  size_t waitForChars(const Duration& timeout) final override;
+  virtual size_t read(char* buffer, const size_t bufferLen) override;
+  virtual void write(const char* cStr, const size_t length_chars) override;
+  virtual void write(const char c) override;
+  virtual bool isBusy(const Duration& timeout) override;
+  virtual size_t waitForChars(const Duration& timeout) override;
   virtual void reconfigure(const Config& newConfig) = 0;
 protected:
   /**   */
@@ -229,6 +229,13 @@ public:
   BasicUart& operator=(const BasicUart&) = delete;
   BasicUart& operator=(BasicUart&&) = delete;
   void reconfigure(const Config& config) final override;
+#ifdef HW_TARGET_STM32F302RCT6
+  virtual size_t read(char* buffer, const size_t bufferLen) final override;
+  virtual void write(const char* cStr, const size_t length_chars) final override;
+  virtual void write(const char c) final override;
+  virtual bool isBusy(const Duration& timeout) final override;
+  virtual size_t waitForChars(const Duration& timeout) final override;
+#endif
 private:
   friend InterruptDispatcher;
   const BasicUartHardwareProperties* hw_;

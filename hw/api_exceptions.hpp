@@ -40,6 +40,7 @@ namespace hw
 
 enum class ExceptionCode : uint32_t
 {
+  driverInstantiationFailed,
   driverFeatureNotSupported,
   driverInstanceNotAvailable,
   receiveOverrun,

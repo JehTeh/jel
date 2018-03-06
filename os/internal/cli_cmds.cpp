@@ -44,6 +44,8 @@ namespace os
 int32_t cliCmdMemuse(cli::CommandIo& io);
 int32_t cliCmdCpuuse(cli::CommandIo& io);
 int32_t cliCmdStackuse(cli::CommandIo& io);
+int32_t cliCmdReadclock(cli::CommandIo& io);
+int32_t cliCmdReboot(cli::CommandIo& io);
 
 const cli::CommandEntry cliCommandArray[] =
 {
@@ -64,6 +66,22 @@ const cli::CommandEntry cliCommandArray[] =
     "Takes a snapshot of the current thread stack usage. Note that this can cause issues in "
     "systems that require precision timing, as the scheduler may be paused for a while. To "
     "ensure that you have actually read this message, call this command with a '-c' parameter.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
+    "readclock", cliCmdReadclock, "%?d",
+    "Reads the current system clock. Automatically refreshes at a default rate of once per "
+    "second.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
+    "reboot", cliCmdReboot, "%?u%?s",
+    "Restarts the processor/MCU. Depending on the hardware platform, this is at minimum a software "
+    "reset but if at all possible a full system reset. Two optional arguments can be specified:\n"
+    "\t[0] (unsigned integer): Time in seconds to delay before restarting. This defaults to five "
+    "seconds and allows the countdown to be aborted if desired.\n"
+    "\t[1] (string): If '-f' (force) is passed, reset is performed immediately without confirmation"
+    ". It is recommended this option not be used on systems sensitive to an immediate shutdown.\n",
     cli::AccessPermission::unrestricted, nullptr
   },
 };
@@ -235,6 +253,56 @@ int32_t cliCmdStackuse(cli::CommandIo& io)
   }
   return 0;
 #endif
+}
+
+int32_t cliCmdReadclock(cli::CommandIo& io)
+{
+  io.fmt.automaticNewline = false;
+  Duration pollPeriod = Duration::seconds(1);
+  if(io.args.totalArguments() > 0)
+  {
+    if(Duration::seconds(io.args[0].asUInt()) > Duration::zero())
+    {
+      pollPeriod = Duration::seconds(io.args[0].asUInt());
+    }
+    else
+    {
+      pollPeriod = Duration::seconds(1);
+    }
+  }
+  io.print("Displaying system time (%llds refresh). Press enter to exit.\r\n", 
+    pollPeriod.toSeconds());
+  while(true)
+  {
+    {
+      auto lg = io.lockOuput();
+      io.print(AnsiFormatter::Erase::entireLine);
+      auto d = Duration{SteadyClock::now() - SteadyClock::zero()};
+      io.print("System Clock: %llus (%lldus)\r", d.toSeconds(), d.toMicroseconds());
+    }
+    if(io.waitForContinue("", pollPeriod))
+    {
+      break;
+    }
+  }
+  return 0;
+}
+
+int32_t cliCmdReboot(cli::CommandIo& io)
+{
+  Duration countdown{Duration::seconds(5)};
+  if(io.args.totalArguments() == 0)
+  {
+
+  }
+  else if(io.args.totalArguments() == 1)
+  {
+
+  }
+  else
+  {
+    
+  }
 }
 
 } /** namespace os */

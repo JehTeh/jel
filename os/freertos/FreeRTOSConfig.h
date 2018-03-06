@@ -35,6 +35,9 @@ extern void jel_threadCreate(volatile void*);
 
 #include <stdint.h>
 
+//
+// Tiva TM4C123GH6PM
+//
 #ifdef HW_TARGET_TM4C123GH6PM
 /** CPU clock speed. */
 #define configCPU_CLOCK_HZ                          ((uint32_t)80000000)
@@ -51,13 +54,25 @@ extern void jel_threadCreate(volatile void*);
 #define configKERNEL_INTERRUPT_PRIORITY             (7 << 5)    
 /* Priority 5, or 0xA0 as only the top three bits are implemented. */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY        (5 << 5)  
-
+//
+// STM32F302RCT6 Target
+//
 #elif defined(HW_TARGET_STM32F302RCT6)
 #define configCPU_CLOCK_HZ                          ((uint32_t)64000000)
 #define configTOTAL_HEAP_SIZE                       ((size_t)(24576))
 #define configMINIMAL_STACK_SIZE                    ((unsigned short)256)
-#define configKERNEL_INTERRUPT_PRIORITY             (7 << 5)    
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY        (5 << 5)  
+#ifdef __NVIC_PRIO_BITS
+#define configPRIO_BITS         __NVIC_PRIO_BITS
+#else
+#define configPRIO_BITS         4
+#endif
+#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY   15
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY 5
+#define configKERNEL_INTERRUPT_PRIORITY 		( configLIBRARY_LOWEST_INTERRUPT_PRIORITY << (8 - configPRIO_BITS) )
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY 	( configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY << (8 - configPRIO_BITS) )
+//
+// No target defined.
+//
 #else
 #error "No hardware target has been defined. JEL must be built for an explicit hardware target."
 #endif

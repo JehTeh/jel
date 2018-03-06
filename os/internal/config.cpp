@@ -57,9 +57,9 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_stm32f302rct6=
 {
   "stm32f302rct6_default", SerialPortType::uart0,
   {
-    hw::uart::UartInstance::uart0, defaultBaud, hw::uart::Parity::none,
+    hw::uart::UartInstance::uart1, hw::uart::Baudrate::bps115200, hw::uart::Parity::none,
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
-    hw::uart::BlockingMode::isr
+    hw::uart::BlockingMode::polling
   },
 };
 

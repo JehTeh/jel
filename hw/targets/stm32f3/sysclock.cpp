@@ -30,6 +30,14 @@
 #include <cstdint>
 /** jel Library Headers */
 #include "hw/api_sysclock.hpp"
+#include "os/api_system.hpp"
+/** stm HAL Headers */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wregister"
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#include "tim.h"
+#include "stm32f3xx_ll_tim.h"
+#pragma GCC diagnostic pop
 
 namespace jel
 {
@@ -38,18 +46,45 @@ namespace hw
 namespace sysclock
 {
 
+TIM_HandleTypeDef& sclk = htim2;
+uint32_t sclkCount;
 
 void SystemSteadyClockSource::startClock()
 {
-
+  MX_TIM2_Init();
+  HAL_TIM_Base_Start_IT(&sclk);
+  sclkCount = 0;
 }
 
 uint64_t SystemSteadyClockSource::readClock() noexcept
 {
-  return 0;
+  CriticalSection cs; 
+  uint32_t low, high;
+  {
+    CriticalSection cs;
+    uint32_t flagStatusBefore = LL_TIM_IsActiveFlag_UPDATE(sclk.Instance);
+    low = LL_TIM_GetCounter(sclk.Instance);
+    uint32_t flagStatusAfter = LL_TIM_IsActiveFlag_UPDATE(sclk.Instance);
+    high = sclkCount;
+    //Check if overflow occured.
+    if(flagStatusAfter != flagStatusBefore)
+    {
+      low = LL_TIM_GetCounter(sclk.Instance);
+      //Increment copy of tick count here, actual value will be incremented by ISR function after
+      //critical section is exited.
+      high++;
+    }
+  }
+  return (static_cast<uint64_t>(high) << 32) | low;
 }
 
 } /** namespace sysclock */
 } /** namespace hw */
 } /** namespace jel */
 
+extern "C" void jel_hw_sysclock_isr(void)
+{
+  using namespace jel::hw::sysclock;
+  sclkCount++;
+  __HAL_TIM_CLEAR_IT(&htim2, TIM_FLAG_UPDATE);
+}

@@ -26,10 +26,11 @@
 
 #Target specific flags, including -DHW_TARGET_[XXX] flag.
 STM32F302RCT6_CPU_FLAGS = $(CPU_TARGET_CORTEX_M4F_FLAGS)
-STM32F302RCT6_CUSTOM_FLAGS = -I $(RTOS_INCLUDE_PATH_ARM_M4F) -I "./ThirdParty/STM-Cube-MX/jel_base/Inc"\
--I "./ThirdParty/STM-Cube-MX/jel_base/Drivers/STM32F3xx_HAL_Driver/Inc" \
--I "./ThirdParty/STM-Cube-MX/jel_base/Drivers/CMSIS/Device/ST/STM32F3xx/Include" \
--I "./ThirdParty/STM-Cube-MX/jel_base/Drivers/CMSIS/Include" \
+STM32F302RCT6_CUSTOM_FLAGS = -I $(RTOS_INCLUDE_PATH_ARM_M4F) -I "./ThirdParty/STM-Cube-MX/mtz_dd/DentalDrill/Inc"\
+-I "./ThirdParty/STM-Cube-MX/mtz_dd/DentalDrill/Drivers/STM32F3xx_HAL_Driver/Inc" \
+-I "./ThirdParty/STM-Cube-MX/mtz_dd/DentalDrill/Drivers/CMSIS/Device/ST/STM32F3xx/Include" \
+-I "./ThirdParty/STM-Cube-MX/mtz_dd/DentalDrill/Drivers/CMSIS/Include" \
+-I "./ThirdParty/STM-Cube-MX/mtz_dd/DentalDrill/Drivers/CMSIS/RTOS/Template" \
 -DHW_TARGET_STM32F302RCT6 -DUSE_HAL_DRIVER -DSTM32F302xC
 STM32F302RCT6_LIBRARY_INCLUDES =
 

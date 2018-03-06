@@ -91,6 +91,27 @@ namespace jel
 namespace os
 {
 void bootThread(void*);
+
+int32_t cliCmdReadAdc(cli::CommandIo& io);
+const cli::CommandEntry cliTestCommandArray[] =
+{
+  {
+    "readadc1", cliCmdReadAdc, "%u%?u",
+    "Reads the value of the specified ADC1 pin. The command accepts up to two arguments:\n"
+    "\t[0]: Positive integer in the range 1-15: The ADC1 channel to sample.\n"
+    "\t[1]: (Optional) a positive integer. This is the polling time in milliseconds, and defaults "
+    "to 1000ms.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+};
+extern const cli::Library cliTestCmdLib =
+{
+  "test",
+  "The test library features various commands for system testing and validation.",
+  sizeof(cliTestCommandArray)/sizeof(cli::CommandEntry),
+  cliTestCommandArray
+};
+
 }
 }
 
@@ -143,6 +164,8 @@ void _resetVector(void)
   hw::startup::enableFpu();
   initBss();
   initData();
+  std::lconv* lptr = localeconv();
+  (void)lptr;
   hw::startup::customDispatcherPostDataInit();
   hw::irq::InterruptController::enableGlobalInterrupts();
   os::SystemAllocator::constructSystemAllocator();
@@ -176,7 +199,7 @@ void _resetVector(void)
 int main(int, char**)
 {
   std::unique_ptr<jel::os::Thread> btThread = 
-    std::make_unique<jel::os::Thread>(&jel::os::bootThread, nullptr, "BOOT", 2048);
+    std::make_unique<jel::os::Thread>(&jel::os::bootThread, nullptr, "BOOT", 4096);
   btThread->detach();
   vTaskStartScheduler();
   return 1;
@@ -249,6 +272,7 @@ void bootThread(void*)
   jelStringPool = std::make_shared<ObjectPool<String, config::stringPoolStringCount>>();
   cli::startSystemCli(jelStandardIo);
   cli::registerLibrary(cliCmdLib);
+  cli::registerLibrary(cliTestCmdLib);
   /** C++ Static object constructors are called here. */
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
@@ -256,6 +280,89 @@ void bootThread(void*)
   }
   ThisThread::deleteSelf();
 }
+
+#include "adc.h"
+
+int32_t cliCmdReadAdc(cli::CommandIo& io)
+{
+  ADC_HandleTypeDef* adc = &hadc1;
+  MX_ADC1_Init();
+  size_t channel = io.args[0].asUInt();
+  switch(channel)
+  {
+    case 1:
+      channel = ADC_CHANNEL_1;
+      break;
+    case 2:
+      channel = ADC_CHANNEL_2;
+      break;
+    case 5:
+      channel = ADC_CHANNEL_5;
+      break;
+    case 6:
+      channel = ADC_CHANNEL_6;
+      break;
+    case 7:
+      channel = ADC_CHANNEL_7;
+      break;
+    case 8:
+      channel = ADC_CHANNEL_8;
+      break;
+    case 9:
+      channel = ADC_CHANNEL_9;
+      break;
+    default:
+      io.fmt.color = AnsiFormatter::Color::brightRed;
+      io.print("This channel (%u) is not supported by the hardware configuration.\n", channel);
+      return 1;
+  }
+  Duration pollRate = Duration::milliseconds(1000);
+  if(io.args.totalArguments() > 1)
+  {
+    pollRate = Duration::milliseconds(io.args[1].asUInt());
+    if(pollRate < Duration::milliseconds(100))
+    {
+      io.fmt.color = AnsiFormatter::Color::yellow;
+      io.print("Caution: Polling rates faster than 100ms may cause issues when displayed via "
+        "the CLI.\n");
+      io.fmt.color = AnsiFormatter::Color::default_;
+    }
+  }
+  io.print("Polling ADC channel every %lldms. Press enter to exit.\r\n", pollRate.toMilliseconds());
+  ADC_ChannelConfTypeDef sConfig;
+  sConfig.Channel = channel;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if(HAL_ADC_ConfigChannel(adc, &sConfig) != HAL_OK)
+  {
+    return 2;
+  }
+  io.fmt.automaticNewline = false;
+  while(true)
+  {
+    HAL_ADC_Start(adc);
+    if(HAL_ADC_PollForConversion(adc, HAL_MAX_DELAY) != HAL_OK)
+    {
+      return 3;
+    }
+    uint32_t cres = HAL_ADC_GetValue(adc);
+    {
+      auto lg = io.lockOuput();
+      io.print("ADC: %lu                   \r", cres);
+    }
+    if(io.waitForContinue("", pollRate))
+    {
+      io.print("ADC: %lu                   \r", cres);
+      break;
+    }
+  }
+  return 0;
+} 
+
+
 
 } /** namespace os */
 } /** namespace jel */
