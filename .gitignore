@@ -39,7 +39,11 @@
 
 #build outputs
 build_*
-!build_stm32f302rct6_dbg/bin/stm32f302rct6_dbg.a.a
+!*_rel.a
+!*_dbg.a
+!*/
+build_hal*
+*_mapfile.map
 
 #Include certain precompiled libraries
 !ThirdParty/tivaware/driverlib/gcc/libdriver.a
