@@ -52,12 +52,11 @@ STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\por
    	port.c \
 		)
 #STM HAL source files
-STM32F302RCT6_HAL_CSOURCE += $(addprefix ThirdParty\STM-Cube-MX\mtz_dd\DentalDrill\,\
+STM32F302RCT6_HAL_CSOURCE += $(addprefix ThirdParty\STM-Cube-MX\jel_base\,\
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c \
     Src/tim.c \
     Src/stm32f3xx_hal_timebase_TIM.c \
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_uart.c \
-    Src/i2c.c \
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_pwr.c \
     Src/stm32f3xx_it.c \
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc_ex.c \
@@ -75,7 +74,6 @@ STM32F302RCT6_HAL_CSOURCE += $(addprefix ThirdParty\STM-Cube-MX\mtz_dd\DentalDri
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_flash.c \
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_cortex.c \
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_adc_ex.c \
-    Src/adc.c \
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_i2c.c \
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_adc.c \
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_dma.c \

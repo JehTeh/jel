@@ -51,13 +51,13 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef        htim4; 
+TIM_HandleTypeDef        htim3; 
 uint32_t                 uwIncrementState = 0;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @brief  This function configures the TIM4 as a time base source. 
+  * @brief  This function configures the TIM3 as a time base source. 
   *         The time source is configured  to have 1ms time base with a dedicated 
   *         Tick interrupt priority. 
   * @note   This function is called  automatically at the beginning of program after
@@ -72,41 +72,41 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   uint32_t              uwPrescalerValue = 0;
   uint32_t              pFLatency;
   
-  /*Configure the TIM4 IRQ priority */
-  HAL_NVIC_SetPriority(TIM4_IRQn, TickPriority ,0); 
+  /*Configure the TIM3 IRQ priority */
+  HAL_NVIC_SetPriority(TIM3_IRQn, TickPriority ,0); 
   
-  /* Enable the TIM4 global Interrupt */
-  HAL_NVIC_EnableIRQ(TIM4_IRQn); 
+  /* Enable the TIM3 global Interrupt */
+  HAL_NVIC_EnableIRQ(TIM3_IRQn); 
   
-  /* Enable TIM4 clock */
-  __HAL_RCC_TIM4_CLK_ENABLE();
+  /* Enable TIM3 clock */
+  __HAL_RCC_TIM3_CLK_ENABLE();
   
   /* Get clock configuration */
   HAL_RCC_GetClockConfig(&clkconfig, &pFLatency);
   
-  /* Compute TIM4 clock */
+  /* Compute TIM3 clock */
   uwTimclock = 2*HAL_RCC_GetPCLK1Freq();
    
-  /* Compute the prescaler value to have TIM4 counter clock equal to 1MHz */
+  /* Compute the prescaler value to have TIM3 counter clock equal to 1MHz */
   uwPrescalerValue = (uint32_t) ((uwTimclock / 1000000) - 1);
   
-  /* Initialize TIM4 */
-  htim4.Instance = TIM4;
+  /* Initialize TIM3 */
+  htim3.Instance = TIM3;
   
   /* Initialize TIMx peripheral as follow:
-  + Period = [(TIM4CLK/1000) - 1]. to have a (1/1000) s time base.
+  + Period = [(TIM3CLK/1000) - 1]. to have a (1/1000) s time base.
   + Prescaler = (uwTimclock/1000000 - 1) to have a 1MHz counter clock.
   + ClockDivision = 0
   + Counter direction = Up
   */
-  htim4.Init.Period = (1000000 / 1000) - 1;
-  htim4.Init.Prescaler = uwPrescalerValue;
-  htim4.Init.ClockDivision = 0;
-  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  if(HAL_TIM_Base_Init(&htim4) == HAL_OK)
+  htim3.Init.Period = (1000000 / 1000) - 1;
+  htim3.Init.Prescaler = uwPrescalerValue;
+  htim3.Init.ClockDivision = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  if(HAL_TIM_Base_Init(&htim3) == HAL_OK)
   {
     /* Start the TIM time Base generation in interrupt mode */
-    return HAL_TIM_Base_Start_IT(&htim4);
+    return HAL_TIM_Base_Start_IT(&htim3);
   }
   
   /* Return function status */
@@ -115,26 +115,26 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 
 /**
   * @brief  Suspend Tick increment.
-  * @note   Disable the tick increment by disabling TIM4 update interrupt.
+  * @note   Disable the tick increment by disabling TIM3 update interrupt.
   * @param  None
   * @retval None
   */
 void HAL_SuspendTick(void)
 {
-  /* Disable TIM4 update Interrupt */
-  __HAL_TIM_DISABLE_IT(&htim4, TIM_IT_UPDATE);                                                  
+  /* Disable TIM3 update Interrupt */
+  __HAL_TIM_DISABLE_IT(&htim3, TIM_IT_UPDATE);                                                  
 }
 
 /**
   * @brief  Resume Tick increment.
-  * @note   Enable the tick increment by Enabling TIM4 update interrupt.
+  * @note   Enable the tick increment by Enabling TIM3 update interrupt.
   * @param  None
   * @retval None
   */
 void HAL_ResumeTick(void)
 {
-  /* Enable TIM4 Update interrupt */
-  __HAL_TIM_ENABLE_IT(&htim4, TIM_IT_UPDATE);
+  /* Enable TIM3 Update interrupt */
+  __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_UPDATE);
 }
 
 /**
