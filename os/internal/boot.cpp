@@ -280,8 +280,10 @@ void bootThread(void*)
   }
   ThisThread::deleteSelf();
 }
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wregister" 
 #include "adc.h"
+#pragma GCC diagnostic pop
 
 int32_t cliCmdReadAdc(cli::CommandIo& io)
 {

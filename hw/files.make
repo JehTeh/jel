@@ -35,6 +35,7 @@ CSOURCE += $(addprefix hw\,\
 CXXSOURCE += $(addprefix hw\,\
 		generic\startup.cpp \
 		generic\uart.cpp \
+		generic\wdt.cpp \
 		)
 
 TM4C123GH6PM_ASOURCE += $(addprefix hw\targets\tm4c\,\
@@ -59,4 +60,5 @@ STM32F302RCT6_CXXSOURCE += $(addprefix hw\targets\stm32f3\,\
 		gpio.cpp \
 		sysclock.cpp \
 		uart.cpp \
+		wdt.cpp \
 		)

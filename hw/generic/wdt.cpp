@@ -1,7 +1,8 @@
-/** @file hw/targets/stm32f3/gpio.cpp
- *  @brief STM32 GPIO definitions
- *
- *  @detail
+/** @file hw/generic/wdt.cpp
+ *  @brief Generalized MCU hardware watchdog definitions. These are weakly-linked stubs that should
+ *  be overridden in the target specific hardware implementation where appropriate.
+ *  Note that the only WDT related functions implemented have to do with forcing system reset, as
+ *  these are required by the jel whereas full WDT functionality is not.
  *
  *  @author Jonathan Thomson 
  */
@@ -28,29 +29,22 @@
 
 /** C/C++ Standard Library Headers */
 #include <cstdint>
-#include <cassert>
 /** jel Library Headers */
-#include "hw/api_gpio.hpp"
-/** STM HAL Headers */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wregister" 
-#include "gpio.h"
-#pragma GCC diagnostic pop
+#include "hw/api_wdt.hpp"
 
 namespace jel
 {
 namespace hw
 {
-namespace gpio
+namespace wdt
 {
-
-void GpioController::initializeGpio()
+__attribute__((weak)) void WdtController::systemReset()
 {
-  MX_GPIO_Init();
+  volatile uint32_t* aircr = reinterpret_cast<uint32_t*>(0xE000ED04);
+  *aircr = 0x5FA0'0004;
 }
 
-
-} /** namespace gpio */
+} /** namespace wdt */
 } /** namespace hw */
 } /** namespace jel */
 

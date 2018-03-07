@@ -36,14 +36,16 @@ namespace jel
 {
 namespace hw
 {
-namespace gpio
+namespace wdt
 {
 
-class GpioController
+class WdtController
 {
 public:
-  /** Enables the GPIO pins and default multiplexing options. */
-  static void initializeGpio();
+  /** Performs a hard reset of the microcontroller by forcing the WDT to expire. On systems where
+   * the WDT first asserts an interrupt, this functionality may be overridden when systemReset() is
+   * called to allow forcing an immediate reset. */
+  static void systemReset();
 };
 
 

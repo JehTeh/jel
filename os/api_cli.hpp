@@ -111,10 +111,6 @@ class CliInstance;
  * */
 class ArgumentContainer
 {
-public:
-  size_t totalArguments() const { return numOfArgs_; }
-  const Argument& operator[](size_t idx) const; 
-  bool isArgListValid() const { return argListValid_; };
 private:
   friend CommandIo;
   enum class Status
@@ -145,6 +141,27 @@ private:
     const size_t discardThreshold, const char* params);
   template<typename T>
   ArgListItem& appendListItem(T&& argval);
+public:
+  class ConstIterator
+  {
+    public:
+      ConstIterator& operator++() { this->ptr = ptr->next.get(); return *this; }
+      ConstIterator operator++(int) { auto temp(*this); this->ptr = ptr->next.get(); return temp; }
+      bool operator!=(ConstIterator& rhs) 
+        { if(this->ptr != rhs.ptr) { return true; } return false; }
+      const Argument& operator*() { return ptr->arg; }
+      const Argument& operator->() { return ptr->arg; }
+    private:
+      friend ArgumentContainer;
+      constexpr ConstIterator(const ArgListItem* baseItem) : ptr(baseItem)
+        { ptr = baseItem; }
+      const ArgListItem* ptr;
+  };
+  size_t totalArguments() const { return numOfArgs_; }
+  const Argument& operator[](size_t idx) const; 
+  bool isArgListValid() const { return argListValid_; };
+  ConstIterator begin() const { return ConstIterator{firstArg.get()}; }
+  ConstIterator end() const { return ConstIterator{nullptr}; };
 };
 
 struct FormatSpecifer

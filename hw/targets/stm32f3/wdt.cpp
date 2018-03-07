@@ -1,5 +1,5 @@
-/** @file hw/targets/stm32f3/gpio.cpp
- *  @brief STM32 GPIO definitions
+/** @file hw/targets/stm32f3/wdt.cpp
+ *  @brief STM32 WDT definitions
  *
  *  @detail
  *
@@ -30,23 +30,24 @@
 #include <cstdint>
 #include <cassert>
 /** jel Library Headers */
-#include "hw/api_gpio.hpp"
+#include "hw/api_wdt.hpp"
 /** STM HAL Headers */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wregister" 
-#include "gpio.h"
 #pragma GCC diagnostic pop
+
+extern "C" void HAL_NVIC_SystemReset(void);
 
 namespace jel
 {
 namespace hw
 {
-namespace gpio
+namespace wdt
 {
 
-void GpioController::initializeGpio()
+void WdtController::systemReset()
 {
-  MX_GPIO_Init();
+  HAL_NVIC_SystemReset();
 }
 
 

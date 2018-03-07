@@ -35,6 +35,7 @@
 #include "os/api_allocator.hpp"
 #include "os/api_threads.hpp"
 #include "hw/api_exceptions.hpp"
+#include "hw/api_wdt.hpp"
 
 namespace jel
 {
@@ -291,18 +292,71 @@ int32_t cliCmdReadclock(cli::CommandIo& io)
 int32_t cliCmdReboot(cli::CommandIo& io)
 {
   Duration countdown{Duration::seconds(5)};
-  if(io.args.totalArguments() == 0)
+  bool forceRestart = false;
+  for(const auto& i : io.args)
   {
-
+    if(i.type == cli::Argument::Type::uint64_t_)
+    {
+      countdown = Duration::seconds(i.asUInt());
+    }
+    else if(i.type == cli::Argument::Type::string_)
+    {
+      if(i.asString() == "-f")
+      {
+        forceRestart = true;
+      }
+      else
+      {
+        io.fmt.color = AnsiFormatter::Color::yellow;
+        io.print("'%s' is not a supported argument.\n", i.asString().c_str());
+        return 1;
+      }
+    }
+    else
+    {
+      io.fmt.color = AnsiFormatter::Color::red;
+      io.print("Illegal argument detected.\n");
+      return 2;
+    }
   }
-  else if(io.args.totalArguments() == 1)
+  if(forceRestart)
   {
-
+    hw::wdt::WdtController::systemReset();
   }
   else
   {
-    
+    io.fmt.automaticNewline = false;
+    io.print("The system will reboot in %llu seconds. Continue (y/n)?\r\n",
+      countdown.toSeconds());
+    if(!io.getConfirmation(" "))
+    {
+      io.fmt.color = AnsiFormatter::Color::brightBlue;
+      io.print("Reset aborted.\r\n");
+      return 0;
+    }
+    while(true)
+    {
+      if(countdown.toSeconds() <= 0)
+      {
+        break;
+      }
+      if(countdown.toSeconds() <= 7) { io.fmt.color = AnsiFormatter::Color::brightYellow; }
+      if(countdown.toSeconds() <= 3) { io.fmt.color = AnsiFormatter::Color::brightRed; }
+      io.print("Restarting system in %llu seconds (press enter to abort)...\r", 
+        countdown.toSeconds());
+      if(io.waitForContinue("", Duration::seconds(1)))
+      {
+        io.fmt.color = AnsiFormatter::Color::brightBlue;
+        io.print("Reset aborted.\r\n");
+        return 0;
+      }
+      io.print(AnsiFormatter::Erase::entireLine);
+      countdown -= Duration::seconds(1);
+    }
+    io.print("\n");
+    hw::wdt::WdtController::systemReset();
   }
+  return 0;
 }
 
 } /** namespace os */
