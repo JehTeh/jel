@@ -62,13 +62,6 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-//This is a somewhat dirty hack to remove the STM main function from the build while not affecting
-//generated HAL code, aside from what is included in the main function. Driver initialization is now
-//the responsibility of the application and jel (i.e. the MX_GPIO_Init(), MX_..._Init() functions).
-//The HAL_Init() and SystemClock_Config() functions are handled by the jel on bootup, and the core
-//timer, UART and GPIO are also initialized on startup.
-__attribute__((unused)) static void DUMMY(void) 
-{
 #ifdef false
 /* USER CODE END 0 */
 
@@ -101,8 +94,8 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART1_UART_Init();
   MX_TIM2_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -113,11 +106,10 @@ int main(void)
   {
 
   /* USER CODE END WHILE */
-
   /* USER CODE BEGIN 3 */
-
-  }
 #endif
+__attribute__((unused)) static void DUMMYFN(void)
+{
   /* USER CODE END 3 */
 
 }

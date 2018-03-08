@@ -42,11 +42,15 @@ namespace jel
 namespace os 
 {
 
+size_t printCpuUse(cli::CommandIo& io, char* pBuf, const size_t pBufLen, const bool showStack);
+size_t printMemUse(cli::CommandIo& io, char* pBuf, const size_t pBufLen);
+
 int32_t cliCmdMemuse(cli::CommandIo& io);
 int32_t cliCmdCpuuse(cli::CommandIo& io);
 int32_t cliCmdStackuse(cli::CommandIo& io);
 int32_t cliCmdReadclock(cli::CommandIo& io);
 int32_t cliCmdReboot(cli::CommandIo& io);
+int32_t cliCmdRmon(cli::CommandIo& io);
 
 const cli::CommandEntry cliCommandArray[] =
 {
@@ -70,7 +74,7 @@ const cli::CommandEntry cliCommandArray[] =
     cli::AccessPermission::unrestricted, nullptr
   },
   {
-    "readclock", cliCmdReadclock, "%?d",
+    "time", cliCmdReadclock, "%?d",
     "Reads the current system clock. Automatically refreshes at a default rate of once per "
     "second.\n",
     cli::AccessPermission::unrestricted, nullptr
@@ -83,6 +87,19 @@ const cli::CommandEntry cliCommandArray[] =
     "seconds and allows the countdown to be aborted if desired.\n"
     "\t[1] (string): If '-f' (force) is passed, reset is performed immediately without confirmation"
     ". It is recommended this option not be used on systems sensitive to an immediate shutdown.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
+    "rmon", cliCmdRmon, "%?s%?u",
+    "Displays the resource monitoring utility. The Resource MONitor (RMON) provides information "
+    "about all registered system resources, such as memory heaps/pools, thread statistics, etc. "
+    "Two parameters are optionally accepted by the command. These are:\n"
+    "\t[0] String: If a '-s' flag is provided, stack usage information will be included. If '-n' "
+    "is provided, no stack usage is included. '-n' is the default.\n"
+    "\t[1] Unsigned integer: Refresh time in seconds. Defaults to 3.\n"
+    "Note that monitoring thread stack usage can have a significant impact on the RTOS scheduler "
+    "and should likely be avoided when the system is under hard real-time constraints and heavy "
+    "CPU load.\n",
     cli::AccessPermission::unrestricted, nullptr
   },
 };
@@ -145,41 +162,7 @@ int32_t cliCmdCpuuse(cli::CommandIo& io)
       auto lg = io.lockOuput();
       size_t lc = 0;
       io.constPrint(AnsiFormatter::Erase::toEndOfScreen);
-      io.fmt.isBold = true;
-      io.constPrint(
-        " Handle         | Thread Name             | Total Time (ms)         | CPU(%)    \r\n");
-      io.fmt.isBold = false;
-      lc++;
-      for(const auto& tip : Thread::registry())
-      {
-        Thread::ThreadInfo& ti = *tip.second;
-        if(tip.second == nullptr)
-        {
-          return 1;
-        }
-        std::sprintf(pBuf, "%p", ti.handle_);
-        io.print(" %-15s|", pBuf);
-        if(ti.isDeleted_)
-        {
-          constexpr char ds[] = " (deleted)";
-          constexpr size_t dsl = constStringLen(ds);
-          std::strncpy(pBuf, ti.name_, pBufLen - dsl);
-          std::strcat(pBuf, ds);
-          io.print(" %-24s|", pBuf);
-        }
-        else
-        {
-          io.print(" %-24s|", ti.name_);
-        }
-        std::sprintf(pBuf, "%lld", ti.totalRuntime_.toMilliseconds());
-        io.print(" %-24s|", pBuf);
-        std::sprintf(pBuf, "%.2f",
-          static_cast<float>(ti.totalRuntime_.toMilliseconds()) / 
-          static_cast<float>(Timestamp{SteadyClock::now()}.toDuration().toMilliseconds()) * 100.0);
-        io.print(" %-10s", pBuf);
-        io.print("\r\n");
-        lc++;
-      }
+      lc += printCpuUse(io, pBuf, pBufLen, false);
       if(io.waitForContinue("Press 'enter' to exit.", pollPeriod))
       {
         break;
@@ -192,6 +175,103 @@ int32_t cliCmdCpuuse(cli::CommandIo& io)
   }
 #endif
   return 0;
+}
+
+size_t printCpuUse(cli::CommandIo& io, char* pBuf, const size_t pBufLen, const bool showStack)
+{
+  size_t lc = 0;
+  io.fmt.isBold = true;
+  if(showStack)
+  {
+    io.constPrint(
+      " Handle       | Thread Name          | Total Time (ms) | CPU(%) | Min. Stack (B)\r\n");
+  }
+  else
+  {
+    io.constPrint(
+      " Handle         | Thread Name             | Total Time (ms)         | CPU(%)    \r\n");
+  }
+  io.fmt.isBold = false;
+  lc++;
+  for(const auto& tip : Thread::registry())
+  {
+    Thread::ThreadInfo& ti = *tip.second;
+    if(tip.second == nullptr)
+    {
+      return lc;
+    }
+    std::sprintf(pBuf, "%p", ti.handle_);
+    if(showStack) { io.print(" %-13s|", pBuf); }
+    else { io.print(" %-15s|", pBuf); }
+    if(ti.isDeleted_)
+    {
+      constexpr char ds[] = " (deleted)";
+      constexpr size_t dsl = constStringLen(ds);
+      std::strncpy(pBuf, ti.name_, pBufLen - dsl);
+      std::strcat(pBuf, ds);
+      if(showStack) { io.print(" %-21s|", pBuf); }
+      else { io.print(" %-24s|", pBuf); }
+    }
+    else
+    {
+      if(showStack) { io.print(" %-21s|", ti.name_); }
+      else { io.print(" %-24s|", ti.name_); }
+    }
+    std::sprintf(pBuf, "%lld", ti.totalRuntime_.toMilliseconds());
+    if(showStack) { io.print(" %-16s|", pBuf); }
+    else { io.print(" %-24s|", pBuf); }
+    std::sprintf(pBuf, "%.2f",
+      static_cast<float>(ti.totalRuntime_.toMilliseconds()) / 
+      static_cast<float>(Timestamp{SteadyClock::now()}.toDuration().toMilliseconds()) * 100.0);
+    if(showStack) { io.print(" %-7s|", pBuf); }
+    else { io.print(" %-10s", pBuf); }
+    if(showStack)
+    {
+      if(ti.isDeleted_)
+      {
+        std::sprintf(pBuf, "%u", ti.minStackBeforeDeletion_bytes_);
+        io.print(" %-14s", pBuf);
+      }
+      else
+      {
+        std::sprintf(pBuf, "%lu", uxTaskGetStackHighWaterMark(ti.handle_) * 4);
+        io.print(" %-14s", pBuf);
+      }
+    }
+    io.print("\r\n");
+    lc++;
+  }
+  return lc;
+}
+
+size_t printMemUse(cli::CommandIo& io, char* pBuf, const size_t pBufLen)
+{
+  size_t lc = 0;
+  io.fmt.isBold = true;
+  io.constPrint(
+    " Heap           | Free (B)   | Min. Free (B) | Size (B)   | Allocs.  | Deallocs.\r\n");
+  io.fmt.isBold = false;
+  lc++;
+  const auto *alloc = AllocatorStatisticsInterface::systemAllocator();
+  while(alloc != nullptr)
+  {
+    const auto* stats = alloc->statsIf;
+    io.print(" %-15s|", stats->name());
+    std::snprintf(pBuf, pBufLen, "%u", stats->freeSpace_Bytes());
+    io.print(" %-11s|", pBuf);
+    std::snprintf(pBuf, pBufLen, "%u", stats->minimumFreeSpace_Bytes());
+    io.print(" %-14s|", pBuf);
+    std::snprintf(pBuf, pBufLen, "%u", stats->totalSpace_Bytes());
+    io.print(" %-11s|", pBuf);
+    std::snprintf(pBuf, pBufLen, "%u", stats->totalAllocations());
+    io.print(" %-9s|", pBuf);
+    std::snprintf(pBuf, pBufLen, "%u", stats->totalDeallocations());
+    io.print(" %-9s", pBuf);
+    io.print("\r\n");
+    lc++;
+    alloc = alloc->next;
+  }
+  return lc;
 }
 
 int32_t cliCmdStackuse(cli::CommandIo& io)
@@ -355,6 +435,54 @@ int32_t cliCmdReboot(cli::CommandIo& io)
     }
     io.print("\n");
     hw::wdt::WdtController::systemReset();
+  }
+  return 0;
+}
+
+int32_t cliCmdRmon(cli::CommandIo& io)
+{
+  bool printStack = false;
+  Duration pollPeriod = Duration::seconds(3);
+  if(io.args.totalArguments() >= 1)
+  {
+    if(io.args[0].asString() == "-s")
+    {
+      printStack = true;
+    }
+    else if(io.args[0].asString() == "-n")
+    {
+      printStack = false;
+    }
+    else
+    {
+      io.print("'%s' is not a supported parameter. See command help for details.\n", 
+        io.args[0].asString().c_str());
+    }
+  }
+  if(io.args.totalArguments() == 2)
+  {
+    pollPeriod = Duration::seconds(io.args[1].asUInt());
+  }
+  io.fmt.automaticNewline = false;
+  constexpr size_t pBufLen = 32;
+  char pBuf[pBufLen];
+  while(true)
+  {
+    {
+      auto lg = io.lockOuput();
+      size_t lc = 0;
+      io.constPrint(AnsiFormatter::Erase::toEndOfScreen);
+      lc += printCpuUse(io, pBuf, pBufLen, printStack);
+      lc += printMemUse(io, pBuf, pBufLen);
+      if(io.waitForContinue("Press 'enter' to exit.", pollPeriod))
+      {
+        break;
+      }
+      for(size_t i = 0; i < lc; i++)
+      {
+        io.constPrint(AnsiFormatter::Cursor::up);
+      }
+    }
   }
   return 0;
 }
