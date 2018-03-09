@@ -178,7 +178,8 @@ void _resetVector(void)
 int main(int, char**)
 {
   std::unique_ptr<jel::os::Thread> btThread = 
-    std::make_unique<jel::os::Thread>(&jel::os::bootThread, nullptr, "BOOT", 4096);
+    std::make_unique<jel::os::Thread>(&jel::os::bootThread, nullptr, "BOOT", 2500, 
+      jel::os::Thread::Priority::maximum);
   btThread->detach();
   vTaskStartScheduler();
   return 1;
