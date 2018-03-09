@@ -37,7 +37,7 @@
 #pragma once
 
 /** C/C++ Standard Library Headers */
-
+#include <memory>
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
@@ -90,15 +90,36 @@ private:
  *  @note Eventually this Queue object will be re-rolled such that it is tightly integrated with the
  *  RTOS and supports direct move and copy operations across MPU barriers.
  *  */
-template<typename T, size_t maxNumberOfElements, 
-  bool isTrivial = std::is_trivially_copyable<T>::value>
-class Queue : private GenericCopyQueue_Base
+class QueueMemoryHelper
+{
+public:
+  QueueMemoryHelper(size_t memSize_Bytes) 
+  {
+    itemMemory_ = new uint8_t[memSize_Bytes];
+    needToFree_ = true;
+  }
+  QueueMemoryHelper(uint8_t* memory)
+  {
+    itemMemory_ = memory;
+    needToFree_ = false;
+  }
+  uint8_t* itemMemory_;
+private:
+  bool needToFree_;
+};
+
+template<typename T, bool isTrivial = std::is_trivially_copyable<T>::value>
+class Queue : private QueueMemoryHelper, private GenericCopyQueue_Base
 {
   template<bool cond, typename U>
   using ResolvedType = typename std::enable_if<cond, U>::type;
-  uint8_t itemMemory_[sizeof(T) * maxNumberOfElements];
+protected:
+  Queue(const size_t maxNumberOfElements, uint8_t* memory) : 
+    QueueMemoryHelper(maxNumberOfElements * sizeof(T)),
+    GenericCopyQueue_Base(maxNumberOfElements, sizeof(T), memory) {}
 public:
-  Queue() : GenericCopyQueue_Base(maxNumberOfElements, sizeof(T), itemMemory_) {}
+  Queue(const size_t maxNumberOfElements) : QueueMemoryHelper(maxNumberOfElements * sizeof(T)),
+    GenericCopyQueue_Base(maxNumberOfElements, sizeof(T), itemMemory_) {}
   ~Queue() noexcept {}
   //If the underlying queue object is trivially copyable, simply pass the pointer off to the
   //underlying implementation which will memcpy the value.
@@ -202,6 +223,14 @@ public:
   bool empty() const noexcept { return genericGetSize() > 0 ? false : true; }
 };
 
+template<typename T, size_t maxNumberOfElements, 
+  bool isTrivial = std::is_trivially_copyable<T>::value>
+class StaticQueue : Queue<T, isTrivial>
+{
+  uint8_t* staticMemory_[sizeof(T) * maxNumberOfElements] __attribute__((aligned(4)));
+public:
+  StaticQueue() : Queue<T, isTrivial>(maxNumberOfElements, staticMemory_) {}
+};
 
 } /** namespace os */
 } /** namespace jel */

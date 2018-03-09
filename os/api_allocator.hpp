@@ -128,7 +128,7 @@ template<typename ObjectT, size_t count>
 class ObjectPool
 {
 public:
-  using ObjQ = Queue<std::unique_ptr<ObjectT>, count>;
+  using ObjQ = Queue<std::unique_ptr<ObjectT>>;
   /** A container storing objects retrieved from the pool. A valid container always holds a non-null
    * item pointer. */
   class ObjectContainer
@@ -154,7 +154,7 @@ public:
     ObjQ* q_;
   };
   template<typename ...Args>
-  ObjectPool(Args&& ...args)
+  ObjectPool(Args&& ...args) : pool_(count)
   {
     minItms_ = count;
     for(size_t i = 0; i < count; i++)
