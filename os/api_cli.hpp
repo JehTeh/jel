@@ -2,6 +2,59 @@
  *  @brief The jel system CLI interface.
  *
  *  @detail
+ *    The jel Command Line Interface (CLI) is designed to provide a robust application interface for
+ *    any system implementing the jel. At a high level, its features are as follows:
+ *      -ANSI/VT100 terminal control and emulation. The user facing input side of the CLI performs
+ *      the following when connected to an emulator supporting ANSI control sequences:
+ *        -Full local (to microcontroller) line echoing and editing, including support for cursor
+ *        movement, insertion, and multicharacter selection. Unfortunately does not support VIM. Use
+ *        the left/right arrow keys (optionally plus shift) to move the cursor on the current input
+ *        line. The Insert, Home, Delete, End and Page Up and Page Down keys are all supported.
+ *        -Input history recollection and editing. Pressing the up/down arrow keys allows cycling
+ *        through the available history buffers, which include the current line being edited and
+ *        lines previously input (i.e., 'Enter' was pressed). 
+ *        -Implements a PrettyPrinter class for all output to the user, allowing automatic
+ *        line-break insertion, formatting removal, and selection between LFCR and LF style
+ *        line-endings.
+ *      -A simplified application facing interface allowing for easy command function creation and
+ *      prebuilt argument parsing (see example). Each command accepts only a single argument, the
+ *      CommandIo& object, which provides the following:
+ *        -Output functionality, including printf formatter support for outputting via the
+ *        standard CLI channel (internally buffered, so there is a maximum allowable printing
+ *        length). Arbitrarily long messages can also be output but may not include printf style 
+ *        formatters.
+ *        -Output formatting can be adjusted on the fly by modifying the io.fmt object. This
+ *        includes things like automatic newline insertion, ANSI code stripping, output color, etc.
+ *        This is an RAII style object, when the command is finished executing formatting returns to
+ *        the default (as such, all commands can assume the formatting is setup in a default manner
+ *        upon entry).
+ *        -Specialized and generic input functionality, i.e. raw input can be read directly from the
+ *        terminal emulator or special functions for reading an integer, float, etc. can be used.
+ *        Furthermore, common operations such as pending on user input/confirmation (like hitting
+ *        the 'Enter' key, answering 'yes/no') are available.
+ *        -Arguments received by the CLI are automatically parsed and containerized. These can be
+ *        accessed inside the io.args object array style ([]) or via iterator. Each argument object
+ *        includes information about its type and the value as parsed by the CLI.
+ *      -Restricted and unrestricted permission levels for commands. Commands can be configured so
+ *      only after 'logging in' to the CLI with the appropriate username and password can they be
+ *      seen in the help menu and executed.
+ *
+ *  @todo
+ *    -Improve parsing of optional sequences. Currently an optional command argument included after
+ *    another optional command argument necessitates that the first argument be entered. This should
+ *    not always be required; for example if an input argument does not positively match with the
+ *    first optional argument, it should be evaluated against the next one, etc until either a
+ *    possible match is found or no argument is matched. This is mostly so commands like 'os reboot'
+ *    do not require a '0' argument for a timeout before a '-f' argument for forcing immediate
+ *    shutdown.
+ *    -Add escape key recognition to various commandIo functions (i.e., on waitForConfirmation(),
+ *    instead of requiring a timeout to return a false an escape key can be hit.)
+ *    -Implement login functionality, instead of current stubs. Passwords should be pre-hashed so
+ *    they are not recognizable in the binary, need to figure out best way to do this.
+ *    -Evaluate/prototype compile time command sorting and storage (possibly in a trie) to allow
+ *    rapid lookups. Not strictly necessary, but would be superior to the current naive
+ *    implementation. Need to ensure it is done at compile time, however, to maintain low memory
+ *    footprint.
  *    
  *  @author Jonathan Thomson 
  */
@@ -164,6 +217,9 @@ public:
   ConstIterator end() const { return ConstIterator{nullptr}; };
 };
 
+/** @struct FormatSpecifier
+ *  @brief Formatting object used to control output formatting for printing functions in the
+ *  CommandIo object. */
 struct FormatSpecifer
 {
   os::AnsiFormatter::Color color = os::AnsiFormatter::Color::white;
@@ -335,7 +391,10 @@ struct Library
   CIt end() const { return CIt{entries, numberOfEntries}; }
 };
 
+/** This is called by the jel on startup. It should not be used by the application. */
 void startSystemCli(std::shared_ptr<os::AsyncIoStream>& io);
+/** Any application libraries must be registered with the CLI before use by calling this function.
+ * */
 Status registerLibrary(const Library& library);
 
 } /** namespace cli */

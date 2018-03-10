@@ -252,23 +252,32 @@ struct AnsiFormatter
     static constexpr char escape = '\033';
     static constexpr char del = '\177';
   };
+  /** Resets any and all active ANSI formatters. */
   static constexpr char reset[] = "\e[0m";
+  /** General prefix used to indicate an escape sequence. */
   static constexpr char escSeqPrefix[] = "\e[";
+  /** Enable or disable bolded (typically implemented as bright) text. */
   struct Bold
   {
     static constexpr char enable[] = "\e[1m";
     static constexpr char disable[] = "\e[21m";
   };
+  /** Enables or disables underlined text. */
   struct Underline
   {
     static constexpr char enable[] = "\e[4m";
     static constexpr char disable[] = "\e[24m";
   };
+  /** Enables or disables 'slow blinking' of text.
+   * @note In reality, this actually seems to enable background highlighting instead of blinking. At
+   * least as tested with putty. */
   struct SlowBlink
   {
     static constexpr char enable[] = "\e[5m";
     static constexpr char disable[] = "\e[25m";
   };
+  /** Colors supported by most terminal emulators. These are named paramaters that can be passed to
+   * the setBackground/ForegroundColor functions to aquire a string to perform said action. */
   enum class Color 
   {
     black,
@@ -289,6 +298,8 @@ struct AnsiFormatter
     brightWhite,
     default_
   };
+  /** Raw text color codes. Can be manually printed directly, or retreived using the
+   * set[xxx]Color functions. */
   struct ColorCode
   {
     static constexpr char black[] =                 "\e[30m";
@@ -301,6 +312,8 @@ struct AnsiFormatter
     static constexpr char white[] =                 "\e[37m";
     static constexpr char default_[] =              "\e[39m";
   };
+  /** Raw text color codes. Can be manually printed directly, or retreived using the
+   * set[xxx]Color functions. */
   struct BrightColorCode
   {
     static constexpr char black[] =                 "\e[90m";
@@ -312,6 +325,8 @@ struct AnsiFormatter
     static constexpr char cyan[] =                  "\e[96m";
     static constexpr char white[] =                 "\e[97m";
   };
+  /** Raw text color codes. Can be manually printed directly, or retreived using the
+   * set[xxx]Color functions. */
   struct BackgroundColorCode
   {
     static constexpr char black[] =                 "\e[40m";
@@ -324,6 +339,8 @@ struct AnsiFormatter
     static constexpr char white[] =                 "\e[47m";
     static constexpr char default_[] =              "\e[49m";
   };
+  /** Raw text color codes. Can be manually printed directly, or retreived using the
+   * set[xxx]Color functions. */
   struct BrightBackgroundColorCode
   {
     static constexpr char black[] =                 "\e[100m";
@@ -335,6 +352,11 @@ struct AnsiFormatter
     static constexpr char cyan[] =                  "\e[106m";
     static constexpr char white[] =                 "\e[107m";
   };
+  /** Erase sequences. Inserting one of these control sequences into the output stream performs said
+   * action, based on cursor position.
+   * @note it is also possible to manually construct most of these sequences with an additional #
+   * paramater that repeats action that many times. If minimal bandwidth is available, that may be
+   * preferable to repeatedly printing a full sequence to erase multiple lines. */
   struct Erase
   {
     static constexpr char toEndOfLine[] = "\e[0K";
@@ -345,6 +367,13 @@ struct AnsiFormatter
     static constexpr char entireScreen[] = "\e[2J";
     static constexpr char entireScreenAndScrollback[] = "\e[3J";
   };
+  /** Cursor control sequences. When inserted into the output stream, the emulator will move the
+   * cursor as indicated.
+   * @note Similiar to erase sequences, many of these actions can be constructed with an additional
+   * # paramater that repeats said action that many times.
+   * @note Cursor save/restore seems buggy, at least with putty. It is generally recommended to
+   * avoid it.
+   * */
   struct Cursor
   {
     static constexpr char up[] = "\e[1A";
@@ -358,6 +387,8 @@ struct AnsiFormatter
     static constexpr char pageUp[] = "\e[S";
     static constexpr char pageDown[] = "\e[T";
   };
+  /** Input sequences are sent from the terminal emulator to the system when a given key/key
+   * sequence is pressed. */
   struct Input
   {
     static constexpr char upArrowKey[] = "\e[A";
