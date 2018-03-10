@@ -13,6 +13,9 @@
  *    the printf debug error handling is quite expensive and requires additional allocations,
  *    although it does allow propagation of an error message up the entire stack.
  *
+ *  @todo
+ *    -Override g++ exception allocation scheme. See api_allocator.hpp for more details.
+ *
  *  @author Jonathan Thomson 
  */
 /**

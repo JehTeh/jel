@@ -31,6 +31,14 @@
  *    should share a common abstracted interface that the visualizer can use to draw the in-use and
  *    free memory, as well as provide statistics on allocated and free block distributions and
  *    sizes.
+ *    -Match STL allocator implementation. This will likely be done by expanding upon the
+ *    AllocatorInterface class. This needs to be done to allow use of std::string/std::vector and
+ *    other containers but with a custom allocator (for example, using external SDRAM memory).
+ *    -Override STL/g++ exception allocation scheme. A custom/separate heap with fallback to the
+ *    system one is more desirable here; this is to significantly reduce uncertainty in exception
+ *    throw() times. Essentially, instead of relying on a seperate shared storage block only for
+ *    fallback on OOM exceptions, rely on a threadsafe shared block normally with fallback on the
+ *    system heap or system terminate(). 
  *
  *  @author Jonathan Thomson 
  */
