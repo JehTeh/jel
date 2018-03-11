@@ -4,8 +4,15 @@
  *  @detail
  *    All jel systems make use of std::chrono based time primitives for timestamps and deltaT
  *    measurements. Furthermore, a common SteadyClock singleton clock class is provided that allows
- *    generation of timestamps from a minimum microsecond precision source. The SteadyClock complies
- *    with the std::chrono::
+ *    generation of timestamps from a minimum microsecond precision source. The SteadyClock
+ *    implementation is based on the std::chrono::steady_clock class and is intended to comply as
+ *    fully as possible within the bounds of the underlying microcontroller hardware.
+ *
+ *  @todo
+ *    -Add RTC interface for systems that include an RTC. Ideally designed such that if no RTC
+ *    hardware is available, a simplistic approximation can be built using the SteadyClock instead.
+ *    Furthermore, efforts will be made to ensure the SteadyClock and RTC can be related in a
+ *    meaningful manner.
  *
  *  @author Jonathan Thomson 
  */
