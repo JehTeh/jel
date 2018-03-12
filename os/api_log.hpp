@@ -34,6 +34,8 @@
 #include <cassert>
 /** jel Library Headers */
 #include "os/api_common.hpp"
+#include "os/api_allocator.hpp"
+#include "os/api_threads.hpp"
 #include "os/api_io.hpp"
 #include "os/api_time.hpp"
 #include "os/api_locks.hpp"
@@ -87,12 +89,14 @@ private:
     Timestamp timestamp;
     union Msg
     {
-      
+      const char* sptr;
+      ObjectPool<String>::ObjectContainer spool;
     };
   };
   Status fastPrint(const char* cStr);
   Status print(const char* cStr, ...);
   PrettyPrinter pp;
+  std::unique_ptr<Thread> tptr;
 };
 
 } /** namespace os */
