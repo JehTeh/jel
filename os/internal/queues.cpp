@@ -61,45 +61,83 @@ GenericCopyQueue_Base::~GenericCopyQueue_Base() noexcept
   }
 }
 
-//Macro to avoid repetition. Used in place of tempaltes because FreeRTOS wraps queue API calls in
-//various macros.
-#define GENERIC_QUEUE_ACTION(isrAction, normalAction , item, timeout) \
-  assert(item); \
-  if(System::inIsr()) \
-  { \
-    auto wakeHpTask = pdFALSE; \
-    if(isrAction(handle_, item, &wakeHpTask) == pdTRUE) \
-    { \
-      portYIELD_FROM_ISR(wakeHpTask); \
-      return Status::success; \
-    } \
-    return Status::failure; \
-  } \
-  else \
-  { \
-    if(normalAction(handle_, item, toTicks(timeout)) == pdTRUE) \
-    { \
-      return Status::success; \
-    } \
-    else \
-    { \
-      return Status::failure; \
-    } \
-  }
-
 Status GenericCopyQueue_Base::genericPush(const void* item, const Duration& timeout) noexcept
 {
-  GENERIC_QUEUE_ACTION(xQueueSendToBackFromISR, xQueueSendToBack, item, timeout)
+  assert(item);  
+  if(System::inIsr())  
+  {  
+    auto wakeHpTask = pdFALSE;  
+    if(xQueueSendToBackFromISR(handle_, item, &wakeHpTask) == pdTRUE)  
+    {  
+      portYIELD_FROM_ISR(wakeHpTask);  
+      return Status::success;  
+    }  
+    return Status::failure;  
+  }  
+  else  
+  {  
+    if(xQueueSendToBack(handle_, item, toTicks(timeout)) == pdTRUE)  
+    {  
+      return Status::success;  
+    }  
+    else  
+    {  
+      return Status::failure;  
+    }  
+  }
+
 }
 
 Status GenericCopyQueue_Base::genericPushToFront(const void* item, const Duration& timeout) noexcept
 {
-  GENERIC_QUEUE_ACTION(xQueueSendToFrontFromISR, xQueueSendToFront, item, timeout)
+  assert(item);  
+  if(System::inIsr())  
+  {  
+    auto wakeHpTask = pdFALSE;  
+    if(xQueueSendToFrontFromISR(handle_, item, &wakeHpTask) == pdTRUE)  
+    {  
+      portYIELD_FROM_ISR(wakeHpTask);  
+      return Status::success;  
+    }  
+    return Status::failure;  
+  }  
+  else  
+  {  
+    if(xQueueSendToFront(handle_, item, toTicks(timeout)) == pdTRUE)  
+    {  
+      return Status::success;  
+    }  
+    else  
+    {  
+      return Status::failure;  
+    }  
+  }
 }
 
 Status GenericCopyQueue_Base::genericPop(void* item, const Duration& timeout) noexcept
 {
-  GENERIC_QUEUE_ACTION(xQueueReceiveFromISR, xQueueReceive, item, timeout)
+  assert(item);  
+  if(System::inIsr())  
+  {  
+    auto wakeHpTask = pdFALSE;  
+    if(xQueueReceiveFromISR(handle_, item, &wakeHpTask) == pdTRUE)  
+    {  
+      portYIELD_FROM_ISR(wakeHpTask);  
+      return Status::success;  
+    }  
+    return Status::failure;  
+  }  
+  else  
+  {  
+    if(xQueueReceive(handle_, item, toTicks(timeout)) == pdTRUE)  
+    {  
+      return Status::success;  
+    }  
+    else  
+    {  
+      return Status::failure;  
+    }  
+  }
 }
 
 size_t GenericCopyQueue_Base::genericGetSize() const noexcept
