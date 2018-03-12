@@ -249,7 +249,7 @@ void bootThread(void*)
   //Initialize GPIO hardware and the serial I/O port
   hw::gpio::GpioController::initializeGpio();
   initializeStandardIo();
-  jelStringPool = std::make_shared<ObjectPool<String, config::stringPoolStringCount>>();
+  jelStringPool = std::make_shared<ObjectPool<String>>(config::stringPoolStringCount, config::stringPoolStringSize, ' ');
   cli::startSystemCli(jelStandardIo);
   cli::registerLibrary(cliCmdLib);
   /** C++ Static object constructors are called here. */

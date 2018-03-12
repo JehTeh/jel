@@ -95,7 +95,7 @@ namespace jel
 namespace cli
 {
 
-typedef os::ObjectPool<String, config::stringPoolStringCount> JelStringPool;
+typedef os::ObjectPool<String> JelStringPool;
 typedef os::Status Status;
 typedef std::basic_string<char> CliString;
 

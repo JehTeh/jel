@@ -214,7 +214,7 @@ private:
  *    } //The String automatically returns to the pool here when it falls out of scope.
  *  @endcode
  *  */
-template<typename ObjectT, size_t count>
+template<typename ObjectT>
 class ObjectPool
 {
 public:
@@ -262,7 +262,7 @@ public:
    *  would, for example, initialize each string with an incrementing index starting at 0.
    * */
   template<typename ...Args>
-  ObjectPool(Args&& ...args) : pool_(count)
+  ObjectPool(const size_t count, Args&& ...args) : maxItems_(count), pool_(count)
   {
     minItms_ = count;
     for(size_t i = 0; i < count; i++)
@@ -285,8 +285,9 @@ public:
   }
   size_t itemsInPool() const { return pool_.size(); }
   size_t minimumItemsInPool() const { return minItms_; };
-  size_t maxItemsInPool() const { return count; }
+  size_t maxItemsInPool() const { return maxItems_; }
 private:
+  const size_t maxItems_;
   size_t minItms_;
   ObjQ pool_;
 };
