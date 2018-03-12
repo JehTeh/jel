@@ -83,7 +83,7 @@ GenericCopyQueue_Base::~GenericCopyQueue_Base() noexcept
     } \
     else \
     { \
-      return Status::success; \
+      return Status::failure; \
     } \
   }
 
