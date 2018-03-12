@@ -136,7 +136,7 @@ public:
     return genericPushToFront(&item, timeout); 
   }
   template<typename U = Status>
-  ResolvedType<isTrivial, U> pop(const T& item, const Duration& timeout = Duration::max()) noexcept
+  ResolvedType<isTrivial, U> pop(T& item, const Duration& timeout = Duration::max()) noexcept
   {
     static_assert(std::is_trivially_copyable<T>::value, "Queue object is not trivially copyable!");
     return genericPop(&item, timeout);
