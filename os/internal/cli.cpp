@@ -947,6 +947,7 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(CliInstance* c
             return Status::noFreeStringsAvailable;
           }
           String& s = *scont.stored();
+          s = "";
           s.replace(0, config::stringPoolStringSize - 1, tokens[i + discardThreshold]);
           appendListItem(scont);
         }
