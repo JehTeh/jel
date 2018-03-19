@@ -47,3 +47,4 @@ build_hal*
 
 #Include certain precompiled libraries
 !ThirdParty/tivaware/driverlib/gcc/libdriver.a
+!ThirdParty/misc/enum_flags.h

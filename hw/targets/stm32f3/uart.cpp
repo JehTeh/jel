@@ -56,11 +56,12 @@ struct BasicUartHardwareProperties
   UART_HandleTypeDef* haltd;
 };
 
+
 const BasicUartHardwareProperties HwMap[] =
 {
-  {
-    UartInstance::uart1, USART1, &huart1
-  }, 
+  { UartInstance::uart1, USART1, &huart1 }, 
+  { UartInstance::uart2, USART2, &huart2 }, 
+  { UartInstance::uart3, USART3, &huart3 }, 
 };
 
 BasicUart::BasicUart(const BasicUart_Base::Config& config) : BasicUart_Base{config}, hw_{nullptr}
@@ -331,6 +332,10 @@ extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef* uart)
   {
     InterruptDispatcher::uartEntry(UartInstance::uart1, InterruptDispatcher::Flags::TX_COMPLETE);
   }
+  else if(uart->Instance == USART2)
+  {
+    InterruptDispatcher::uartEntry(UartInstance::uart2, InterruptDispatcher::Flags::TX_COMPLETE);
+  }
 }
 
 extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef* uart)
@@ -339,5 +344,9 @@ extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef* uart)
   if(uart->Instance == USART1)
   {
     InterruptDispatcher::uartEntry(UartInstance::uart1, InterruptDispatcher::Flags::RX_COMPLETE);
+  }
+  else if(uart->Instance == USART2)
+  {
+    InterruptDispatcher::uartEntry(UartInstance::uart2, InterruptDispatcher::Flags::RX_COMPLETE);
   }
 }

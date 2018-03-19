@@ -96,6 +96,8 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -106,6 +108,7 @@ int main(void)
   {
 
   /* USER CODE END WHILE */
+
   /* USER CODE BEGIN 3 */
 #endif
 __attribute__((unused)) static void DUMMYFN(void)
@@ -152,8 +155,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_USART2
+                              |RCC_PERIPHCLK_USART3;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
+  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+  PeriphClkInit.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
