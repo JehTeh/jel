@@ -40,7 +40,7 @@ namespace cli
 {
 
 using CliArgumentPool = 
-  os::BlockAllocator<sizeof(Argument) + 16, config::cliMaximumArguments>;
+  BlockAllocator<sizeof(Argument) + 16, config::cliMaximumArguments>;
 
 std::unique_ptr<CliArgumentPool> argumentPool;
 
@@ -93,9 +93,9 @@ const Library cliCmdLib =
 };
 
 //Temporary used for debug
-os::AllocatorStatisticsInterface& cliPoolIf() { return *argumentPool; }
+AllocatorStatisticsInterface& cliPoolIf() { return *argumentPool; }
 
-void startSystemCli(std::shared_ptr<os::AsyncIoStream>& io)
+void startSystemCli(std::shared_ptr<AsyncIoStream>& io)
 {
   new CliInstance(io);
 }
@@ -105,7 +105,7 @@ Status registerLibrary(const Library& library)
   return CliInstance::registerLibrary(library);
 }
 
-Vtt::Vtt(const std::shared_ptr<os::AsyncIoStream>& ios) : ios_(ios), printer_(ios),
+Vtt::Vtt(const std::shared_ptr<AsyncIoStream>& ios) : ios_(ios), printer_(ios),
   wb_(), rxs_(), wrtbuf_(new char[cfg_.maxEntryLength]), fmts_(new char[formatScratchBufferSize])
 {
   assert(cfg_.maxEntryLength > 80);
@@ -137,15 +137,15 @@ Status Vtt::write(const char* format, va_list args)
   return Status::failure;
 }
 
-Status Vtt::colorizedWrite(const os::AnsiFormatter::Color color, const char* format, ...)
+Status Vtt::colorizedWrite(const AnsiFormatter::Color color, const char* format, ...)
 {
   auto lg = ios_->lockOutput();
-  write(os::AnsiFormatter::setForegroundColor(color));
+  write(AnsiFormatter::setForegroundColor(color));
   va_list args;
   va_start(args, format);
   auto stat = write(format, args);
   va_end(args);
-  write(os::AnsiFormatter::setForegroundColor(os::AnsiFormatter::Color::default_));
+  write(AnsiFormatter::setForegroundColor(AnsiFormatter::Color::default_));
   return stat;
 }
 
@@ -176,7 +176,7 @@ size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
       if((SteadyClock::now() - tStart) >= timeout)
       {
         auto lg = ios_->lockOutput();
-        ios_->write(os::AnsiFormatter::Erase::entireLine);
+        ios_->write(AnsiFormatter::Erase::entireLine);
         ios_->write('\r');
         buffer[0] = '\0'; return 0;
       }
@@ -194,7 +194,7 @@ size_t Vtt::read(char* buffer, size_t bufferSize, const Duration& timeout)
     }
   }
   auto lg = ios_->lockOutput();
-  ios_->write(os::AnsiFormatter::Erase::entireLine);
+  ios_->write(AnsiFormatter::Erase::entireLine);
   ios_->write('\r');
   buffer[0] = '\0'; return 0;
 }
@@ -248,7 +248,7 @@ size_t Vtt::loadRxs(const Duration& timeout)
 
 size_t Vtt::handleControlCharacters()
 {
-  using fmt = os::AnsiFormatter;
+  using fmt = AnsiFormatter;
   //Search for any special escape or control characters (i.e. non-visible ASCII)
   for(size_t pos = 0; pos != rxs_.length(); pos++)
   {
@@ -273,7 +273,7 @@ size_t Vtt::handleControlCharacters()
 
 bool Vtt::parseEscapeSequence(const size_t sp)
 {
-  using efmt = os::AnsiFormatter::Input;
+  using efmt = AnsiFormatter::Input;
   constexpr size_t npos = std::string::npos; 
   if(rxs_.find(efmt::leftArrowKey, sp) != npos)
   {
@@ -336,11 +336,11 @@ bool Vtt::parseEscapeSequence(const size_t sp)
   }
   else if(rxs_.find(efmt::pageUpKey, sp) != npos)
   {
-    ios_->write(os::AnsiFormatter::Cursor::pageUp);
+    ios_->write(AnsiFormatter::Cursor::pageUp);
   }
   else if(rxs_.find(efmt::pageDownKey, sp) != npos)
   {
-    ios_->write(os::AnsiFormatter::Cursor::pageDown);
+    ios_->write(AnsiFormatter::Cursor::pageDown);
   }
   else if((rxs_.find(efmt::upArrowKey, sp) != npos) ||
     (rxs_.find(efmt::shiftUpArrowKey, sp) != npos))
@@ -375,7 +375,7 @@ bool Vtt::parseEscapeSequence(const size_t sp)
 
 bool Vtt::parseAsciiControl(const size_t sp)
 {
-  using fmt = os::AnsiFormatter::ControlCharacters;
+  using fmt = AnsiFormatter::ControlCharacters;
   if((rxs_[sp] == fmt::backspace) || (rxs_[sp] == fmt::del))
   {
     if(smode_)
@@ -399,7 +399,7 @@ bool Vtt::parseAsciiControl(const size_t sp)
 
 bool Vtt::terminateInput(const size_t sp)
 {
-  using fmt = os::AnsiFormatter::ControlCharacters;
+  using fmt = AnsiFormatter::ControlCharacters;
   if((rxs_[sp] == fmt::carriageReturn) || (rxs_[sp] == fmt::newline))
   {
     terminated_ = true;
@@ -447,7 +447,7 @@ void Vtt::regenerateOuput()
       cpos_ += rxs_.length();
     }
   }
-  using fmt = os::AnsiFormatter;
+  using fmt = AnsiFormatter;
   auto lg = ios_->lockOutput();
   ios_->write(fmt::Erase::entireLine); //Erase the line.
   ios_->write('\r'); //Erase the line.
@@ -562,7 +562,7 @@ Vtt::HistoryBuffer::HistoryBuffer()
 {
   for(size_t i = 0; i < config::cliHistoryDepth; i++)
   {
-    buffers_[i] = os::jelStringPool->acquire();
+    buffers_[i] = jelStringPool->acquire();
     buffers_[i].stored()->reserve(config::cliMaximumStringLength);
     *buffers_[i].stored() = "";
   }
@@ -939,7 +939,7 @@ ArgumentContainer::Status ArgumentContainer::generateArgumentList(CliInstance* c
         break;
       case Argument::Type::string_:
         {
-          auto scont = os::jelStringPool->acquire(Duration::zero());
+          auto scont = jelStringPool->acquire(Duration::zero());
           if(scont.stored() == nullptr)
           {
             cli_->vtt_->colorizedWrite(CliInstance::defaultErrorColor,
@@ -1000,7 +1000,7 @@ const Argument& ArgumentContainer::operator[](size_t index) const
 
 CliInstance* CliInstance::activeCliInstance;
 
-CliInstance::CliInstance(std::shared_ptr<os::AsyncIoStream>& io) 
+CliInstance::CliInstance(std::shared_ptr<AsyncIoStream>& io) 
 {
   if(activeCliInstance == nullptr)
   {
@@ -1008,7 +1008,7 @@ CliInstance::CliInstance(std::shared_ptr<os::AsyncIoStream>& io)
     argumentPool = std::make_unique<CliArgumentPool>("CLI_Arg_Pool");
     activeCliInstance = this;
     libList_.libptr = &cliCmdLib;
-    tptr_ = new os::Thread(reinterpret_cast<os::Thread::FunctionSignature>(&cliThreadDispatcher), 
+    tptr_ = new Thread(reinterpret_cast<Thread::FunctionSignature>(&cliThreadDispatcher), 
       &io, "CLI", cliThreadStackSize_Bytes, cliThreadPriority);
   }
   else
@@ -1038,12 +1038,12 @@ Status CliInstance::registerLibrary(const Library& lib)
   return Status::failure;
 }
 
-void CliInstance::cliThreadDispatcher(std::shared_ptr<os::AsyncIoStream>* io)
+void CliInstance::cliThreadDispatcher(std::shared_ptr<AsyncIoStream>* io)
 {
   activeCliInstance->cliThread(io);
 } 
 
-void CliInstance::cliThread(std::shared_ptr<os::AsyncIoStream>* io)
+void CliInstance::cliThread(std::shared_ptr<AsyncIoStream>* io)
 {
   istr_ = std::make_unique<String>();
   istr_->reserve(config::cliMaximumStringLength);
@@ -1163,13 +1163,13 @@ int CliInstance::executeCommand(Tokenizer& tokens)
     cmdRet = acptr_->function(cmdIo);
     if(cmdRet != 0)
     {
-      vtt_->colorizedWrite(os::AnsiFormatter::Color::yellow,
+      vtt_->colorizedWrite(AnsiFormatter::Color::yellow,
         "Warning: Command returned status code %ld\r\n", cmdRet);
     }
   }
   catch(...)
   {
-    vtt_->colorizedWrite(os::AnsiFormatter::Color::yellow,
+    vtt_->colorizedWrite(AnsiFormatter::Color::yellow,
       "Warning: Command threw an exception!\r\n");
   }
   return cmdRet;
@@ -1200,7 +1200,7 @@ CommandIo::~CommandIo() noexcept
   vtt_.printer().editConfig().automaticNewline = preIoPpConfig_.automaticNewline;
 }
 
-os::AsyncLock CommandIo::lockOuput(const Duration& timeout)
+AsyncLock CommandIo::lockOuput(const Duration& timeout)
 {
   return vtt_.lockOutput(timeout);
 }
@@ -1212,7 +1212,7 @@ Status CommandIo::print(const char* format, ...)
   va_start(args, format);
   Status st = vtt_.write(format, args);
   va_end(args);
-  vtt_.write(os::AnsiFormatter::reset);
+  vtt_.write(AnsiFormatter::reset);
   return st;
 }
 
@@ -1220,7 +1220,7 @@ Status CommandIo::constPrint(const char* cString, const size_t length)
 {
   printFormatters();
   auto stat = vtt_.write(cString, length);
-  vtt_.write(os::AnsiFormatter::reset);
+  vtt_.write(AnsiFormatter::reset);
   return stat;
 }
 
@@ -1228,7 +1228,7 @@ Status CommandIo::constPrint(String& string)
 {
   printFormatters();
   auto stat = vtt_.write(string.c_str(), string.length());
-  vtt_.write(os::AnsiFormatter::reset);
+  vtt_.write(AnsiFormatter::reset);
   return stat;
 }
 
@@ -1237,7 +1237,7 @@ size_t CommandIo::currentLineLength() const
   return vtt_.printer().currentLength();
 }
 
-const os::PrettyPrinter::Config& CommandIo::printerConfig() const 
+const PrettyPrinter::Config& CommandIo::printerConfig() const 
 {
   return vtt_.printer().editConfig();
 }
@@ -1307,7 +1307,7 @@ int64_t CommandIo::readSignedInt(const char* prompt, const Duration& timeout)
       return rval;
     }
   }
-  throw os::Exception{os::ExceptionCode::cliArgumentReadTimeout,
+  throw Exception{ExceptionCode::cliArgumentReadTimeout,
     "Failed to read a signed integer within the specified timeout.\r\n"};
 }
 
@@ -1327,7 +1327,7 @@ uint64_t CommandIo::readUnsignedInt(const char* prompt, const Duration& timeout)
       return rval;
     }
   }
-  throw os::Exception{os::ExceptionCode::cliArgumentReadTimeout,
+  throw Exception{ExceptionCode::cliArgumentReadTimeout,
     "Failed to read an unsigned integer within the specified timeout.\r\n"};
 }
 
@@ -1346,13 +1346,13 @@ double CommandIo::readDouble(const char* prompt, const Duration& timeout)
       return rval;
     }
   }
-  throw os::Exception{os::ExceptionCode::cliArgumentReadTimeout,
+  throw Exception{ExceptionCode::cliArgumentReadTimeout,
     "Failed to read a double within the specified timeout.\r\n"};
 }
 
 void CommandIo::printFormatters()
 {
-  using afmtr = os::AnsiFormatter;
+  using afmtr = AnsiFormatter;
   vtt_.printer().editConfig().stripFormatters= fmt.disableAllFormatting;
   if(fmt.disableAllFormatting) { return; }
   vtt_.printer().editConfig().automaticNewline = fmt.automaticNewline;
@@ -1537,9 +1537,9 @@ int32_t cliCmdTest_inputs(cli::CommandIo& io)
         io.print("No input was entered.\r\n");
       }
     }
-    catch(const os::Exception& e)
+    catch(const Exception& e)
     {
-      if(e.error == os::ExceptionCode::cliArgumentReadTimeout)
+      if(e.error == ExceptionCode::cliArgumentReadTimeout)
       {
         io.print("A timeout occurred waiting for user input.\r\n");
         return 1;

@@ -44,8 +44,6 @@
 
 namespace jel
 {
-namespace os
-{
 
 inline TickType_t toTicks(const Duration& d) noexcept
 {
@@ -72,5 +70,4 @@ extern std::shared_ptr<JelStringPool> jelStringPool;
  * cache their own shared_ptr copy. */
 extern std::shared_ptr<AsyncIoStream> jelStandardIo;
 
-}
-}
+} /** namespace jel */

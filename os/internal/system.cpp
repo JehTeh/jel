@@ -125,7 +125,7 @@ SchedulerLock::~SchedulerLock() noexcept
 {
   if(xTaskResumeAll() == pdTRUE)
   {
-    os::ThisThread::yield();
+    ThisThread::yield();
   }
 }
 

@@ -158,7 +158,7 @@ void BasicUart::write(const char c)
 
 bool BasicUart::isBusy(const Duration& timeout)
 {
-  auto lg = os::LockGuard(tx_.flag, timeout);
+  auto lg = LockGuard(tx_.flag, timeout);
   if(lg.isLocked())
   {
     return false;
@@ -168,7 +168,7 @@ bool BasicUart::isBusy(const Duration& timeout)
 
 size_t BasicUart::waitForChars(const Duration& timeout)
 {
-  auto lg = os::LockGuard(rx_.flag, timeout);
+  auto lg = LockGuard(rx_.flag, timeout);
   if(lg.isLocked())
   {
     return rx_.pos;

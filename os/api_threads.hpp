@@ -53,9 +53,6 @@
 
 namespace jel
 {
-namespace os
-{
-
 class Thread;
 
 /** @class ThisThread
@@ -228,6 +225,4 @@ protected:
 #endif
 };
 
-
-} /** namespace os */
 } /** namespace jel */

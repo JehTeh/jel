@@ -65,7 +65,7 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **tcbSpace, StackType_t **stackS
   *stackSpace  = &uxIdleTaskStack[0];
   *stackSize = configMINIMAL_STACK_SIZE;
 #ifdef ENABLE_THREAD_STATISTICS
-  using namespace jel::os;
+  using namespace jel;
   static Thread::ThreadInfo ti =
   {
     Thread::Priority::minimum,
@@ -86,15 +86,15 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **tcbSpace, StackType_t **stackS
 
 void jel_threadCreate(volatile void* handle)
 {
-  jel::os::Thread::schedulerThreadCreation(const_cast<void*>(handle));
+  jel::Thread::schedulerThreadCreation(const_cast<void*>(handle));
 }
 
 void jel_threadEntry(volatile void* handle)
 {
-  jel::os::Thread::schedulerEntry(const_cast<void*>(handle));
+  jel::Thread::schedulerEntry(const_cast<void*>(handle));
 }
 
 void jel_threadExit(volatile void* handle)
 {
-  jel::os::Thread::schedulerExit(const_cast<void*>(handle));
+  jel::Thread::schedulerExit(const_cast<void*>(handle));
 }

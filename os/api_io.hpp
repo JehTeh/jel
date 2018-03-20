@@ -87,8 +87,6 @@ constexpr size_t constStringLen(const char* cString)
   return len;
 }
 
-namespace os
-{
 /** @class SerialWriterInterface
  *  @brief The SerialWriterInterface is implemented by drivers that support serial transmission of
  *  data.
@@ -499,5 +497,4 @@ private:
   size_t cidnt_;
 };
 
-} /** namespace os */
 } /** namespace jel */

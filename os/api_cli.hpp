@@ -95,8 +95,8 @@ namespace jel
 namespace cli
 {
 
-typedef os::ObjectPool<String> JelStringPool;
-typedef os::Status Status;
+typedef ObjectPool<String> JelStringPool;
+typedef Status Status;
 typedef std::basic_string<char> CliString;
 
 /** Forward declarations. */
@@ -222,7 +222,7 @@ public:
  *  CommandIo object. */
 struct FormatSpecifer
 {
-  os::AnsiFormatter::Color color = os::AnsiFormatter::Color::white;
+  AnsiFormatter::Color color = AnsiFormatter::Color::white;
   bool isBold = false;
   bool isUnderlined = false;
   bool automaticNewline = true;
@@ -246,7 +246,7 @@ public:
   CommandIo& operator=(const CommandIo&) = delete;
   CommandIo& operator=(CommandIo&&) = delete;
   /** Locks the output channel against asynchronous access. */
-  os::AsyncLock lockOuput(const Duration& timeout = Duration::max());
+  AsyncLock lockOuput(const Duration& timeout = Duration::max());
   /** Prints a printf style formatting string with arguments. Note that the total length of the
    * string, after argument expansions, must be less than the config::cliMaximumStringLength.
    * Multiple successive calls to print(...) are acceptable.
@@ -259,7 +259,7 @@ public:
   /** Returns the current length of the line being printed. */
   size_t currentLineLength() const;
   /** Returns a constant reference to the current printer configuration. */
-  const os::PrettyPrinter::Config& printerConfig() const;
+  const PrettyPrinter::Config& printerConfig() const;
   /** Reads in data from the CLI input in a manner identical to scanf and returns either when data
    * has been successfully read or when the timeout expires. */
   size_t scan(char* buffer, size_t bufferLen, const Duration& timeout = Duration::max());
@@ -274,18 +274,18 @@ public:
   /** Prompts the user for a signed integer input. This function will only return once a signed
    * integer is successfully parsed. In the event of a timeout expiration, an exception will be
    * thrown.
-   * @throws os::ExceptionCode::cliArgumentReadTimeout in the event no valid data is read before the
+   * @throws ExceptionCode::cliArgumentReadTimeout in the event no valid data is read before the
    * timeout occurs. */
   int64_t readSignedInt(const char* prompt = nullptr, const Duration& timeout = Duration::max());
   /** Prompts the user for an unsigned integer input. This function will only return once an 
    * unsigned integer is successfully parsed. In the event of a timeout expiration, an exception
    * will be thrown.
-   * @throws os::ExceptionCode::cliArgumentReadTimeout in the event no valid data is read before the
+   * @throws ExceptionCode::cliArgumentReadTimeout in the event no valid data is read before the
    * timeout occurs. */
   uint64_t readUnsignedInt(const char* prompt = nullptr, const Duration& timeout = Duration::max());
   /** Prompts the user for a floating point input. This function will only return once a float 
    * is successfully parsed. In the event of a timeout expiration, an exception will be thrown.
-   * @throws os::ExceptionCode::cliArgumentReadTimeout in the event no valid data is read before the
+   * @throws ExceptionCode::cliArgumentReadTimeout in the event no valid data is read before the
    * timeout occurs. */
   double readDouble(const char* prompt = nullptr, const Duration& timeout = Duration::max());
   /** The current formatting configuration to use when printing. */
@@ -392,7 +392,7 @@ struct Library
 };
 
 /** This is called by the jel on startup. It should not be used by the application. */
-void startSystemCli(std::shared_ptr<os::AsyncIoStream>& io);
+void startSystemCli(std::shared_ptr<AsyncIoStream>& io);
 /** Any application libraries must be registered with the CLI before use by calling this function.
  * */
 Status registerLibrary(const Library& library);

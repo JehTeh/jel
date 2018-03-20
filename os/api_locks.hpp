@@ -47,8 +47,6 @@
 
 namespace jel
 {
-namespace os
-{
 /** @class Lock
 *  @brief Provides a thread-safe locking primitive.
 *
@@ -204,5 +202,4 @@ protected:
   bool locked_;
 };
 
-} /** namespace os */
 } /** namespace jel */

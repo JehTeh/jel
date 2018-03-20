@@ -44,10 +44,6 @@
 
 namespace jel
 {
-namespace os
-{
-
-
 GenericThread_Base::GenericThread_Base()
 {
   /** Nothing is done here. All initialization is performed in the startThread() function to ensure
@@ -251,5 +247,4 @@ void ThisThread::deleteSelf(bool performCompleteErasure) noexcept
   vTaskDelete(nullptr);
 }
 
-} /** namespace os */
 } /** namespace jel */

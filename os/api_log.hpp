@@ -42,9 +42,6 @@
 
 namespace jel
 {
-namespace os
-{
-
 /** @class Logger
  *  @brief Provides formatted, asynchronous logging style output to application threads.
  *  */
@@ -99,5 +96,4 @@ private:
   std::unique_ptr<Thread> tptr;
 };
 
-} /** namespace os */
 } /** namespace jel */

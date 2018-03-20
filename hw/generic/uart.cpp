@@ -90,7 +90,7 @@ size_t BasicUart_Base::read(char* buffer, const size_t bufferLen)
 
 size_t BasicUart_Base::waitForChars(const Duration& timeout)
 {
-  os::LockGuard grabFlag(rx_.flag, timeout);
+  LockGuard grabFlag(rx_.flag, timeout);
   return rx_.pos;
 }
 
@@ -143,13 +143,13 @@ void BasicUart_Base::write(const char c)
   //corrupted, it is on the application to ensure this isn't called when another transmission is
   //ongoing. Currently this also just relies on polling, IMO the overhead of implementing an ISR for
   //single characters generally isn't worth it.
-  while(!isTxBufferReady()) { os::ThisThread::yield(); };
+  while(!isTxBufferReady()) { ThisThread::yield(); };
   loadTxBuffer(c);
 }
 
 bool BasicUart_Base::isBusy(const Duration& timeout) 
 {
-  os::LockGuard lg(tx_.flag, timeout);
+  LockGuard lg(tx_.flag, timeout);
   if(lg.isLocked()) { return false; }
   return true;
 }

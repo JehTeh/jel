@@ -37,8 +37,6 @@
 
 namespace jel
 {
-namespace os
-{
 
 GenericCopyQueue_Base::GenericCopyQueue_Base(const size_t maxLength, const size_t itemSize, uint8_t* memory) :
   itemStoragePtr_(memory)
@@ -156,5 +154,4 @@ void GenericCopyQueue_Base::genericErase() noexcept
   xQueueReset(handle_);
 }
 
-} /** namespace os */
 } /** namespace jel */

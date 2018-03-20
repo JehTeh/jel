@@ -88,11 +88,8 @@ extern volatile uint32_t _ebss; /**< End of .bss, located in RAM. */
 int main(int, char**);
 namespace jel
 {
-namespace os
-{
 void bootThread(void*);
-}
-}
+} /** namespace jel */
 
 inline static void initBss()
 {
@@ -147,7 +144,7 @@ void _resetVector(void)
   (void)lptr;
   hw::startup::customDispatcherPostDataInit();
   hw::irq::InterruptController::enableGlobalInterrupts();
-  os::SystemAllocator::constructSystemAllocator();
+  SystemAllocator::constructSystemAllocator();
   hw::sysclock::SystemSteadyClockSource::startClock();
   //-heartbeat IO init
   //Newlib pre-os initialization. This does everything except call C++ static constructors, as such
@@ -177,17 +174,15 @@ void _resetVector(void)
  * */
 int main(int, char**)
 {
-  std::unique_ptr<jel::os::Thread> btThread = 
-    std::make_unique<jel::os::Thread>(&jel::os::bootThread, nullptr, "BOOT", 2500, 
-      jel::os::Thread::Priority::maximum);
+  std::unique_ptr<jel::Thread> btThread = 
+    std::make_unique<jel::Thread>(&jel::bootThread, nullptr, "BOOT", 2500, 
+      jel::Thread::Priority::maximum);
   btThread->detach();
   vTaskStartScheduler();
   return 1;
 }
 
 namespace jel
-{
-namespace os
 {
 
 /** Note: This must be nullptr/unitialized. If it is not, GCC will call a static constructor and
@@ -261,5 +256,4 @@ void bootThread(void*)
   ThisThread::deleteSelf();
 }
 
-} /** namespace os */
 } /** namespace jel */

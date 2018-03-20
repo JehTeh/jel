@@ -135,7 +135,7 @@ enum class UartInstance : uint8_t
  *  through numerous virtual functions that would be used to directly access the hardware on most
  *  platforms. 
  * */
-class BasicUart_Base : public os::SerialReaderInterface, public os::SerialWriterInterface
+class BasicUart_Base : public SerialReaderInterface, public SerialWriterInterface
 {
 public:
   /** @struct Config
@@ -167,7 +167,7 @@ protected:
     volatile size_t pos;
     volatile size_t totalLen;
     volatile BufferType* buffer;
-    os::Semaphore flag;
+    Semaphore flag;
   };
   Config cfg_;
   OpState<char> rx_;

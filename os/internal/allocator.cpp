@@ -47,17 +47,15 @@ void __wrap_vPortFree(void* ptr);
 
 void* __wrap_pvPortMalloc(size_t size)
 {
-  return jel::os::SystemAllocator::systemAllocator()->allocate(size);
+  return jel::SystemAllocator::systemAllocator()->allocate(size);
 }
 
 void __wrap_vPortFree(void* ptr)
 {
-  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
+  jel::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 namespace jel
-{
-namespace os
 {
 
 AllocatorStatisticsInterface::AllocatorsTableEntry*
@@ -182,5 +180,4 @@ size_t SystemAllocator::totalSpace_Bytes() const noexcept
   return configTOTAL_HEAP_SIZE;
 }
 
-} /** namespace os */
 } /** namespace jel */

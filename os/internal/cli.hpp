@@ -45,7 +45,7 @@ namespace cli
 {
 
 void initCliPool();
-os::AllocatorStatisticsInterface& cliPoolIf();
+AllocatorStatisticsInterface& cliPoolIf();
 
 /** @class Vtt
  *  @brief The Visual Text Terminal (VTT) provides input/output functionality.
@@ -64,18 +64,18 @@ public:
     size_t receiveBufferLength = 32;
     Duration pollingPeriod =  Duration::milliseconds(50);
   };
-  Vtt(const std::shared_ptr<os::AsyncIoStream>& ios);
+  Vtt(const std::shared_ptr<AsyncIoStream>& ios);
   ~Vtt() noexcept;
-  os::AsyncLock lockOutput(const Duration& timeout = Duration::max()) 
+  AsyncLock lockOutput(const Duration& timeout = Duration::max()) 
     { return ios_->lockOutput(timeout); }
   Status write(const char* cStr, size_t length = 0);
   Status write(const char* format, va_list args);
-  Status colorizedWrite(const os::AnsiFormatter::Color color, const char* format, ...)
+  Status colorizedWrite(const AnsiFormatter::Color color, const char* format, ...)
     __attribute__((format(printf, 3, 4)));
   size_t read(char* buffer, size_t bufferSize, const Duration& timeout = Duration::max()); 
   size_t read(String& string, const Duration& timeout = Duration::max()); 
   Status prefix(const char* cStr);
-  os::PrettyPrinter& printer() { return printer_; }
+  PrettyPrinter& printer() { return printer_; }
 private:
   static constexpr size_t formatScratchBufferSize = 16; 
   class HistoryBuffer
@@ -92,14 +92,14 @@ private:
   private:
     size_t bpos_;
     size_t vpos_;
-    os::JelStringPool::ObjectContainer buffers_[config::cliHistoryDepth];
+    jel::JelStringPool::ObjectContainer buffers_[config::cliHistoryDepth];
     void nextBpos();
     void prevBpos();
     void nextVpos();
     void prevVpos();
   };
-  std::shared_ptr<os::AsyncIoStream> ios_;
-  os::PrettyPrinter printer_;
+  std::shared_ptr<AsyncIoStream> ios_;
+  PrettyPrinter printer_;
   Config cfg_;
   String wb_;
   String rxs_;
@@ -187,17 +187,17 @@ public:
     LibrariesListItem() : libptr(nullptr), next(nullptr) {}
     LibrariesListItem(const Library& lib) : libptr(&lib), next(nullptr) {}
   };
-  static constexpr os::AnsiFormatter::Color defaultErrorColor = os::AnsiFormatter::Color::brightRed;
+  static constexpr AnsiFormatter::Color defaultErrorColor = AnsiFormatter::Color::brightRed;
   static constexpr size_t cliThreadStackSize_Bytes = 2048;
-  static constexpr os::Thread::Priority cliThreadPriority = os::Thread::Priority::low;
-  CliInstance(std::shared_ptr<os::AsyncIoStream>& io);
+  static constexpr Thread::Priority cliThreadPriority = Thread::Priority::low;
+  CliInstance(std::shared_ptr<AsyncIoStream>& io);
   ~CliInstance() noexcept;
   static const LibrariesListItem* getLibraryList() { return &activeCliInstance->libList_; };
   static Status registerLibrary(const Library& lib);
 private:
   friend ArgumentContainer;
   AccessPermission aplvl_ = AccessPermission::unrestricted;
-  os::Thread* tptr_;
+  Thread* tptr_;
   std::unique_ptr<String> istr_;
   std::unique_ptr<Vtt> vtt_;
   LibrariesListItem libList_;
@@ -208,9 +208,9 @@ private:
   bool lookupCommand(const char* name);
   int executeCommand(Tokenizer& tokens);
   bool doesAplvlMeetSecRequirment(const AccessPermission& lvlToCheckAgainst);
-  void cliThread(std::shared_ptr<os::AsyncIoStream>* io);
+  void cliThread(std::shared_ptr<AsyncIoStream>* io);
   static CliInstance* activeCliInstance;
-  static void cliThreadDispatcher(std::shared_ptr<os::AsyncIoStream>* io);
+  static void cliThreadDispatcher(std::shared_ptr<AsyncIoStream>* io);
 };
 
 } /** namespace cli */

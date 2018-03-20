@@ -37,9 +37,6 @@
 
 namespace jel
 {
-namespace os
-{
 
-} /** namespace os */
 } /** namespace jel */
 

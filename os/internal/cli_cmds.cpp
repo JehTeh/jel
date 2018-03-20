@@ -39,8 +39,6 @@
 
 namespace jel
 {
-namespace os 
-{
 
 size_t printCpuUse(cli::CommandIo& io, char* pBuf, const size_t pBufLen, const bool showStack);
 size_t printMemUse(cli::CommandIo& io, char* pBuf, const size_t pBufLen);
@@ -487,6 +485,4 @@ int32_t cliCmdRmon(cli::CommandIo& io)
   return 0;
 }
 
-} /** namespace os */
 } /** namespace jel */
-

@@ -77,9 +77,6 @@
 namespace jel
 {
 
-namespace os
-{
-
 /** @Class AllocatorStatisticsInterface
  *  @brief An optional interface that can be implemented by allocator components and is used for
  *  tracking memory usage at the system level. 
@@ -392,5 +389,4 @@ private:
   uint8_t mem_[blockSize_Bytes * totalBlocks] __attribute__((aligned(4)));
 };
 
-} /** namespace os */
 } /** namespace jel */

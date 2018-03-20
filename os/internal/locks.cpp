@@ -60,8 +60,6 @@
 
 namespace jel
 {
-namespace os
-{
 
 Lock::Lock(const Type type, const size_t maxCount, const size_t initialCount) :
   type_(type)
@@ -214,5 +212,4 @@ void Lock::unlock() noexcept
   }
 }
 
-} /** namespace os */
 } /** namespace jel */

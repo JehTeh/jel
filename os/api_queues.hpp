@@ -44,9 +44,6 @@
 
 namespace jel
 {
-namespace os
-{
-
 /** @class GenericCopyQueue_Base
  *  @brief This base class is used strictly as a helper and should not be used in the application
  *  directly.
@@ -232,5 +229,4 @@ public:
   StaticQueue() : Queue<T, isTrivial>(maxNumberOfElements, staticMemory_) {}
 };
 
-} /** namespace os */
 } /** namespace jel */

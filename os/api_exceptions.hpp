@@ -147,9 +147,6 @@ private:
 #endif
 };
 
-namespace os
-{
-
 enum class ExceptionCode : uint32_t
 {
   allocationFailed = 0,
@@ -169,6 +166,5 @@ public:
     {}
 };
 
-}
 
-}
+} /** namespace jel */

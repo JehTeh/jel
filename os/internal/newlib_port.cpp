@@ -93,47 +93,47 @@ void __libc_fini_array(void);
 #endif
 void* operator new(size_t size)
 {
-  return jel::os::SystemAllocator::systemAllocator()->allocate(size);
+  return jel::SystemAllocator::systemAllocator()->allocate(size);
 }
 
 void* operator new[](size_t size)
 {
-  return jel::os::SystemAllocator::systemAllocator()->allocate(size);
+  return jel::SystemAllocator::systemAllocator()->allocate(size);
 }
 
 void operator delete(void* ptr) noexcept
 {
-  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
+  jel::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 void operator delete[](void* ptr) noexcept
 {
-  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
+  jel::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 void operator delete(void* ptr, size_t) noexcept
 {
-  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
+  jel::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 void operator delete[](void* ptr, size_t) noexcept
 {
-  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
+  jel::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 void* operator new(size_t size, char const*, int)
 {
-  return jel::os::SystemAllocator::systemAllocator()->allocate(size);
+  return jel::SystemAllocator::systemAllocator()->allocate(size);
 }
 
 void operator delete(void* ptr, char const*, int ) 
 {
-  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
+  jel::SystemAllocator::systemAllocator()->deallocate(ptr);
 }
 
 auto mallocBase = [](size_t size)
 {
-  void* ptr = jel::os::SystemAllocator::systemAllocator()->allocate(size);
+  void* ptr = jel::SystemAllocator::systemAllocator()->allocate(size);
   return ptr;
 };
 
@@ -156,7 +156,7 @@ auto callocBase = [](size_t num, size_t size)
 
 auto freeBase = [](void* ptr)
 {
-  jel::os::SystemAllocator::systemAllocator()->deallocate(ptr);
+  jel::SystemAllocator::systemAllocator()->deallocate(ptr);
 };
 
 void* malloc(size_t size)
@@ -301,7 +301,7 @@ int _read(int file, char* buffer, int len)
   {
     case STDOUT_FILENO:
     case STDIN_FILENO:
-      return os::jelStandardIo->read(buffer, len, Duration::max());
+      return jelStandardIo->read(buffer, len, Duration::max());
     default:
       return -1;
   }
@@ -314,7 +314,7 @@ int _write(int file, char *ptr, int len)
   {
     case STDOUT_FILENO:
     case STDERR_FILENO:
-      os::jelStandardIo->write(ptr, len, Duration::max());
+      jelStandardIo->write(ptr, len, Duration::max());
       return len;
     default:
       return 0;

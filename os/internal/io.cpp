@@ -38,8 +38,6 @@
 
 namespace jel
 {
-namespace os
-{
 
 MtWriter::MtWriter(std::unique_ptr<SerialWriterInterface> writer) :
   stream_(std::move(writer))
@@ -410,6 +408,5 @@ constexpr char AnsiFormatter::Input::endKey[];
 constexpr char AnsiFormatter::Input::pageUpKey[];
 constexpr char AnsiFormatter::Input::pageDownKey[];
 
-} /** namespace os */
 } /** namespace jel */
 
