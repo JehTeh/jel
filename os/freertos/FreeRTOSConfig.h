@@ -59,7 +59,7 @@ extern void jel_threadCreate(volatile void*);
 //
 #elif defined(HW_TARGET_STM32F302RCT6)
 #define configCPU_CLOCK_HZ                          ((uint32_t)64000000)
-#define configTOTAL_HEAP_SIZE                       ((size_t)(24576))
+#define configTOTAL_HEAP_SIZE                       ((size_t)(32768))
 #define configMINIMAL_STACK_SIZE                    ((unsigned short)128)
 #ifdef __NVIC_PRIO_BITS
 #define configPRIO_BITS         __NVIC_PRIO_BITS

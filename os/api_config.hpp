@@ -136,6 +136,8 @@ struct JelRuntimeConfiguration
 {
   /** Human readable name for this configuration. */
   const char* name;
+  const size_t bootThreadStackSize_Bytes;
+  const size_t systemHeapSize_Bytes;
   /** The type of serial port to instantiate on startup. */
   SerialPortType stdioPortType;
   /** The serial line configuration parameters to use for the system standard I/O channel. */

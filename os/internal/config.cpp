@@ -42,7 +42,7 @@ static constexpr auto defaultBaud = hw::uart::Baudrate::bps1Mbit;
 #ifdef HW_TARGET_TM4C123GH6PM
 const JelRuntimeConfiguration jelRuntimeConfiguration_tm4c123gh6pm =
 {
-  "tm4c123gh6pm_default", SerialPortType::uart0,
+  "tm4c123gh6pm_default", 1536, 25000, SerialPortType::uart0,
   {
     hw::uart::UartInstance::uart0, defaultBaud, hw::uart::Parity::none,
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
@@ -55,7 +55,7 @@ extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfigurati
 #elif defined(HW_TARGET_STM32F302RCT6)
 const JelRuntimeConfiguration jelRuntimeConfiguration_stm32f302rct6=
 {
-  "stm32f302rct6_default", SerialPortType::uart0,
+  "stm32f302rct6_default", 1536, 25000, SerialPortType::uart0,
   {
     hw::uart::UartInstance::uart1, hw::uart::Baudrate::bps115200, hw::uart::Parity::none,
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
@@ -68,7 +68,7 @@ extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfigurati
 #else
 const JelRuntimeConfiguration jelRuntimeConfiguration_nocfg =
 {
-  "nocfg_default", SerialPortType::uart0,
+  "nocfg_default", 1536, 25000, SerialPortType::uart0,
   {
     hw::uart::UartInstance::uart0, defaultBaud, hw::uart::Parity::none,
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
