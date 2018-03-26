@@ -1406,7 +1406,11 @@ int32_t cliCmdHelp(CommandIo& io)
         for(const auto& cmd : lib)
         {
           bold = true; io.print("\t%s: ", cmd.name); bold = false;
-          io.print("%.60s...\r\n", cmd.helpString);
+          io.print("%.40s...", cmd.helpString);
+          if(io.currentLineLength() != 0)
+          {
+            io.print("\r\n");
+          }
         }
         return 0;
       }
