@@ -76,6 +76,11 @@ const CommandEntry cliCommandArray[] =
     cli::AccessPermission::unrestricted, nullptr
   },
   {
+    "short", nullptr, "",
+    "Short test cmd, does nothing.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
     "test_inputs", cliCmdTest_inputs, "",
     "A test command used to validate CLI io.xxx() input functions.\r\n",
     cli::AccessPermission::unrestricted, nullptr
@@ -1383,8 +1388,9 @@ int32_t cliCmdHelp(CommandIo& io)
       assert(lli->libptr != nullptr);
       const Library& lib = *lli->libptr;
       bold = true; io.print("\t%s: ", lib.name); bold = false;
-      if(std::strlen(lib.helpString) > 60) { io.print("%.60s...\r\n", lib.helpString); }
-      else { io.print("%s\r\n", lib.helpString); }
+      if(std::strlen(lib.helpString) > 50) { io.print("%.50s...", lib.helpString); }
+      else { io.print("%s", lib.helpString); }
+      if(io.currentLineLength() > 0) { io.print("\r\n"); }
       lli = lli->next.get();
     }
     return 0;
@@ -1406,10 +1412,17 @@ int32_t cliCmdHelp(CommandIo& io)
         for(const auto& cmd : lib)
         {
           bold = true; io.print("\t%s: ", cmd.name); bold = false;
-          io.print("%.40s...", cmd.helpString);
+          io.print("%.40s", cmd.helpString);
           if(io.currentLineLength() != 0)
           {
-            io.print("\r\n");
+            if(std::strlen(cmd.helpString) > 40)
+            {
+              io.print("...\r\n");
+            }
+            else
+            {
+              io.print("\r\n");
+            }
           }
         }
         return 0;
