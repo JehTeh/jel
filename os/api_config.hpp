@@ -90,6 +90,46 @@ constexpr size_t cliHistoryDepth = 3;
  * */
 constexpr size_t cliMaximumArguments = 8;
 constexpr size_t cliMaximumStringLength = 128;
+#elif defined(HW_TARGET_TM4C1294NCPDT)
+/** Determines the total number of strings in the jel shared string pool. The string pool is used
+ *  by the CLI and logger. 
+ *  
+ *  Generally the logger requires at least one String object for printing. The CLI typically
+ *  requires at least 3, in addition to an extra string for each string paramater that may be
+ *  passed into a command (strings are re-used between commands, so only enough strings are needed
+ *  for the command that accepts the most string inputs). Note that each level of CLI history
+ *  requires one additional string.
+ *
+ *  A minimum of 8 strings is strongly recommended, with a CLI history of 1. With a larger history
+ *  depth, 16-24 strings is preferable.
+ * */
+constexpr size_t stringPoolStringCount = 32;
+/** Determines the size of each string in the jel shared string pool.
+ *  
+ *  The total memory used by the string pool is ~100B + (stringPoolStringCount *
+ *  stringPoolStringSize) without the optimizeStringMemory flag enabled. With the flag enabled, this
+ *  is the maximum possible memory consumed by the string pool. 
+ *  A minimum string size of 128B is recommended, although most CLI and other system functionality
+ *  will generally work with 64B strings. Note that this value also determines the effective
+ *  maximum command length that can be handled by the CLI.
+ * */
+constexpr size_t stringPoolStringSize = 256;
+/** If true, all string pool memory will be allocated up-front during jel initialization. If false,
+ * no string memory will be allocated up front but will be allocated as needed. Furthermore, strings
+ * actively in use will be continuously trimmed to keep their memory consumption as low as possible.
+ * This has the advantage of significantly reducing memory consumption but will require numerous
+ * allocations at run-time, which depending on the allocator in use may or may not be ideal.
+ * */
+constexpr bool optimizeStringMemory = false;
+/** Determines the maximum number of history items the CLI will keep in memory. */
+constexpr size_t cliHistoryDepth = 12;
+/** Determines the maximum number of separate arguments that a command can accept at once. Each
+ * argument is defined according to the definitions in api_cli.hpp. 
+ * This has a relatively low memory impact (<20B/arg) and will fully support all built in jel
+ * functionality with a minimum of 8 arguments. 
+ * */
+constexpr size_t cliMaximumArguments = 8;
+constexpr size_t cliMaximumStringLength = 256;
 #elif defined(HW_TARGET_STM32F302RCT6)
 constexpr size_t stringPoolStringCount = 24;
 constexpr size_t stringPoolStringSize = 256;

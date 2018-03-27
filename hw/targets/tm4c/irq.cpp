@@ -39,6 +39,9 @@
 #ifdef HW_TARGET_TM4C123GH6PM
 #include "hw/targets/tm4c/vectorTable_tm4c123gh6pm.hpp"
 #endif
+#ifdef HW_TARGET_TM4C1294NCPDT
+#include "hw/targets/tm4c/vectorTable_tm4c1294ncpdt.hpp"
+#endif
 
 namespace jel
 {

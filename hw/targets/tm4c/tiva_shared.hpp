@@ -40,6 +40,9 @@
 #define PART_TM4C123GH6PM
 #define TARGET_IS_TM4C123_RB2
 #endif
+#ifdef HW_TARGET_TM4C1294NCPDT
+#define PART_TM4C1294NCPDT
+#endif
 #include "inc/hw_types.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_ints.h"
@@ -55,6 +58,9 @@ namespace hw
 {
 #ifdef HW_TARGET_TM4C123GH6PM
   constexpr uint32_t systemClockFrequency_Hz() { return 80'000'000; }
+#endif
+#ifdef HW_TARGET_TM4C1294NCPDT
+  inline uint32_t systemClockFrequency_Hz() { return 120'000'000; }
 #endif
 
 } /** namespace hw */

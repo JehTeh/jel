@@ -55,6 +55,25 @@ extern void jel_threadCreate(volatile void*);
 /* Priority 5, or 0xA0 as only the top three bits are implemented. */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY        (5 << 5)  
 //
+// TM4C1294NCPDT Target
+//
+#elif HW_TARGET_TM4C1294NCPDT
+/** CPU clock speed. */
+#define configCPU_CLOCK_HZ                          ((uint32_t)120000000)
+/** Heap size in bytes. The Tiva 129 jel implementation only uses a single heap. */
+#define configTOTAL_HEAP_SIZE                       ((size_t)(196606))
+/** Minimum task stack size, in 32b words. A value of  (1024 bytes) was found sufficient in
+ * testing for most tasks, including the idle task. */
+#define configMINIMAL_STACK_SIZE                    ((unsigned short)128)
+/** Interrupt priority configuration, from TI. NOTE: When enabling hardware interrupts, ensure they
+ * are mapped to a priority equal to or below this to avoid corrupting RTOS routines! The only time
+ * an interrupt can be mapped to a higher priority is when it explicitly avoids using any and all
+ * RTOS related primitives and doesn't affect data in a critical section. */
+/* Priority 7, or 0xE0 as only the top three bits are implemented.  This is the lowest priority. */
+#define configKERNEL_INTERRUPT_PRIORITY             (7 << 5)    
+/* Priority 5, or 0xA0 as only the top three bits are implemented. */
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY        (5 << 5)  
+//
 // STM32F302RCT6 Target
 //
 #elif defined(HW_TARGET_STM32F302RCT6)

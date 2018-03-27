@@ -108,6 +108,21 @@ const BasicUartHardwareProperties HwMap[] =
   }
 };
 #endif
+#ifdef HW_TARGET_TM4C1294NCPDT
+const BasicUartHardwareProperties HwMap[] =
+{
+  {
+    UartInstance::uart0, UART0_BASE, SYSCTL_PERIPH_UART0, static_cast<irq::Index>(INT_UART0),
+    GPIO_PORTA_BASE, GPIO_PIN_1, GPIO_PA1_U0TX, 
+    GPIO_PORTA_BASE, GPIO_PIN_0, GPIO_PA0_U0RX 
+  },
+  {
+    UartInstance::uart1, UART1_BASE, SYSCTL_PERIPH_UART1, static_cast<irq::Index>(INT_UART1),
+    GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_PB1_U1TX, 
+    GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_PB0_U1RX 
+  }
+};
+#endif
 
 BasicUart::BasicUart(const BasicUart_Base::Config& config) : BasicUart_Base{config}, hw_{nullptr}
 {
@@ -188,13 +203,14 @@ void BasicUart::clearTxIsrFlags()
 void BasicUart::initializeHardware()
 {
   SysCtlPeripheralEnable(hw_->uartSystemId);
-  ROM_GPIOPinTypeUART(hw_->io_rxPort, hw_->io_rxPin); ROM_GPIOPinTypeUART(hw_->io_txPort, hw_->io_txPin);
+  MAP_GPIOPinTypeUART(hw_->io_rxPort, hw_->io_rxPin); 
+  MAP_GPIOPinTypeUART(hw_->io_txPort, hw_->io_txPin);
   GPIOPinConfigure(hw_->io_muxRx); GPIOPinConfigure(hw_->io_muxTx);
   while(!SysCtlPeripheralReady(hw_->uartSystemId));
-  UARTEnable(hw_->base);
-  UARTClockSourceSet(hw_->base, UART_CLOCK_SYSTEM);
-  ROM_UARTFIFOLevelSet(hw_->base, UART_FIFO_TX7_8, UART_FIFO_RX1_8);
-  ROM_UARTFIFOEnable(hw_->base);
+  MAP_UARTEnable(hw_->base);
+  MAP_UARTClockSourceSet(hw_->base, UART_CLOCK_SYSTEM);
+  MAP_UARTFIFOLevelSet(hw_->base, UART_FIFO_TX7_8, UART_FIFO_RX1_8);
+  MAP_UARTFIFOEnable(hw_->base);
   uint32_t cfgWord = 0;
   switch(cfg_.parity)
   {
@@ -241,7 +257,8 @@ void BasicUart::initializeHardware()
       throw Exception{ExceptionCode::driverFeatureNotSupported,
         "The requested stop bit setting is not supported by this UART."};
   }
-  UARTConfigSetExpClk(hw_->base, systemClockFrequency_Hz(), static_cast<uint32_t>(cfg_.baud), cfgWord);
+  MAP_UARTConfigSetExpClk(hw_->base, systemClockFrequency_Hz(), static_cast<uint32_t>(cfg_.baud), 
+    cfgWord);
   switch(cfg_.rxBlockingMode)
   {
     case BlockingMode::isr:

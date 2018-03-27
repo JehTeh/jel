@@ -1,0 +1,4 @@
+CREATE build_tm4c1294ncpdt_dbg\bin\tm4c1294ncpdt_dbg_fullarchive.a
+ADDLIB build_tm4c1294ncpdt_dbg\bin\tm4c1294ncpdt_dbg.a
+SAVE
+END

@@ -51,6 +51,7 @@ namespace jel
 {
 namespace hw
 {
+
 namespace startup
 {
   void defaultInitializeClocks();
@@ -61,6 +62,11 @@ namespace startup
     #ifdef HW_TARGET_TM4C123GH6PM
     //Configure the CPU clock for the maximum rated (80MHz). 
     MAP_SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+    #endif
+    #ifdef HW_TARGET_TM4C1294NCPDT
+    //Configure the CPU clock for the maximum rated (120MHz). 
+    SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480),
+      120'000'000);
     #endif
   }
 

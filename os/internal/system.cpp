@@ -44,7 +44,13 @@ bool System::cpuExceptionActive() noexcept
   {
     return true;
   }
-#elif defined(HW_TARGET_TM4C123GH6PM) || defined(HW_TARGET_TM4C129XNCZAD)
+#elif defined(HW_TARGET_TM4C123GH6PM) 
+  uint32_t* scb_icsr = reinterpret_cast<uint32_t*>(0xE000ED04);
+  if((*scb_icsr & 0x1FF) != 0)
+  {
+    return true;
+  }
+#elif defined(HW_TARGET_TM4C1294NCPDT)
   uint32_t* scb_icsr = reinterpret_cast<uint32_t*>(0xE000ED04);
   if((*scb_icsr & 0x1FF) != 0)
   {
@@ -73,6 +79,12 @@ bool System::inIsr() noexcept
     return true;
   }
 #elif defined(HW_TARGET_TM4C123GH6PM) || defined(HW_TARGET_TM4C129XNCZAD)
+  uint32_t* scb_icsr = reinterpret_cast<uint32_t*>(0xE000ED04);
+  if((*scb_icsr & 0x1FF) != 0)
+  {
+    return true;
+  }
+#elif defined(HW_TARGET_TM4C1294NCPDT)
   uint32_t* scb_icsr = reinterpret_cast<uint32_t*>(0xE000ED04);
   if((*scb_icsr & 0x1FF) != 0)
   {

@@ -1,0 +1,4 @@
+CREATE build_tm4c1294ncpdt_rel\bin\tm4c1294ncpdt_rel_fullarchive.a
+ADDLIB build_tm4c1294ncpdt_rel\bin\tm4c1294ncpdt_rel.a
+SAVE
+END
