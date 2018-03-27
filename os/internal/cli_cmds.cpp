@@ -43,6 +43,7 @@ namespace jel
 size_t printCpuUse(cli::CommandIo& io, char* pBuf, const size_t pBufLen, const bool showStack);
 size_t printMemUse(cli::CommandIo& io, char* pBuf, const size_t pBufLen);
 
+int32_t cliCmdBuildInfo(cli::CommandIo& io);
 int32_t cliCmdMemuse(cli::CommandIo& io);
 int32_t cliCmdCpuuse(cli::CommandIo& io);
 int32_t cliCmdStackuse(cli::CommandIo& io);
@@ -52,6 +53,11 @@ int32_t cliCmdRmon(cli::CommandIo& io);
 
 const cli::CommandEntry cliCommandArray[] =
 {
+  {
+    "buildinfo", cliCmdBuildInfo, "",
+    "Prints jel system build information.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
   {
     "memuse", cliCmdMemuse, "",
     "Reports the current memory usage of various heaps and memory pools in the system.\n",
@@ -109,6 +115,44 @@ extern const cli::Library cliCmdLib =
   sizeof(cliCommandArray)/sizeof(cli::CommandEntry),
   cliCommandArray
 };
+
+int32_t cliCmdBuildInfo(cli::CommandIo& io)
+{
+  io.fmt.isBold = true;
+  io.constPrint("JEL (JT's Embedded Libraries) Info:\r\n");
+  io.constPrint("Build Date: "); io.fmt.isBold = false;
+  io.constPrint(jelBuildDateString); 
+  io.constPrint("@"); io.constPrint(jelBuildTimeString); io.constPrint("\r\n"); 
+  io.fmt.isBold = true;
+  io.constPrint("GCC/G++ Version: \r\n\t"); io.fmt.isBold = false;
+  io.constPrint(jelCompilerVersionString); io.constPrint("\r\n");
+  io.fmt.isBold = true;
+#ifdef __OPTIMIZE__
+  io.fmt.color = AnsiFormatter::Color::green;
+  io.constPrint("This build is an optimized build (-O1 or greater).\r\n");
+#else
+  io.fmt.color = AnsiFormatter::Color::yellow;
+  io.constPrint("This build is not an optimized build (-O0).\r\n");
+#endif
+  io.fmt.isBold = false;
+  io.fmt.color = AnsiFormatter::Color::default_;
+#if defined(HW_TARGET_RM57L843)
+  io.constPrint("Built for the RM57L843 processor.\r\n");
+#elif defined(HW_TARGET_STM32F302RCT6)
+  io.constPrint("Built for the STM32F302RCT6 processor.\r\n");
+#elif defined(HW_TARGET_TM4C1294NCPDT)
+  io.constPrint("Built for the TM4C1294NCPDT processor.\r\n");
+#elif defined(HW_TARGET_TM4C123GH6PM)
+  io.constPrint("Built for the TM4C123GH6PM processor.\r\n");
+#else
+  io.constPrint("This jel has not been built for a supported/recognized processor.\r\n");
+#error "No Target defined."
+#endif
+  io.fmt.isBold = true;
+  io.constPrint("Runtime Config: "); io.fmt.isBold = false;
+  io.constPrint(config::jelRuntimeConfiguration.name); io.constPrint("\r\n");
+  return 0;
+}
 
 int32_t cliCmdMemuse(cli::CommandIo& io)
 {

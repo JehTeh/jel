@@ -70,4 +70,8 @@ extern std::shared_ptr<JelStringPool> jelStringPool;
  * cache their own shared_ptr copy. */
 extern std::shared_ptr<AsyncIoStream> jelStandardIo;
 
+extern const char* jelBuildDateString;
+extern const char* jelBuildTimeString;
+extern const char* jelCompilerVersionString;
+
 } /** namespace jel */

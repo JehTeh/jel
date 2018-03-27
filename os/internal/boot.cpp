@@ -190,6 +190,9 @@ namespace jel
  * blow away the Io pointer that is assigned before C++ static initialization. */
 std::shared_ptr<AsyncIoStream> jelStandardIo;
 std::shared_ptr<JelStringPool> jelStringPool;
+const char* jelBuildDateString = __DATE__;
+const char* jelBuildTimeString = __TIME__;
+const char* jelCompilerVersionString = __VERSION__;
 
 extern const cli::Library cliCmdLib;
 /** 
@@ -238,6 +241,11 @@ void initializeStandardIo()
   jelStandardIo->write("Runtime configuration '"); 
   jelStandardIo->write(config::jelRuntimeConfiguration.name);
   jelStandardIo->write("' has been loaded successfully.\r\n");
+  jelStandardIo->write("jel lib. build ");
+  jelStandardIo->write(jelBuildDateString);
+  jelStandardIo->write("@");
+  jelStandardIo->write(jelBuildTimeString);
+  jelStandardIo->write("\r\n"); 
 };
 
 void bootThread(void*)
