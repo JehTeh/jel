@@ -70,3 +70,6 @@ __attribute__((weak)) bool Pin::operator==(bool state) const
 } /** namespace hw */
 } /** namespace jel */
 
+__attribute__((weak)) jel::hw::gpio::Pin
+  jel_HeartbeatIdlePin(jel::hw::gpio::PortName::gpioPort0, 0);
+

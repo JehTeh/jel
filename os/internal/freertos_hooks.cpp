@@ -31,6 +31,9 @@
 /** jel Library Headers */
 #include "os/internal/indef.hpp"
 #include "os/api_threads.hpp"
+#include "hw/api_gpio.hpp"
+
+extern jel::hw::gpio::Pin jel_HeartbeatIdlePin;
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,7 +56,20 @@ void vApplicationTickHook()
 
 void vApplicationIdleHook()
 {
-
+  constexpr jel::Duration blinkTime = jel::Duration::seconds(1);
+  static jel::Timestamp lastToggle = jel::SteadyClock::zero();
+  if((jel::SteadyClock::now() - lastToggle) >= blinkTime)
+  {
+    lastToggle = jel::SteadyClock::now();
+    if(jel_HeartbeatIdlePin.read())
+    {
+      jel_HeartbeatIdlePin.reset();
+    }
+    else
+    {
+      jel_HeartbeatIdlePin.set();
+    }
+  }
 }
 
 void vApplicationGetIdleTaskMemory(StaticTask_t **tcbSpace, StackType_t **stackSpace, 
