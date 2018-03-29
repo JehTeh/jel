@@ -29,9 +29,6 @@
 /** jel Library Headers */
 #include "hw/api_gpio.hpp"
 
-jel::hw::gpio::Pin
-  __attribute__((weak)) jel_HeartbeatIdlePin(jel::hw::gpio::PortName::nullPort, 0);
-
 namespace jel
 {
 namespace hw

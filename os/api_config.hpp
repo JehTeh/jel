@@ -45,6 +45,7 @@
 
 /** jel Library Headers */
 #include "hw/api_uart.hpp"
+#include "hw/api_gpio.hpp"
 
 namespace jel
 {
@@ -190,6 +191,7 @@ struct JelRuntimeConfiguration
  *  linked jel configuration with the application configuration.
  * */
 extern const JelRuntimeConfiguration jelRuntimeConfiguration;
+extern hw::gpio::Pin jelHeartbeatPin;
 
 } /** namespace config */
 } /** namespace jel */

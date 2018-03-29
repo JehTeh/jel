@@ -31,9 +31,8 @@
 /** jel Library Headers */
 #include "os/internal/indef.hpp"
 #include "os/api_threads.hpp"
+#include "os/api_config.hpp"
 #include "hw/api_gpio.hpp"
-
-extern jel::hw::gpio::Pin jel_HeartbeatIdlePin;
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,13 +60,13 @@ void vApplicationIdleHook()
   if((jel::SteadyClock::now() - lastToggle) >= blinkTime)
   {
     lastToggle = jel::SteadyClock::now();
-    if(jel_HeartbeatIdlePin.read())
+    if(jel::config::jelHeartbeatPin.read())
     {
-      jel_HeartbeatIdlePin.reset();
+      jel::config::jelHeartbeatPin.reset();
     }
     else
     {
-      jel_HeartbeatIdlePin.set();
+      jel::config::jelHeartbeatPin.set();
     }
   }
 }
