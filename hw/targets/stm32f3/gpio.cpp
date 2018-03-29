@@ -38,6 +38,9 @@
 #include "gpio.h"
 #pragma GCC diagnostic pop
 
+__attribute__((weak)) jel::hw::gpio::Pin
+  jel_HeartbeatIdlePin(jel::hw::gpio::PortName::gpioPort0, 0);
+
 namespace jel
 {
 namespace hw
