@@ -48,13 +48,11 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_tm4c123gh6pm =
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
     hw::uart::BlockingMode::isr
   },
+  hw::gpio::PortName::nullPort, 0
 };
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
   jelRuntimeConfiguration_tm4c123gh6pm;
-
-hw::gpio::Pin __attribute__((weak)) jelHeartbeatPin = 
-  hw::gpio::Pin(hw::gpio::PortName::nullPort, 0);
 #elif HW_TARGET_TM4C1294NCPDT
 const JelRuntimeConfiguration jelRuntimeConfiguration_tm4c1294ncpdt =
 {
@@ -64,13 +62,11 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_tm4c1294ncpdt =
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
     hw::uart::BlockingMode::isr
   },
+  hw::gpio::PortName::nullPort, 0
 };
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
   jelRuntimeConfiguration_tm4c1294ncpdt;
-
-hw::gpio::Pin __attribute__((weak)) jelHeartbeatPin = 
-  hw::gpio::Pin(hw::gpio::PortName::nullPort, 0);
 #elif defined(HW_TARGET_STM32F302RCT6)
 const JelRuntimeConfiguration jelRuntimeConfiguration_stm32f302rct6=
 {
@@ -78,15 +74,13 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_stm32f302rct6=
   {
     hw::uart::UartInstance::uart1, hw::uart::Baudrate::bps115200, hw::uart::Parity::none,
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
-    hw::uart::BlockingMode::polling
+    hw::uart::BlockingMode::polling,
   },
+  hw::gpio::PortName::nullPort, 0
 };
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
   jelRuntimeConfiguration_stm32f302rct6;
-
-hw::gpio::Pin __attribute__((weak)) jelHeartbeatPin = 
-  hw::gpio::Pin(hw::gpio::PortName::nullPort, 0);
 #else
 const JelRuntimeConfiguration jelRuntimeConfiguration_nocfg =
 {
@@ -96,13 +90,11 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_nocfg =
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
     hw::uart::BlockingMode::isr
   },
+  hw::gpio::PortName::nullPort, 0
 };
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration =
   jelRuntimeConfiguration_nocfg;
-
-hw::gpio::Pin __attribute__((weak)) jelHeartbeatPin = 
-  hw::gpio::Pin(hw::gpio::PortName::nullPort, 0);
 #endif
 
 } /** namespace config */

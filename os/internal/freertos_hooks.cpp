@@ -57,16 +57,21 @@ void vApplicationIdleHook()
 {
   constexpr jel::Duration blinkTime = jel::Duration::seconds(1);
   static jel::Timestamp lastToggle = jel::SteadyClock::zero();
-  if((jel::SteadyClock::now() - lastToggle) >= blinkTime)
+  if(jel::config::jelRuntimeConfiguration.heartbeatLedPort != jel::hw::gpio::PortName::nullPort)
   {
-    lastToggle = jel::SteadyClock::now();
-    if(jel::config::jelHeartbeatPin.read())
+    jel::hw::gpio::Pin hbPin(jel::config::jelRuntimeConfiguration.heartbeatLedPort,
+        jel::config::jelRuntimeConfiguration.heartbeatLedPin);
+    if((jel::SteadyClock::now() - lastToggle) >= blinkTime)
     {
-      jel::config::jelHeartbeatPin.reset();
-    }
-    else
-    {
-      jel::config::jelHeartbeatPin.set();
+      lastToggle = jel::SteadyClock::now();
+      if(hbPin.read())
+      {
+        hbPin.reset();
+      }
+      else
+      {
+        hbPin.set();
+      }
     }
   }
 }

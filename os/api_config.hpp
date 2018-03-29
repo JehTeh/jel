@@ -183,6 +183,9 @@ struct JelRuntimeConfiguration
   SerialPortType stdioPortType;
   /** The serial line configuration parameters to use for the system standard I/O channel. */
   const hw::uart::BasicUart::Config stdioUartConfiguration;
+  /** Heartbeat LED pin. */
+  const hw::gpio::PortName heartbeatLedPort;
+  const uint8_t heartbeatLedPin;
 };
 
 /** 
@@ -191,7 +194,6 @@ struct JelRuntimeConfiguration
  *  linked jel configuration with the application configuration.
  * */
 extern const JelRuntimeConfiguration jelRuntimeConfiguration;
-extern hw::gpio::Pin jelHeartbeatPin;
 
 } /** namespace config */
 } /** namespace jel */
