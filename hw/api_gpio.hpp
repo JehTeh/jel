@@ -46,6 +46,49 @@ public:
   static void initializeGpio();
 };
 
+/** enum PortName
+ *  @brief Generic port names for use with multiple microcontrollers.
+ *  @note Not all ports are supported by all targets. It is up to the application which ports to use
+ *  @note GPIO ports can be referred to either numerically or alphabetically. For the purposes of
+ *  the GPIO driver these are equivalent. 
+ * */
+enum class PortName : intptr_t
+{
+  gpioPortA, gpioPortB, gpioPortC, gpioPortD, gpioPortE, gpioPortF,
+  gpioPortG, gpioPortH, gpioPortI, gpioPortJ, gpioPortK, gpioPortL,
+  gpioPortM, gpioPortN, gpioPortO, gpioPortP, gpioPortQ, gpioPortR,
+  gpioPortS, gpioPortT, gpioPortU, gpioPortV, gpioPortW,
+  gpioPort0 = gpioPortA, gpioPort1 = gpioPortB, gpioPort2 = gpioPortC,
+  gpioPort3 = gpioPortD, gpioPort4 = gpioPortE, gpioPort5 = gpioPortF,
+  gpioPort6 = gpioPortG, gpioPort7 = gpioPortH, gpioPort8 = gpioPortI,
+  gpioPort9 = gpioPortJ, gpioPort11 = gpioPortK, gpioPort12 = gpioPortL,
+  gpioPort13 = gpioPortM, gpioPort14 = gpioPortN, gpioPort15 = gpioPortO,
+  gpioPort16 = gpioPortP, gpioPort17 = gpioPortQ, gpioPort18 = gpioPortR,
+  gpioPort19 = gpioPortS, gpioPort20 = gpioPortT, gpioPort21 = gpioPortU,
+  gpioPort22 = gpioPortV, gpioPort23 = gpioPortW, 
+  nullPort
+};
+
+class Pin
+{
+public:
+  Pin(PortName port, uint8_t pin);
+  void set();
+  void reset();
+  bool read() const;
+  bool operator==(bool state) const;
+private:
+  PortName port_;
+  uint8_t pin_;
+};
+
+class Port
+{
+public:
+  void write(uint32_t mask, uint32_t value);
+  uint32_t read(uint32_t mask) const;
+private:
+};
 
 } /** namespace gpio */
 } /** namespace hw */

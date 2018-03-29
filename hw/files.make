@@ -36,6 +36,7 @@ CXXSOURCE += $(addprefix hw\,\
 		generic\startup.cpp \
 		generic\uart.cpp \
 		generic\wdt.cpp \
+		generic\gpio.cpp \
 		)
 
 TM4C123GH6PM_ASOURCE += $(addprefix hw\targets\tm4c\,\
