@@ -29,8 +29,8 @@
 /** jel Library Headers */
 #include "hw/api_gpio.hpp"
 
-__attribute__((weak)) jel::hw::gpio::Pin
-  jel_HeartbeatIdlePin(jel::hw::gpio::PortName::gpioPort0, 0);
+jel::hw::gpio::Pin
+  __attribute__((weak)) jel_HeartbeatIdlePin(jel::hw::gpio::PortName::nullPort, 0);
 
 namespace jel
 {
@@ -39,7 +39,7 @@ namespace hw
 namespace gpio
 {
 
-__attribute__((weak)) void GpioController::initializeGpio()
+void __attribute__((weak)) GpioController::initializeGpio()
 {
   /** Does nothing */
 }
@@ -49,22 +49,22 @@ __attribute__((weak)) Pin::Pin(PortName port, uint8_t pin) : port_(port), pin_(p
 
 }
 
-__attribute__((weak)) void Pin::set()
+void __attribute__((weak)) Pin::set()
 {
 
 }
 
-__attribute__((weak)) void Pin::reset()
+void __attribute__((weak)) Pin::reset()
 {
 
 }
 
-__attribute__((weak)) bool Pin::read() const
+bool __attribute__((weak)) Pin::read() const
 {
   return false;
 }
 
-__attribute__((weak)) bool Pin::operator==(bool state) const
+bool __attribute__((weak)) Pin::operator==(bool state) const
 {
   return read() == state ? true : false;
 }
