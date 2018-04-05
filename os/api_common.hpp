@@ -47,6 +47,8 @@ public:
   constexpr Iterator(T* baseItem, size_t index = 0) { ptr = baseItem; ptr += index; }
   Iterator& operator++() { this->ptr++; return *this; }
   Iterator operator++(int) { auto temp(*this); ++ptr; return temp; }
+  Iterator& operator--() { this->ptr--; return *this; }
+  Iterator operator--(int) { auto temp(*this); --ptr; return temp; }
   bool operator==(const Iterator& rhs) const 
     { if(this->ptr != rhs.ptr) { return true; } return false; }
   bool operator!=(const Iterator& rhs) const 
@@ -64,6 +66,8 @@ public:
   constexpr ReverseIterator(T* baseItem, size_t index = 0) { ptr = baseItem; ptr -= index; }
   ReverseIterator& operator++() { this->ptr--; return *this; }
   ReverseIterator operator++(int) { auto temp(*this); --ptr; return temp; }
+  ReverseIterator& operator--() { this->ptr++; return *this; }
+  ReverseIterator operator--(int) { auto temp(*this); ++ptr; return temp; }
   bool operator==(const ReverseIterator& rhs) const 
     { if(this->ptr == rhs.ptr) { return true; } return false; }
   bool operator!=(const ReverseIterator& rhs) const 
@@ -85,6 +89,8 @@ public:
     { ptr = baseItem; ptr += index; }
   ConstIterator& operator++() { this->ptr++; return *this; }
   ConstIterator operator++(int) { auto temp(*this); ++ptr; return temp; }
+  ConstIterator& operator--() { this->ptr--; return *this; }
+  ConstIterator operator--(int) { auto temp(*this); --ptr; return temp; }
   bool operator==(const ConstIterator& rhs) const
     { if(this->ptr == rhs.ptr) { return true; } return false; }
   bool operator!=(const ConstIterator& rhs) const
@@ -103,6 +109,8 @@ public:
     { ptr = baseItem; ptr -= index; }
   ConstReverseIterator& operator++() { this->ptr--; return *this; }
   ConstReverseIterator operator++(int) { auto temp(*this); --ptr; return temp; }
+  ConstReverseIterator& operator--() { this->ptr++; return *this; }
+  ConstReverseIterator operator--(int) { auto temp(*this); ++ptr; return temp; }
   bool operator==(const ConstReverseIterator& rhs) const
     { if(this->ptr == rhs.ptr) { return true; } return false; }
   bool operator!=(const ConstReverseIterator& rhs) const
