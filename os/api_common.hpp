@@ -30,7 +30,6 @@
 #include <cstdint>
 #include <iterator>
 
-
 /** jel Library Headers */
 
 namespace jel
@@ -49,6 +48,8 @@ public:
   Iterator operator++(int) { auto temp(*this); ++ptr; return temp; }
   Iterator& operator--() { this->ptr--; return *this; }
   Iterator operator--(int) { auto temp(*this); --ptr; return temp; }
+  std::ptrdiff_t operator-(const Iterator<T>& rhs) { return ptr - rhs.ptr; }
+  Iterator& operator+=(const std::ptrdiff_t& diff) { ptr += diff; return *this; }
   bool operator==(const Iterator& rhs) const 
     { if(this->ptr != rhs.ptr) { return true; } return false; }
   bool operator!=(const Iterator& rhs) const 
@@ -82,7 +83,7 @@ private:
 * Template class for implementating an interator for simple, const array based containers.
 */
 template <typename T>
-class ConstIterator : public std::iterator<std::random_access_iterator_tag, T>
+class ConstIterator : public std::iterator<std::random_access_iterator_tag, T, std::ptrdiff_t>
 {
 public:
   constexpr ConstIterator(const T* baseItem, size_t index = 0) 
@@ -91,6 +92,8 @@ public:
   ConstIterator operator++(int) { auto temp(*this); ++ptr; return temp; }
   ConstIterator& operator--() { this->ptr--; return *this; }
   ConstIterator operator--(int) { auto temp(*this); --ptr; return temp; }
+  std::ptrdiff_t operator-(const ConstIterator<T>& rhs) { return ptr - rhs.ptr; }
+  ConstIterator& operator+=(const std::ptrdiff_t& diff) { ptr += diff; return *this; }
   bool operator==(const ConstIterator& rhs) const
     { if(this->ptr == rhs.ptr) { return true; } return false; }
   bool operator!=(const ConstIterator& rhs) const
