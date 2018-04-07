@@ -48,7 +48,7 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_tm4c123gh6pm =
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
     hw::uart::BlockingMode::isr
   },
-  hw::gpio::PortName::nullPort, 0
+  hw::gpio::PortName::nullPort, hw::gpio::PinNumber::pin0
 };
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
@@ -62,7 +62,7 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_tm4c1294ncpdt =
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
     hw::uart::BlockingMode::isr
   },
-  hw::gpio::PortName::nullPort, 0
+  hw::gpio::PortName::nullPort, hw::gpio::PinNumber::pin0
 };
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
@@ -76,7 +76,7 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_stm32f302rct6=
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
     hw::uart::BlockingMode::polling,
   },
-  hw::gpio::PortName::nullPort, 0
+  hw::gpio::PortName::nullPort, hw::gpio::PinNumber::pin0
 };
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
@@ -90,7 +90,7 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_nocfg =
     hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
     hw::uart::BlockingMode::isr
   },
-  hw::gpio::PortName::nullPort, 0
+  hw::gpio::PortName::nullPort, hw::gpio::PinNumber::pin0
 };
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration =

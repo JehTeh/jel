@@ -41,19 +41,19 @@ void __attribute__((weak)) GpioController::initializeGpio()
   /** Does nothing */
 }
 
-__attribute__((weak)) Pin::Pin(PortName port, uint8_t pin) : port_(port), pin_(pin)
+__attribute__((weak)) Pin::Pin(PortName port, PinNumber pin) : port_(port), pin_(pin)
 {
-
+  /** Does nothing */
 }
 
 void __attribute__((weak)) Pin::set()
 {
-
+  /** Does nothing */
 }
 
 void __attribute__((weak)) Pin::reset()
 {
-
+  /** Does nothing */
 }
 
 bool __attribute__((weak)) Pin::read() const
@@ -61,9 +61,24 @@ bool __attribute__((weak)) Pin::read() const
   return false;
 }
 
-bool __attribute__((weak)) Pin::operator==(bool state) const
+__attribute__((weak)) Port::Port(const PortName port) : port_(port)
 {
-  return read() == state ? true : false;
+  /** Does nothing */
+}
+
+void __attribute__((weak)) Port::write(const PinNumber)
+{
+  /** Does nothing */
+}
+
+void __attribute__((weak)) Port::write(const PinNumber, const PinNumber)
+{
+  /** Does nothing */
+}
+
+PinNumber __attribute__((weak)) Port::read(const PinNumber) const
+{
+  return PinNumber::none;
 }
 
 } /** namespace gpio */

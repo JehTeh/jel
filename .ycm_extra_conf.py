@@ -48,14 +48,14 @@ flags = [
 # 'c++11'.
 '-std=c++17',
 '-nostdinc++',
-'--system-header-prefix=C:/MinGW/',
-'--system-header-prefix=E:/Apps/Microsoft/VC/',
-'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include/c++',
-'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include',
-'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include/ssp',
-'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include-fixed',
-'-isystem', 'C:/MinGW/include',
-'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include/c++/mingw32',
+#'--system-header-prefix=C:/MinGW/',
+#'--system-header-prefix=E:/Apps/Microsoft/VC/',
+#'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include/c++',
+#'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include',
+#'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include/ssp',
+#'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include-fixed',
+#'-isystem', 'C:/MinGW/include',
+#'-isystem', 'C:/MinGW/lib/gcc/mingw32/5.3.0/include/c++/mingw32',
 # ...and the same thing goes for the magic -x option which specifies the
 # language that the files to be compiled are written in. This is mostly
 # relevant for c++ headers.

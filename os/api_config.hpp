@@ -185,7 +185,7 @@ struct JelRuntimeConfiguration
   const hw::uart::BasicUart::Config stdioUartConfiguration;
   /** Heartbeat LED pin. */
   const hw::gpio::PortName heartbeatLedPort;
-  const uint8_t heartbeatLedPin;
+  const hw::gpio::PinNumber heartbeatLedPin;
 };
 
 /** 

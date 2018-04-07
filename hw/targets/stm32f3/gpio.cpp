@@ -35,6 +35,7 @@
 /** STM HAL Headers */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wregister" 
+#include "stm32f3xx_ll_gpio.h"
 #include "gpio.h"
 #pragma GCC diagnostic pop
 
@@ -63,7 +64,41 @@ void GpioController::initializeGpio()
   MX_GPIO_Init();
 }
 
-Pin::Pin(const PortName port, const uint8_t pin) : port_(portNameToGpioPortPointer(port)), pin_(pin)
+Pin::Pin(const PortName port, const PinNumber pin) : port_(portNameToGpioPortPointer(port)), 
+  pin_(pin)
+{
+  if(static_cast<intptr_t>(port_) == 0)
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This port is not available on this processor.");
+  }
+  if(static_cast<uint32_t>(pin_) > static_cast<uint32_t>(PinNumber::pin15))
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This pin is not available on this processor port.");
+  }
+}
+
+void Pin::set()
+{
+  HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(static_cast<intptr_t>(port_)),
+    static_cast<uint16_t>(pin_), GPIO_PIN_SET);
+}
+
+void Pin::reset()
+{
+  HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(static_cast<intptr_t>(port_)),
+    static_cast<uint16_t>(pin_), GPIO_PIN_RESET);
+}
+
+bool Pin::read() const
+{
+  return HAL_GPIO_ReadPin(reinterpret_cast<GPIO_TypeDef*>(static_cast<intptr_t>(port_)),
+    static_cast<uint16_t>(pin_)) 
+    != 0 ? true : false;
+}
+
+Port::Port(const PortName port) : port_(portNameToGpioPortPointer(port))
 {
   if(static_cast<intptr_t>(port_) == 0)
   {
@@ -72,23 +107,23 @@ Pin::Pin(const PortName port, const uint8_t pin) : port_(portNameToGpioPortPoint
   }
 }
 
-void Pin::set()
+void Port::write(const PinNumber pins)
 {
-  HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(static_cast<intptr_t>(port_)),
-    1 << pin_, GPIO_PIN_SET);
+  WRITE_REG(reinterpret_cast<GPIO_TypeDef*>( static_cast<intptr_t>(port_))->ODR,
+    static_cast<uint32_t>(pins));
 }
 
-void Pin::reset()
+void Port::write(const PinNumber pins, const PinNumber mask)
 {
-  HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(static_cast<intptr_t>(port_)),
-    1 << pin_, GPIO_PIN_RESET);
+  WRITE_REG(reinterpret_cast<GPIO_TypeDef*>( static_cast<intptr_t>(port_))->ODR,
+    static_cast<uint32_t>(pins & mask));
 }
 
-bool Pin::read() const
+PinNumber Port::read(const PinNumber mask) const
 {
-  return HAL_GPIO_ReadPin(reinterpret_cast<GPIO_TypeDef*>(static_cast<intptr_t>(port_)),
-    1 << pin_) 
-    != 0 ? true : false;
+  PinNumber rd = static_cast<PinNumber>(READ_REG(reinterpret_cast<GPIO_TypeDef*>(
+    static_cast<intptr_t>(port_))->IDR));
+  return rd & mask;
 }
 
 } /** namespace gpio */

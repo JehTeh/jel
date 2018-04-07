@@ -70,7 +70,7 @@ void GpioController::initializeGpio()
   init(SYSCTL_PERIPH_GPIOE);
 }
 
-Pin::Pin(PortName port, uint8_t pin) : port_(portNameToGpioPortPointer(port)), pin_(pin)
+Pin::Pin(PortName port, PinNumber pin) : port_(portNameToGpioPortPointer(port)), pin_(pin)
 {
   if(static_cast<intptr_t>(port_) == 0)
   {
@@ -81,17 +81,43 @@ Pin::Pin(PortName port, uint8_t pin) : port_(portNameToGpioPortPointer(port)), p
 
 void Pin::set()
 {
-  GPIOPinWrite(static_cast<intptr_t>(port_), 1 << pin_, 0xFF);
+  GPIOPinWrite(static_cast<intptr_t>(port_), static_cast<uint32_t>(pin_), 0xFF);
 }
 
 void Pin::reset()
 {
-  GPIOPinWrite(static_cast<intptr_t>(port_), 1 << pin_, 0x00);
+  GPIOPinWrite(static_cast<intptr_t>(port_), static_cast<uint32_t>(pin_), 0x00);
 }
 
 bool Pin::read() const
 {
-  return GPIOPinRead(static_cast<intptr_t>(port_), 1 << pin_) != 0 ? true : false;
+  return GPIOPinRead(static_cast<intptr_t>(port_), static_cast<uint32_t>(pin_)) != 0 ? true : false;
+}
+
+Port::Port(const PortName port) : port_(portNameToGpioPortPointer(port))
+{
+  if(static_cast<intptr_t>(port_) == 0)
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This port is not available on this processor.");
+  }
+}
+
+void Port::write(const PinNumber pins)
+{
+  GPIOPinWrite(static_cast<intptr_t>(port_), static_cast<uint32_t>(pins), 0xFF);
+}
+
+void Port::write(const PinNumber pins, const PinNumber mask)
+{
+  GPIOPinWrite(static_cast<intptr_t>(port_), static_cast<uint32_t>(pins),
+    static_cast<uint32_t>(mask));
+}
+
+PinNumber Port::read(const PinNumber mask) const
+{
+  return static_cast<PinNumber>(GPIOPinRead(static_cast<intptr_t>(port_), 
+    static_cast<uint32_t>(mask)));
 }
 
 } /** namespace gpio */
