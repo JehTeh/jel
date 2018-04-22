@@ -45,6 +45,7 @@
 
 /** jel Library Headers */
 #include "hw/api_uart.hpp"
+#include "hw/api_gpio.hpp"
 
 namespace jel
 {
@@ -182,6 +183,9 @@ struct JelRuntimeConfiguration
   SerialPortType stdioPortType;
   /** The serial line configuration parameters to use for the system standard I/O channel. */
   const hw::uart::BasicUart::Config stdioUartConfiguration;
+  /** Heartbeat LED pin. */
+  const hw::gpio::PortName heartbeatLedPort;
+  const hw::gpio::PinNumber heartbeatLedPin;
 };
 
 /** 

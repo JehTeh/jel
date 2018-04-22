@@ -22,6 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/** 
+ *  Note: A small change was made to this file from the original to allow specifying the underyling
+ *  type for the enum, instead of defaulting to int.
+ *
+ * */
+
 /*
 Usage sample:
 
@@ -65,7 +71,7 @@ Use this line before header, if you don't want flags(T x) function to be impleme
 
 
 #define ENUM_FLAGS_EX_NO_FLAGS_FUNC(T,INT_T) \
-enum class T;	\
+enum class T : INT_T;	\
 inline T	operator	&	(T x, T y)		{	return static_cast<T>	(static_cast<INT_T>(x) & static_cast<INT_T>(y));	}; \
 inline T	operator	|	(T x, T y)		{	return static_cast<T>	(static_cast<INT_T>(x) | static_cast<INT_T>(y));	}; \
 inline T	operator	^	(T x, T y)		{	return static_cast<T>	(static_cast<INT_T>(x) ^ static_cast<INT_T>(y));	}; \
@@ -85,5 +91,5 @@ inline T&	operator	^=	(T& x, T y)		{	x = x ^ y;	return x;	};
 
 #endif
 
-#define ENUM_FLAGS(T) ENUM_FLAGS_EX(T,intptr_t)
+#define ENUM_FLAGS(T, BASE_TYPE) ENUM_FLAGS_EX(T, BASE_TYPE)
 #endif

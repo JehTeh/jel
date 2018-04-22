@@ -30,7 +30,6 @@
 #include <cstdint>
 #include <iterator>
 
-
 /** jel Library Headers */
 
 namespace jel
@@ -47,7 +46,14 @@ public:
   constexpr Iterator(T* baseItem, size_t index = 0) { ptr = baseItem; ptr += index; }
   Iterator& operator++() { this->ptr++; return *this; }
   Iterator operator++(int) { auto temp(*this); ++ptr; return temp; }
-  bool operator!=(Iterator& rhs) { if(this->ptr != rhs.ptr) { return true; } return false; }
+  Iterator& operator--() { this->ptr--; return *this; }
+  Iterator operator--(int) { auto temp(*this); --ptr; return temp; }
+  std::ptrdiff_t operator-(const Iterator<T>& rhs) { return ptr - rhs.ptr; }
+  Iterator& operator+=(const std::ptrdiff_t& diff) { ptr += diff; return *this; }
+  bool operator==(const Iterator& rhs) const 
+    { if(this->ptr != rhs.ptr) { return true; } return false; }
+  bool operator!=(const Iterator& rhs) const 
+    { if(this->ptr != rhs.ptr) { return true; } return false; }
   T& operator*() { return *ptr; }
   T& operator->() { return *ptr; }
 private:
@@ -61,7 +67,12 @@ public:
   constexpr ReverseIterator(T* baseItem, size_t index = 0) { ptr = baseItem; ptr -= index; }
   ReverseIterator& operator++() { this->ptr--; return *this; }
   ReverseIterator operator++(int) { auto temp(*this); --ptr; return temp; }
-  bool operator!=(ReverseIterator& rhs) { if(this->ptr != rhs.ptr) { return true; } return false; }
+  ReverseIterator& operator--() { this->ptr++; return *this; }
+  ReverseIterator operator--(int) { auto temp(*this); ++ptr; return temp; }
+  bool operator==(const ReverseIterator& rhs) const 
+    { if(this->ptr == rhs.ptr) { return true; } return false; }
+  bool operator!=(const ReverseIterator& rhs) const 
+    { if(this->ptr != rhs.ptr) { return true; } return false; }
   T& operator*() { return *ptr; }
   T& operator->() { return *ptr; }
 private:
@@ -72,14 +83,20 @@ private:
 * Template class for implementating an interator for simple, const array based containers.
 */
 template <typename T>
-class ConstIterator : public std::iterator<std::random_access_iterator_tag, T>
+class ConstIterator : public std::iterator<std::random_access_iterator_tag, T, std::ptrdiff_t>
 {
 public:
   constexpr ConstIterator(const T* baseItem, size_t index = 0) 
     { ptr = baseItem; ptr += index; }
   ConstIterator& operator++() { this->ptr++; return *this; }
   ConstIterator operator++(int) { auto temp(*this); ++ptr; return temp; }
-  bool operator!=(ConstIterator& rhs) 
+  ConstIterator& operator--() { this->ptr--; return *this; }
+  ConstIterator operator--(int) { auto temp(*this); --ptr; return temp; }
+  std::ptrdiff_t operator-(const ConstIterator<T>& rhs) { return ptr - rhs.ptr; }
+  ConstIterator& operator+=(const std::ptrdiff_t& diff) { ptr += diff; return *this; }
+  bool operator==(const ConstIterator& rhs) const
+    { if(this->ptr == rhs.ptr) { return true; } return false; }
+  bool operator!=(const ConstIterator& rhs) const
     { if(this->ptr != rhs.ptr) { return true; } return false; }
   const T& operator*() { return *ptr; }
   const T& operator->() { return *ptr; }
@@ -95,7 +112,11 @@ public:
     { ptr = baseItem; ptr -= index; }
   ConstReverseIterator& operator++() { this->ptr--; return *this; }
   ConstReverseIterator operator++(int) { auto temp(*this); --ptr; return temp; }
-  bool operator!=(ConstReverseIterator& rhs) 
+  ConstReverseIterator& operator--() { this->ptr++; return *this; }
+  ConstReverseIterator operator--(int) { auto temp(*this); ++ptr; return temp; }
+  bool operator==(const ConstReverseIterator& rhs) const
+    { if(this->ptr == rhs.ptr) { return true; } return false; }
+  bool operator!=(const ConstReverseIterator& rhs) const
     { if(this->ptr != rhs.ptr) { return true; } return false; }
   const T& operator*() { return *ptr; }
   const T& operator->() { return *ptr; }

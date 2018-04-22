@@ -32,6 +32,7 @@
 /** jel Library Headers */
 #include "hw/targets/tm4c/tiva_shared.hpp"
 #include "hw/api_gpio.hpp"
+#include "hw/api_exceptions.hpp"
 /** Tivaware Library Headers */
 #include "driverlib/gpio.h"
 
@@ -41,6 +42,19 @@ namespace hw
 {
 namespace gpio
 {
+
+constexpr PortName portNameToGpioPortPointer(PortName port)
+{
+  switch(port)
+  {
+    case PortName::gpioPortA: return static_cast<PortName>(GPIO_PORTA_BASE);
+    case PortName::gpioPortB: return static_cast<PortName>(GPIO_PORTB_BASE);
+    case PortName::gpioPortC: return static_cast<PortName>(GPIO_PORTC_BASE);
+    case PortName::gpioPortD: return static_cast<PortName>(GPIO_PORTD_BASE);
+    case PortName::gpioPortE: return static_cast<PortName>(GPIO_PORTE_BASE);
+    default: return (PortName)(0);
+  }
+};
 
 void GpioController::initializeGpio()
 {
@@ -56,6 +70,55 @@ void GpioController::initializeGpio()
   init(SYSCTL_PERIPH_GPIOE);
 }
 
+Pin::Pin(PortName port, PinNumber pin) : port_(portNameToGpioPortPointer(port)), pin_(pin)
+{
+  if(static_cast<intptr_t>(port_) == 0)
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This port is not available on this processor.");
+  }
+}
+
+void Pin::set()
+{
+  GPIOPinWrite(static_cast<intptr_t>(port_), static_cast<uint32_t>(pin_), 0xFF);
+}
+
+void Pin::reset()
+{
+  GPIOPinWrite(static_cast<intptr_t>(port_), static_cast<uint32_t>(pin_), 0x00);
+}
+
+bool Pin::read() const
+{
+  return GPIOPinRead(static_cast<intptr_t>(port_), static_cast<uint32_t>(pin_)) != 0 ? true : false;
+}
+
+Port::Port(const PortName port) : port_(portNameToGpioPortPointer(port))
+{
+  if(static_cast<intptr_t>(port_) == 0)
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This port is not available on this processor.");
+  }
+}
+
+void Port::write(const PinNumber pins)
+{
+  GPIOPinWrite(static_cast<intptr_t>(port_), static_cast<uint32_t>(pins), 0xFF);
+}
+
+void Port::write(const PinNumber pins, const PinNumber mask)
+{
+  GPIOPinWrite(static_cast<intptr_t>(port_), static_cast<uint32_t>(pins),
+    static_cast<uint32_t>(mask));
+}
+
+PinNumber Port::read(const PinNumber mask) const
+{
+  return static_cast<PinNumber>(GPIOPinRead(static_cast<intptr_t>(port_), 
+    static_cast<uint32_t>(mask)));
+}
 
 } /** namespace gpio */
 } /** namespace hw */

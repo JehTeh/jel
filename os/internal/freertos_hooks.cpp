@@ -31,6 +31,8 @@
 /** jel Library Headers */
 #include "os/internal/indef.hpp"
 #include "os/api_threads.hpp"
+#include "os/api_config.hpp"
+#include "hw/api_gpio.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,7 +55,25 @@ void vApplicationTickHook()
 
 void vApplicationIdleHook()
 {
-
+  constexpr jel::Duration blinkTime = jel::Duration::seconds(1);
+  static jel::Timestamp lastToggle = jel::SteadyClock::zero();
+  if(jel::config::jelRuntimeConfiguration.heartbeatLedPort != jel::hw::gpio::PortName::nullPort)
+  {
+    jel::hw::gpio::Pin hbPin(jel::config::jelRuntimeConfiguration.heartbeatLedPort,
+        jel::config::jelRuntimeConfiguration.heartbeatLedPin);
+    if((jel::SteadyClock::now() - lastToggle) >= blinkTime)
+    {
+      lastToggle = jel::SteadyClock::now();
+      if(hbPin.read())
+      {
+        hbPin.reset();
+      }
+      else
+      {
+        hbPin.set();
+      }
+    }
+  }
 }
 
 void vApplicationGetIdleTaskMemory(StaticTask_t **tcbSpace, StackType_t **stackSpace, 

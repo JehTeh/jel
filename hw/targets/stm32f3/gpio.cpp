@@ -31,9 +31,11 @@
 #include <cassert>
 /** jel Library Headers */
 #include "hw/api_gpio.hpp"
+#include "hw/api_exceptions.hpp"
 /** STM HAL Headers */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wregister" 
+#include "stm32f3xx_ll_gpio.h"
 #include "gpio.h"
 #pragma GCC diagnostic pop
 
@@ -44,11 +46,85 @@ namespace hw
 namespace gpio
 {
 
+constexpr PortName portNameToGpioPortPointer(PortName port)
+{
+  switch(port)
+  {
+    case PortName::gpioPortA: return static_cast<PortName>(reinterpret_cast<intptr_t>(GPIOA));
+    case PortName::gpioPortB: return static_cast<PortName>(reinterpret_cast<intptr_t>(GPIOB));
+    case PortName::gpioPortC: return static_cast<PortName>(reinterpret_cast<intptr_t>(GPIOC));
+    case PortName::gpioPortD: return static_cast<PortName>(reinterpret_cast<intptr_t>(GPIOD));
+    case PortName::gpioPortF: return static_cast<PortName>(reinterpret_cast<intptr_t>(GPIOF));
+    default: return (PortName)(0);
+  }
+};
+
 void GpioController::initializeGpio()
 {
   MX_GPIO_Init();
 }
 
+Pin::Pin(const PortName port, const PinNumber pin) : port_(portNameToGpioPortPointer(port)), 
+  pin_(pin)
+{
+  if(static_cast<intptr_t>(port_) == 0)
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This port is not available on this processor.");
+  }
+  if(static_cast<uint32_t>(pin_) > static_cast<uint32_t>(PinNumber::pin15))
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This pin is not available on this processor port.");
+  }
+}
+
+void Pin::set()
+{
+  HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(static_cast<intptr_t>(port_)),
+    static_cast<uint16_t>(pin_), GPIO_PIN_SET);
+}
+
+void Pin::reset()
+{
+  HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(static_cast<intptr_t>(port_)),
+    static_cast<uint16_t>(pin_), GPIO_PIN_RESET);
+}
+
+bool Pin::read() const
+{
+  return HAL_GPIO_ReadPin(reinterpret_cast<GPIO_TypeDef*>(static_cast<intptr_t>(port_)),
+    static_cast<uint16_t>(pin_)) 
+    != 0 ? true : false;
+}
+
+Port::Port(const PortName port) : port_(portNameToGpioPortPointer(port))
+{
+  if(static_cast<intptr_t>(port_) == 0)
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This port is not available on this processor.");
+  }
+}
+
+void Port::write(const PinNumber pins)
+{
+  WRITE_REG(reinterpret_cast<GPIO_TypeDef*>( static_cast<intptr_t>(port_))->ODR,
+    static_cast<uint32_t>(pins));
+}
+
+void Port::write(const PinNumber pins, const PinNumber mask)
+{
+  WRITE_REG(reinterpret_cast<GPIO_TypeDef*>( static_cast<intptr_t>(port_))->ODR,
+    static_cast<uint32_t>(pins & mask));
+}
+
+PinNumber Port::read(const PinNumber mask) const
+{
+  PinNumber rd = static_cast<PinNumber>(READ_REG(reinterpret_cast<GPIO_TypeDef*>(
+    static_cast<intptr_t>(port_))->IDR));
+  return rd & mask;
+}
 
 } /** namespace gpio */
 } /** namespace hw */
