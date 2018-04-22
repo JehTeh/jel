@@ -92,7 +92,7 @@ Status Logger::internalPrint(const PrintableMessage& msg)
   }
   if(cfg_.fmt.prefixType)
   {
-    switch(msg.type)
+    switch(static_cast<MessageType>(static_cast<uint8_t>(msg.type) & 0x7F))
     {
       case MessageType::debug:
         if(cfg_.fmt.colorize)
@@ -141,22 +141,26 @@ Status Logger::internalPrint(const PrintableMessage& msg)
   }
   if(cfg_.fmt.prefixThreadName)
   {
-    pp_.print("["); pp_.print(msg.thread); pp_.print("]");
+    const char* name = Thread::lookupName(msg.threadHandle);
+    if(name)
+    {
+      pp_.print("["); pp_.print(name); pp_.print("]");
+    }
   }
   if(cfg_.fmt.prefixLoggerName)
   {
     pp_.print("["); pp_.print(cfg_.name); pp_.print("]");
   }
-  if(msg.isConst)
+  if(static_cast<uint8_t>(msg.type) & 0x80)
+  {
+    pp_.print(msg.poolString.stored()->c_str());
+  }
+  else
   {
     if(msg.cStr)
     {
       pp_.print(msg.cStr);
     }
-  }
-  else
-  {
-    pp_.print(msg.poolString.stored()->c_str());
   }
   if(pp_.currentLength())
   {
@@ -183,40 +187,50 @@ void Logger::printerThreadImpl()
 }
 
 Logger::PrintableMessage::PrintableMessage() :
-  timestamp(SteadyClock::now()), thread(ThisThread::name()), isConst(true), 
-  type(MessageType::hidden), cStr(nullptr), poolString()
+  timestamp(SteadyClock::now()), threadHandle(ThisThread::handle()), type(MessageType::hidden)
 {
-
+  //If type & 0x80 == 0, message is constant type and union contains cStr pointer. Otherwise,
+  //message is non-const type and contains a pool object.
+  uint8_t temp = static_cast<uint8_t>(type);
+  temp &= ~0x80;
+  type = static_cast<MessageType>(temp);
 }
 
 Logger::PrintableMessage::PrintableMessage(const MessageType type_, const char* constString) :
-  timestamp(SteadyClock::now()), thread(ThisThread::name()), isConst(true), 
-  type(type_), cStr(constString), poolString()
+  timestamp(SteadyClock::now()), threadHandle(ThisThread::handle()), type(type_), cStr(constString)
 {
-
+  //If type & 0x80 == 0, message is constant type and union contains cStr pointer. Otherwise,
+  //message is non-const type and contains a pool object.
+  uint8_t temp = static_cast<uint8_t>(type);
+  temp &= ~0x80;
+  type = static_cast<MessageType>(temp);
 }
 
 Logger::PrintableMessage::PrintableMessage(const MessageType type_, 
   ObjectPool<String>::ObjectContainer&& nonConstString) :
-  timestamp(SteadyClock::now()), thread(ThisThread::name()), isConst(false), 
-  type(type_), cStr(nullptr), poolString(std::move(nonConstString))
+  timestamp(SteadyClock::now()), threadHandle(ThisThread::handle()), type(type_), cStr(nullptr),
+  poolString(std::move(nonConstString))
 {
-
+  //If type & 0x80 == 0, message is constant type and union contains cStr pointer. Otherwise,
+  //message is non-const type and contains a pool object.
+  uint8_t temp = static_cast<uint8_t>(type);
+  temp |= 0x80;
+  type = static_cast<MessageType>(temp);
 }
 
 Logger::PrintableMessage& Logger::PrintableMessage::operator=(PrintableMessage&& rhs)
 {
   timestamp = rhs.timestamp;
-  thread = rhs.thread;
-  isConst = rhs.isConst;
+  threadHandle = rhs.threadHandle;
   type = rhs.type;
-  if(isConst)
+  if(static_cast<uint8_t>(type) & 0x80)
   {
-    cStr = rhs.cStr;
+    poolString = std::move(rhs.poolString);
+    rhs.type = MessageType::hidden;
   }
   else
   {
-    poolString = std::move(rhs.poolString);
+    cStr = rhs.cStr;
   }
   return *this;
 }

@@ -78,6 +78,8 @@ public:
   static void deleteSelf(bool performCompleteErasure = false) noexcept;
   /** Returns the null terminated ASCII name string for the calling thread. */
   static const char* name();
+  /** Returns the underlying RTOS handle for the thread. */
+  static void* handle();
 };
 
 /** @class GenericThread_Base
@@ -218,6 +220,8 @@ public:
   /** Used to register the static idle task and associated information. Not for application use. */
   static void schedulerAddIdleTask(Handle handle, ThreadInfo* info);
 #endif
+  /** Returns the name of the thread from a given handle. */
+  static const char* lookupName(const Handle& handle);
 protected:
   friend ThisThread;
   friend GenericThread_Base;

@@ -50,15 +50,19 @@ namespace jel
 class Logger
 {
 public:
+  /** The type of logger message. Note that only 127 types are supported - The upper nibble of the
+   * MessageType enumeration is reserved for internal implementation features. */
   enum class MessageType : uint8_t
   {
     hidden = 0,
-    debug,
-    info,
-    warning,
-    error,
+    debug = 0x01,
+    info = 0x02,
+    warning = 0x03,
+    error = 0x04,
     default_ = info
   };
+  /** struct MessageFormatting
+   * @brief Controls the output formatting of Logger messages when they are printed. */
   struct MessageFormatting 
   {
     bool prefixTimestamp;
@@ -69,6 +73,9 @@ public:
     MessageFormatting() : prefixTimestamp(true), prefixThreadName(true), prefixLoggerName(false),
       prefixType(true), colorize(true) {}
   };
+  /** struct Config
+   * @brief The Config structure is passed to the Logger on creation and is used to set various
+   * Logger parameters. */
   struct Config
   {
     /** The maximum number of logging messages that can be buffered in the print queue. Note that
@@ -127,88 +134,32 @@ public:
    * increase the call time. Furthermore, in asynchronous printing mode, the calling thread may
    * sleep while waiting for room in the print queue.
    * */
+#define LOGGER_PRINT_FOR_TYPE( mType ) \
+    if(System::cpuExceptionActive()) { return fp(mType, format); } \
+    va_list vargs; \
+    va_start(vargs, format); \
+    Status stat = print(mType, format, vargs); \
+    va_end(vargs); \
+    return stat;
   Status __attribute__((format(printf, 2, 3))) printInfo(const char* format, ...) 
-  {
-    if(System::cpuExceptionActive()) { return fprintInfo(format); }
-    va_list vargs;
-    va_start(vargs, format);
-    Status stat = print(MessageType::info, format, vargs);
-    va_end(vargs);
-    return stat;
-  }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::info); }
   Status __attribute__((format(printf, 2, 3))) printDebug(const char* format, ...) 
-  {
-    if(System::cpuExceptionActive()) { return fprintDebug(format); }
-    va_list vargs;
-    va_start(vargs, format);
-    Status stat = print(MessageType::debug, format, vargs);
-    va_end(vargs);
-    return stat;
-  }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   Status __attribute__((format(printf, 2, 3))) printWarning(const char* format, ...) 
-  {
-    if(System::cpuExceptionActive()) { return fprintWarning(format); }
-    va_list vargs;
-    va_start(vargs, format);
-    Status stat = print(MessageType::warning, format, vargs);
-    va_end(vargs);
-    return stat;
-  }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   Status __attribute__((format(printf, 2, 3))) printError(const char* format, ...) 
-  {
-    if(System::cpuExceptionActive()) { return fprintError(format); }
-    va_list vargs;
-    va_start(vargs, format);
-    Status stat = print(MessageType::error, format, vargs);
-    va_end(vargs);
-    return stat;
-  }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   Status __attribute__((format(printf, 3, 4))) 
     print(const MessageType type, const char* format, ...) 
-  {
-    if(System::cpuExceptionActive()) { return fp(type, format); }
-    va_list vargs;
-    va_start(vargs, format);
-    Status stat = print(type, format, vargs);
-    va_end(vargs);
-    return stat;
-  }
+    { LOGGER_PRINT_FOR_TYPE(type); }
   Status __attribute__((format(printf, 2, 3))) pInf(const char* format, ...) 
-  {
-    if(System::cpuExceptionActive()) { return fprintInfo(format); }
-    va_list vargs;
-    va_start(vargs, format);
-    Status stat = print(MessageType::info, format, vargs);
-    va_end(vargs);
-    return stat;
-  }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   Status __attribute__((format(printf, 2, 3))) pDbg(const char* format, ...) 
-  {
-    if(System::cpuExceptionActive()) { return fprintDebug(format); }
-    va_list vargs;
-    va_start(vargs, format);
-    Status stat = print(MessageType::debug, format, vargs);
-    va_end(vargs);
-    return stat;
-  }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   Status __attribute__((format(printf, 2, 3))) pWrn(const char* format, ...) 
-  {
-    if(System::cpuExceptionActive()) { return fprintWarning(format); }
-    va_list vargs;
-    va_start(vargs, format);
-    Status stat = print(MessageType::warning, format, vargs);
-    va_end(vargs);
-    return stat;
-  }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   Status __attribute__((format(printf, 2, 3))) pErr(const char* format, ...) 
-  {
-    if(System::cpuExceptionActive()) { return fprintError(format); }
-    va_list vargs;
-    va_start(vargs, format);
-    Status stat = print(MessageType::error, format, vargs);
-    va_end(vargs);
-    return stat;
-  }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   /** Returns a reference to the system logging channel integrated into the jel. Useful on targets
    * where instantiating multiple loggers is too expensive. */
   static Logger& sysLogChannel();
@@ -216,8 +167,7 @@ private:
   struct PrintableMessage
   {
     Timestamp timestamp;
-    const char* thread;
-    bool isConst;
+    Thread::Handle threadHandle;
     MessageType type;
     const char* cStr;
     ObjectPool<String>::ObjectContainer poolString;

@@ -69,6 +69,7 @@
 #include <memory>
 #include <atomic>
 #include <bitset>
+#include <cassert>
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
@@ -222,13 +223,14 @@ public:
   {
   public:
     ObjectContainer() : item_{nullptr}, q_{nullptr} {}
-    ~ObjectContainer() noexcept { if(item_ && q_) { q_->push(std::move(item_)); } }
+    ~ObjectContainer() noexcept { empty(); }
     ObjectContainer(const ObjectContainer&) = delete;
     ObjectContainer(ObjectContainer&& other) noexcept : item_{std::move(other.item_)}, q_{other.q_}
     { other.q_ = nullptr; }
     ObjectContainer& operator=(const ObjectContainer&) = delete;
     ObjectContainer& operator=(ObjectContainer&& other) noexcept 
     {
+      empty();
       item_ = std::move(other.item_); q_ = other.q_; other.q_ = nullptr; 
       return *this;
     }
@@ -239,6 +241,14 @@ public:
     ObjectContainer(std::unique_ptr<ObjectT>& obj, ObjQ& q) : item_{std::move(obj)}, q_{&q} {}
     std::unique_ptr<ObjectT> item_;
     ObjQ* q_;
+    void empty()
+    {
+      if(item_) { assert(q_); }
+      if(item_ && q_) 
+      { 
+        q_->push(std::move(item_)); 
+      } 
+    }
   };
   /** Construct a new ObjectPool. Note that the constructor accepts generic arguments, which are
    * forwarded to each object when it is created and added to the pool. For example, using 

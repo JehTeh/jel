@@ -215,6 +215,11 @@ void Thread::schedulerAddIdleTask(Handle h, ThreadInfo* inf)
 }
 #endif
 
+const char* Thread::lookupName(const Handle& handle)
+{
+  return pcTaskGetName(handle);
+}
+
 void Thread::detach()
 {
   inf_->isDetached_ = true;
@@ -250,6 +255,11 @@ void ThisThread::deleteSelf(bool performCompleteErasure) noexcept
 const char* ThisThread::name()
 {
   return pcTaskGetName(nullptr);
+}
+
+void* ThisThread::handle()
+{
+  return xTaskGetCurrentTaskHandle(); 
 }
 
 } /** namespace jel */
