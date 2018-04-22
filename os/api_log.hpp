@@ -46,6 +46,23 @@ namespace jel
 {
 /** @class Logger
  *  @brief Provides formatted, asynchronous logging style output to application threads.
+ *
+ *  The logger provides a simplified interface to log application activity. It supports multiple
+ *  message types (debug, info, warning and error) in addition to integrating timestamp
+ *  functionality (when the statement was pushed, not when it was printed) and source thread
+ *  tracking functionality.
+ *
+ *  Two types of print functionality are available - fast print functions which support only
+ *  printing fixed strings and traditional printf style print functions which support the full array
+ *  of printf specifiers. Generally speaking, the application layer should make use of the print
+ *  functions, except in the following cases:
+ *    -It is required to print a log statement from an interrupt.
+ *    -Precision timing with no blocking is required in the calling thread.
+ *    -A string longer than the configured print buffer length needs to be printed.
+ *  In these cases, make use of the fastPrint functions as required.
+ *
+ *  @note: Benchmarking on the TM4C1294NCPDT (120MHz) resulted in fast print speeds of roughly
+ *   ~10us/print statement (GCC, -O2).
  *  */
 class Logger
 {
