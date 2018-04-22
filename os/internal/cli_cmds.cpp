@@ -26,6 +26,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+//Define this to disable some warnings from linting tools.
+#define _CRT_SECURE_NO_WARNINGS
+
 /** C/C++ Standard Library Headers */
 #include <cassert>
 #include <cstring>
@@ -50,6 +53,7 @@ int32_t cliCmdStackuse(cli::CommandIo& io);
 int32_t cliCmdReadclock(cli::CommandIo& io);
 int32_t cliCmdReboot(cli::CommandIo& io);
 int32_t cliCmdRmon(cli::CommandIo& io);
+int32_t cliCmdEnableTestLib(cli::CommandIo& io);
 
 const cli::CommandEntry cliCommandArray[] =
 {
@@ -104,6 +108,11 @@ const cli::CommandEntry cliCommandArray[] =
     "Note that monitoring thread stack usage can have a significant impact on the RTOS scheduler "
     "and should likely be avoided when the system is under hard real-time constraints and heavy "
     "CPU load.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
+    "etl", cliCmdEnableTestLib, "",
+    "Enables the os module testing CLI command library.\n",
     cli::AccessPermission::unrestricted, nullptr
   },
 };
@@ -527,6 +536,27 @@ int32_t cliCmdRmon(cli::CommandIo& io)
     }
   }
   return 0;
+}
+
+extern const cli::Library cliCmdLib_tests;
+
+int32_t cliCmdEnableTestLib(cli::CommandIo& io)
+{
+  int32_t stat = 0;
+  io.fmt.automaticNewline = false;
+  io.print("Registering '%s' library...", cliCmdLib_tests.name);
+  if(cli::registerLibrary(cliCmdLib_tests) == Status::success)
+  {
+    io.fmt.color = AnsiFormatter::Color::brightGreen;
+    io.print("Registration successful.\n");
+  }
+  else
+  {
+    io.fmt.color = AnsiFormatter::Color::brightRed;
+    io.print("Registration failed!\n");
+    stat = 1;
+  }
+  return stat;
 }
 
 } /** namespace jel */

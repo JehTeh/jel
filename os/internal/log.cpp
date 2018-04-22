@@ -41,9 +41,9 @@ namespace jel
 
 Logger::Logger(const std::shared_ptr<MtWriter>& output, Config cfg) : pp_(output), cfg_(cfg)
 {
-  if(cfg_.asyncQueueLength)
+  mq_ = std::make_unique<MsgQueue>(cfg_.maxPrintQueueLength);
+  if(cfg_.useAsyncPrintThread)
   {
-    mq_ = std::make_unique<MsgQueue>(cfg_.asyncQueueLength);
     tptr_ = std::make_unique<Thread>(reinterpret_cast<void(*)(void*)>(printerThread), this, 
       cfg_.name, config::jelRuntimeConfiguration.loggerThreadStackSize_Bytes, 
       Thread::Priority::low);
@@ -52,39 +52,34 @@ Logger::Logger(const std::shared_ptr<MtWriter>& output, Config cfg) : pp_(output
 
 Status Logger::fastPrint(const MessageType type, const char* cStr)
 {
-  PrintableMessage msg(type, cStr);
-  if(cfg_.asyncQueueLength)
-  {
-    return mq_->push(std::move(msg), Duration::zero());
-  }
-  else
-  {
-    return internalPrint(msg);
-  }
+  return mq_->push({type, cStr}, Duration::zero());
 }
 
-Status Logger::print(const MessageType type, const char* format, ...)
+Status Logger::print(const MessageType type, const char* format, va_list vargs) 
 {
-  va_list vargs;
-  va_start(vargs, format);
   auto strContainer = jelStringPool->acquire();
   String& string = *strContainer.stored();
   string.assign(" ", string.capacity() - 1);
   int32_t printStat = std::vsnprintf(&string[0], string.length(), format, vargs);
-  va_end(vargs);
   if(printStat < 0)
   {
     return Status::failure;
   }
   string.resize(printStat);
   PrintableMessage msg(type, std::move(strContainer));
-  if(cfg_.asyncQueueLength)
+  if(cfg_.useAsyncPrintThread)
   {
     return mq_->push(std::move(msg));
   }
   else
   {
-    return internalPrint(msg);
+    Status stat = internalPrint(msg);
+    //Flush the print queue.
+    while((stat == Status::success) && (mq_->pop(msg) == Status::success))
+    {
+      stat = internalPrint(msg);
+    }
+    return stat;
   }
 }
 
@@ -228,6 +223,11 @@ Logger::PrintableMessage& Logger::PrintableMessage::operator=(PrintableMessage&&
 
 Logger::PrintableMessage::~PrintableMessage() noexcept
 {
+}
+
+Logger& Logger::sysLogChannel() 
+{
+  return *jelLogger;
 }
 
 } /** namespace jel */
