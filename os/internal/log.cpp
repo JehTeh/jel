@@ -90,44 +90,24 @@ Status Logger::internalPrint(const PrintableMessage& msg)
   {
     pp_.nextLine();
   }
-  if(cfg_.fmt.prefixType)
+  if(cfg_.fmt.colorize)
   {
     switch(static_cast<MessageType>(static_cast<uint8_t>(msg.type) & 0x7F))
     {
       case MessageType::debug:
-        if(cfg_.fmt.colorize)
-        {
-          pp_.print(AnsiFormatter::setForegroundColor(AnsiFormatter::Color::brightBlue));
-        }
-        pp_.print("[DBG]");
+        pp_.print(AnsiFormatter::setForegroundColor(AnsiFormatter::Color::brightBlue));
         break;
       case MessageType::info:
-        if(cfg_.fmt.colorize)
-        {
-          pp_.print(AnsiFormatter::setForegroundColor(AnsiFormatter::Color::white));
-        }
-        pp_.print("[INF]");
+        pp_.print(AnsiFormatter::setForegroundColor(AnsiFormatter::Color::white));
         break;
       case MessageType::warning:
-        if(cfg_.fmt.colorize)
-        {
-          pp_.print(AnsiFormatter::setForegroundColor(AnsiFormatter::Color::brightYellow));
-        }
-        pp_.print("[WRN]");
+        pp_.print(AnsiFormatter::setForegroundColor(AnsiFormatter::Color::brightYellow));
         break;
       case MessageType::error:
-        if(cfg_.fmt.colorize)
-        {
-          pp_.print(AnsiFormatter::setForegroundColor(AnsiFormatter::Color::brightRed));
-        }
-        pp_.print("[ERR]");
+        pp_.print(AnsiFormatter::setForegroundColor(AnsiFormatter::Color::brightRed));
         break;
       case MessageType::hidden:
         break;
-    }
-    if(cfg_.fmt.colorize)
-    {
-      pp_.print(AnsiFormatter::reset);
     }
   }
   if(cfg_.fmt.prefixTimestamp)
@@ -135,9 +115,45 @@ Status Logger::internalPrint(const PrintableMessage& msg)
     constexpr size_t bSize = 32;
     char buf[bSize];
     int64_t tus = msg.timestamp.toDuration().toMicroseconds();
-    std::snprintf(buf, bSize, "[%lld.%lld,%lld]", tus / 1'000'000, (tus / 1'000) % 1'000,
+    std::snprintf(buf, bSize, "[%lld.%03lld,%03lld", tus / 1'000'000, (tus / 1'000) % 1'000,
       tus % 1000);
     pp_.print(buf);
+    if(cfg_.fmt.prefixType)
+    {
+      pp_.print("-");
+    }
+    else
+    {
+      pp_.print("]");
+    }
+  }
+  if(cfg_.fmt.prefixType)
+  {
+    if(!cfg_.fmt.prefixTimestamp)
+    {
+      pp_.print("[");
+    }
+    switch(static_cast<MessageType>(static_cast<uint8_t>(msg.type) & 0x7F))
+    {
+      case MessageType::debug:
+        pp_.print("DBG]");
+        break;
+      case MessageType::info:
+        pp_.print("INF]");
+        break;
+      case MessageType::warning:
+        pp_.print("WRN]");
+        break;
+      case MessageType::error:
+        pp_.print("ERR]");
+        break;
+      case MessageType::hidden:
+        break;
+    }
+  }
+  if(cfg_.fmt.colorize)
+  {
+    pp_.print(AnsiFormatter::reset);
   }
   if(cfg_.fmt.prefixThreadName)
   {
@@ -151,6 +167,7 @@ Status Logger::internalPrint(const PrintableMessage& msg)
   {
     pp_.print("["); pp_.print(cfg_.name); pp_.print("]");
   }
+  pp_.print(" ");
   if(static_cast<uint8_t>(msg.type) & 0x80)
   {
     pp_.print(msg.poolString.stored()->c_str());
