@@ -72,8 +72,11 @@ public:
   {
     /** Non-zero lengths result in an asynchronous logger. */
     int32_t asyncQueueLength;
+    /** The name of the logger. */
     const char* name;
+    /** The default message level. */
     MessageType defaultMessageType;
+    /** Formatting controls when printing log statements. */
     MessageFormatting fmt;
     Config() : asyncQueueLength(10), name("lggr"), defaultMessageType(MessageType::default_) {}
   };

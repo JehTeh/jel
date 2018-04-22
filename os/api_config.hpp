@@ -177,7 +177,13 @@ struct JelRuntimeConfiguration
 {
   /** Human readable name for this configuration. */
   const char* name;
+  /** The total stack size used for the startup thread. If significant stack depth is required in
+   * some static constructors then this may need to be increased. */
   const size_t bootThreadStackSize_Bytes;
+  /** The total stack size used for the system logging thread. If set to zero, the system logger is
+   * configured to run in synchronous mode only. */
+  const size_t loggerThreadStackSize_Bytes;
+  /** Currently unused. Heap size needs to be manually set in the FreeRTOS configuration. */
   const size_t systemHeapSize_Bytes;
   /** The type of serial port to instantiate on startup. */
   SerialPortType stdioPortType;

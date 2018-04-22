@@ -45,7 +45,8 @@ Logger::Logger(const std::shared_ptr<MtWriter>& output, Config cfg) : pp_(output
   {
     mq_ = std::make_unique<MsgQueue>(cfg_.asyncQueueLength);
     tptr_ = std::make_unique<Thread>(reinterpret_cast<void(*)(void*)>(printerThread), this, 
-      cfg_.name, 1024, Thread::Priority::low);
+      cfg_.name, config::jelRuntimeConfiguration.loggerThreadStackSize_Bytes, 
+      Thread::Priority::low);
   }
 }
 
