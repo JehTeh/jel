@@ -57,6 +57,7 @@
 #include "os/api_threads.hpp"
 #include "os/api_allocator.hpp"
 #include "os/api_io.hpp"
+#include "os/api_log.hpp"
 #include "hw/api_startup.hpp"
 #include "hw/api_irq.hpp"
 #include "hw/api_gpio.hpp"
@@ -190,6 +191,7 @@ namespace jel
  * blow away the Io pointer that is assigned before C++ static initialization. */
 std::shared_ptr<AsyncIoStream> jelStandardIo;
 std::shared_ptr<JelStringPool> jelStringPool;
+std::shared_ptr<Logger> jelLogger;
 const char* jelBuildDateString = __DATE__;
 const char* jelBuildTimeString = __TIME__;
 const char* jelCompilerVersionString = __VERSION__;
@@ -248,20 +250,31 @@ void initializeStandardIo()
   jelStandardIo->write("\r\n"); 
 };
 
+void initializeLogger()
+{
+  Logger::Config cfg;
+  jelLogger = std::make_shared<Logger>(jelStandardIo, cfg);
+};
+
 void bootThread(void*)
 {
   //Initialize GPIO hardware and the serial I/O port
   hw::gpio::GpioController::initializeGpio();
   initializeStandardIo();
+  initializeLogger();
+  jelLogger->fprintDebug("Logger initialized.");
   jelStringPool = std::make_shared<ObjectPool<String>>(config::stringPoolStringCount,
     config::stringPoolStringSize, '\0');
+  jelLogger->printDebug("String pool initialized.");
   cli::startSystemCli(jelStandardIo);
+  jelLogger->printDebug("CLI initialized.");
   cli::registerLibrary(cliCmdLib);
   /** C++ Static object constructors are called here. */
   for(int32_t i = 0; i < __init_array_end - __init_array_start; i++)
   {
     __init_array_start[i]();
   }
+  jelLogger->printDebug("Static construction complete.");
   ThisThread::deleteSelf();
 }
 

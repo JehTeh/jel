@@ -76,6 +76,8 @@ public:
    *  eventually an OOM error would occur due to all the ThreadInfo objects).
    * */
   static void deleteSelf(bool performCompleteErasure = false) noexcept;
+  /** Returns the null terminated ASCII name string for the calling thread. */
+  static const char* name();
 };
 
 /** @class GenericThread_Base

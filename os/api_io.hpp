@@ -489,7 +489,11 @@ public:
   Config& editConfig() { return cfg_; }
   /** Automatically output a newline sequence and reset the current line length to zero. */
   void nextLine();
+  /** Returns the length of the current line (in visible characters). */
   size_t currentLength() const { return clen_; }
+  /** Provides a reference to the underlying multithreaded writer. Useful if it is necessary to lock
+   * the writer while successively calling PP functions. */
+  MtWriter& writerBase() { return *out_; }
 private:
   std::shared_ptr<MtWriter> out_;
   Config cfg_;

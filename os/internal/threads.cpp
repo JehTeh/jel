@@ -247,4 +247,9 @@ void ThisThread::deleteSelf(bool performCompleteErasure) noexcept
   vTaskDelete(nullptr);
 }
 
+const char* ThisThread::name()
+{
+  return pcTaskGetName(nullptr);
+}
+
 } /** namespace jel */

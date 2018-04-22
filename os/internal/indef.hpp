@@ -35,6 +35,7 @@
 #include "os/api_time.hpp"
 #include "os/api_allocator.hpp"
 #include "os/api_io.hpp"
+#include "os/api_log.hpp"
 #include "os/api_config.hpp"
 /** RTOS Library Headers */
 #include "FreeRTOS.h"
@@ -69,6 +70,7 @@ extern std::shared_ptr<JelStringPool> jelStringPool;
  * calls and must persist through them. To avoid requiring a double de-reference, objects should
  * cache their own shared_ptr copy. */
 extern std::shared_ptr<AsyncIoStream> jelStandardIo;
+extern std::shared_ptr<Logger> jelLogger;
 
 extern const char* jelBuildDateString;
 extern const char* jelBuildTimeString;

@@ -222,7 +222,7 @@ public:
   {
   public:
     ObjectContainer() : item_{nullptr}, q_{nullptr} {}
-    ~ObjectContainer() noexcept { if(item_ != nullptr) { q_->push(std::move(item_)); } }
+    ~ObjectContainer() noexcept { if(item_ && q_) { q_->push(std::move(item_)); } }
     ObjectContainer(const ObjectContainer&) = delete;
     ObjectContainer(ObjectContainer&& other) noexcept : item_{std::move(other.item_)}, q_{other.q_}
     { other.q_ = nullptr; }

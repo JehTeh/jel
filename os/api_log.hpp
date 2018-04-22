@@ -39,6 +39,7 @@
 #include "os/api_io.hpp"
 #include "os/api_time.hpp"
 #include "os/api_locks.hpp"
+#include "os/api_system.hpp"
 
 namespace jel
 {
@@ -59,41 +60,92 @@ public:
   };
   struct MessageFormatting 
   {
-    bool disablePrefixes;
+    bool prefixTimestamp;
+    bool prefixThreadName;
+    bool prefixLoggerName;
+    bool prefixType;
+    bool colorize;
+    MessageFormatting() : prefixTimestamp(true), prefixThreadName(true), prefixLoggerName(false),
+      prefixType(true), colorize(true) {}
   };
   struct Config
   {
-    bool useAsyncPrintThread;
+    /** Non-zero lengths result in an asynchronous logger. */
+    int32_t asyncQueueLength;
+    const char* name;
     MessageType defaultMessageType;
-    Config() : useAsyncPrintThread(true), defaultMessageType(MessageType::default_) {}
+    MessageFormatting fmt;
+    Config() : asyncQueueLength(10), name("lggr"), defaultMessageType(MessageType::default_) {}
   };
   Logger(const std::shared_ptr<MtWriter>& output, Config = Config());
-  Status printInfo(const char* cStr);
-  Status printDebug(const char* cStr);
-  Status printWarning(const char* cStr);
-  Status printError(const char* cStr);
+  Status fprintInfo(const char* cStr)
+  {
+    return fastPrint(MessageType::info, cStr);
+  }
+  Status fprintDebug(const char* cStr)
+  {
+    return fastPrint(MessageType::debug, cStr);
+  }
+  Status fprintWarning(const char* cStr)
+  {
+    return fastPrint(MessageType::warning, cStr);
+  }
+  Status fprintError(const char* cStr)
+  {
+    return fastPrint(MessageType::error, cStr);
+  }
   template<typename ...Args>
-  Status printInfo(const char* format, Args&& ...args) __attribute__((format(printf, 2, 3)));
+  Status printInfo(const char* format, Args&& ...args) 
+  {
+    if(System::cpuExceptionActive()) { return fprintInfo(format); }
+    return print(MessageType::info, format, args...);
+  }
   template<typename ...Args>
-  Status printDebug(const char* format, Args&& ...args) __attribute__((format(printf, 2, 3)));
+  Status printDebug(const char* format, Args&& ...args) 
+  {
+    if(System::cpuExceptionActive()) { return fprintDebug(format); }
+    return print(MessageType::debug, format, args...);
+  }
   template<typename ...Args>
-  Status printWarning(const char* format, Args&& ...args) __attribute__((format(printf, 2, 3)));
+  Status printWarning(const char* format, Args&& ...args) 
+  {
+    if(System::cpuExceptionActive()) { return fprintWarning(format); }
+    return print(MessageType::warning, format, args...);
+  }
   template<typename ...Args>
-  Status printError(const char* format, Args&& ...args) __attribute__((format(printf, 2, 3)));
+  Status printError(const char* format, Args&& ...args) 
+  {
+    if(System::cpuExceptionActive()) { return fprintError(format); }
+    return print(MessageType::error, format, args...);
+  }
 private:
   struct PrintableMessage
   {
     Timestamp timestamp;
-    union Msg
-    {
-      const char* sptr;
-      ObjectPool<String>::ObjectContainer spool;
-    };
+    const char* thread;
+    bool isConst;
+    MessageType type;
+    const char* cStr;
+    ObjectPool<String>::ObjectContainer poolString;
+    PrintableMessage();
+    PrintableMessage(const PrintableMessage&) = delete;
+    PrintableMessage(PrintableMessage&&) = delete;
+    PrintableMessage(const MessageType type, const char* constString);
+    PrintableMessage(const MessageType type, ObjectPool<String>::ObjectContainer&& nonConstString);
+    ~PrintableMessage() noexcept;
+    PrintableMessage& operator=(PrintableMessage&& rhs);
+    PrintableMessage& operator=(const PrintableMessage&) = delete;
   };
-  Status fastPrint(const char* cStr);
-  Status print(const char* cStr, ...);
-  PrettyPrinter pp;
-  std::unique_ptr<Thread> tptr;
+  using MsgQueue = Queue<PrintableMessage>;
+  Status fastPrint(MessageType type, const char* cStr);
+  Status __attribute__((format(printf, 3, 4))) print(MessageType type, const char* cStr, ...);
+  PrettyPrinter pp_;
+  Config cfg_;
+  std::unique_ptr<Thread> tptr_;
+  std::unique_ptr<MsgQueue> mq_;
+  Status internalPrint(const PrintableMessage& msg);
+  void printerThreadImpl();
+  static void printerThread(Logger* instance);
 };
 
 } /** namespace jel */
