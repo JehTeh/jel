@@ -183,7 +183,14 @@ public:
   /** The constructSystemAllocator() function should only ever be called by the jel during startup,
    * and never the application. Repeated calls to this function will have no effect. */
   static void constructSystemAllocator() noexcept;
+  /** Attempts to allocate memory for an exception to the internal thread-safe exception page. If
+   * this fails, it will be allocated on the heap instead. */
+  static void* allocateException(size_t size) noexcept;
+  static void deallocateException(void* except) noexcept;
 private:
+  static constexpr size_t exceptionPageSize_bytes = 64;
+  static std::atomic<bool> excpLocked_;
+  static __attribute__((aligned(4))) uint8_t excpPage_[exceptionPageSize_bytes];
   static SystemAllocator* systemAllocator_;
 };
 

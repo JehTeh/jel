@@ -43,6 +43,8 @@
 #include "hw/targets/tm4c/vectorTable_tm4c1294ncpdt.hpp"
 #endif
 
+extern "C" void ISR_readFaultAddress(uint32_t* fStack);
+
 namespace jel
 {
 namespace hw
@@ -51,8 +53,7 @@ namespace irq
 {
 
 void phantomIsr() __attribute__((naked));
-void faultIsr() __attribute__((naked, noreturn));
-
+void faultIsr() __attribute__((naked));
 
 void InterruptController::enableGlobalInterrupts()
 {
@@ -85,12 +86,35 @@ void phantomIsr()
   /** Do nothing. */
 }
 
+
 void faultIsr()
 {
-  while(true);
+  __asm volatile
+    (
+        " tst lr, #4                                                \n"
+        " ite eq                                                    \n"
+        " mrseq r0, msp                                             \n"
+        " mrsne r0, psp                                             \n"
+        " ldr r1, [r0, #24]                                         \n"
+        " ldr r2, handler2_address_const                            \n"
+        " bx r2                                                     \n"
+        " handler2_address_const: .word ISR_readFaultAddress        \n"
+    );
 }
 
 }
 }
+}
+
+void ISR_readFaultAddress(uint32_t* fStack)
+{
+  volatile uint32_t r0; volatile uint32_t r1; volatile uint32_t r2;
+  volatile uint32_t r3; volatile uint32_t r12; volatile uint32_t lr; 
+  volatile uint32_t pc; volatile uint32_t psr;
+  r0 = fStack[0]; r1 = fStack[1]; r2 = fStack[2]; r3 = fStack[3];
+  r12 = fStack[4]; lr = fStack[5]; pc = fStack[6]; psr = fStack[7];
+  (void)r0; (void)r1; (void)r2; (void)r3; (void)r12; (void)lr;
+  (void)pc; (void)psr;
+  while(true);
 }
 

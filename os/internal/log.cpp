@@ -50,13 +50,23 @@ Logger::Logger(const std::shared_ptr<MtWriter>& output, Config cfg) : pp_(output
   }
 }
 
-Status Logger::fastPrint(const MessageType type, const char* cStr)
+Status Logger::fastPrint(const MessageType type, const char* cStr) noexcept
 {
+  if(cfg_.maskLevel >= type)
+  {
+    //Masked out messages are always considered successfully 'printed'.
+    return Status::success;
+  }
   return mq_->push({type, cStr}, Duration::zero());
 }
 
 Status Logger::print(const MessageType type, const char* format, va_list vargs) 
 {
+  if(cfg_.maskLevel >= type)
+  {
+    //Masked out messages are always considered successfully 'printed'.
+    return Status::success;
+  }
   auto strContainer = jelStringPool->acquire();
   String& string = *strContainer.stored();
   string.assign(" ", string.capacity() - 1);

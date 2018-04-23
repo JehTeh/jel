@@ -29,6 +29,7 @@
 /** C/C++ Standard Library Headers */
 #include <cstring>
 #include <cassert>
+#include <atomic>
 /** jel Library Headers */
 #include "os/api_allocator.hpp"
 #include "os/api_exceptions.hpp"
@@ -123,6 +124,8 @@ AllocatorStatisticsInterface::~AllocatorStatisticsInterface() noexcept
  *
  * */
 static uint8_t systemAllocatorStorage[sizeof(SystemAllocator)] __attribute__((aligned(4)));
+std::atomic<bool> SystemAllocator::excpLocked_;
+uint8_t SystemAllocator::excpPage_[];
 
 SystemAllocator* SystemAllocator::systemAllocator_ = nullptr;
 
@@ -180,4 +183,50 @@ size_t SystemAllocator::totalSpace_Bytes() const noexcept
   return configTOTAL_HEAP_SIZE;
 }
 
+void* SystemAllocator::allocateException(const size_t size) noexcept
+{
+  bool test = false; 
+  if(size > exceptionPageSize_bytes)
+  {
+    return systemAllocator()->allocate(size);
+  }
+  if(excpLocked_.compare_exchange_strong(test, true))
+  {
+    //Aquired and locked the page successfully.
+    return &excpPage_[0];
+  } 
+  else
+  {
+    //Failed to lock the page/page is already in use.
+    return systemAllocator()->allocate(size);
+  }
+}
+
+void SystemAllocator::deallocateException(void* except) noexcept
+{
+  if(except == &excpPage_[0])
+  {
+    excpLocked_.store(false);
+  }
+  else
+  {
+    systemAllocator()->deallocate(except);
+  }
+}
+
+
 } /** namespace jel */
+/**
+ *  TEMPORARILY DISABLED
+ *
+extern "C" void *
+__cxa_allocate_exception(std::size_t thrown_size) throw()
+{
+  return jel::SystemAllocator::allocateException(thrown_size);
+}
+
+extern "C" void __cxa_free_exception(void *thrown_exception)
+{
+  jel::SystemAllocator::deallocateException(thrown_exception);
+}
+*/

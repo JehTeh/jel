@@ -43,7 +43,7 @@
 
 /** C/C++ Standard Library Headers */
 #include <memory>
-#include <unordered_map>
+#include <vector>
 /** jel Library Headers */
 #include "os/api_common.hpp"
 #include "os/api_time.hpp"
@@ -194,7 +194,7 @@ public:
 #endif
   };
 #ifdef ENABLE_THREAD_STATISTICS
-  using InfoRegistry = std::unordered_map<Handle, ThreadInfo*>;
+  using InfoRegistry = std::vector<ThreadInfo*>;
 #endif
   /** Construct a new thread. If no arguments are desired in the userFunction, simply pass a nullptr
    * args value. */

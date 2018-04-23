@@ -44,13 +44,19 @@ namespace jel
 {
 
 int32_t cliCmdTest_Logger(cli::CommandIo& io);
+int32_t cliCmdTest_Exceptions(cli::CommandIo& io);
 
 const cli::CommandEntry cliCommandArray_tests[] =
 {
   {
-    "test_logger", cliCmdTest_Logger, "",
+    "log", cliCmdTest_Logger, "",
     "Tests the integrated OS logging subsystem. Useful for validating different logging "
     "configurations across targets.\n",
+    cli::AccessPermission::unrestricted, nullptr
+  },
+  {
+    "except", cliCmdTest_Exceptions, "",
+    "Test the system exception allocation scheme.\n",
     cli::AccessPermission::unrestricted, nullptr
   },
 };
@@ -104,6 +110,13 @@ int32_t cliCmdTest_Logger(cli::CommandIo& io)
   log.fpErr("Test: fpErr");
   log.fp(Logger::MessageType::default_, "Test: fp (default_)");
   log.printInfo("Test: Info print call (this should flush the print queue).");
+  return 0;
+}
+
+int32_t cliCmdTest_Exceptions(cli::CommandIo& io)
+{
+  io.print("Testing throwing an int... (the CLI should catch this)\n");
+  throw int(5);
   return 0;
 }
 

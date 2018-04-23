@@ -246,8 +246,8 @@ size_t printCpuUse(cli::CommandIo& io, char* pBuf, const size_t pBufLen, const b
   lc++;
   for(const auto& tip : Thread::registry())
   {
-    Thread::ThreadInfo& ti = *tip.second;
-    if(tip.second == nullptr)
+    const Thread::ThreadInfo& ti = *tip;
+    if(tip == nullptr)
     {
       return lc;
     }
@@ -349,8 +349,8 @@ int32_t cliCmdStackuse(cli::CommandIo& io)
   char pBuf[pBufLen];
   for(const auto& tip : Thread::registry())
   {
-    Thread::ThreadInfo& ti = *tip.second;
-    if(tip.second == nullptr)
+    Thread::ThreadInfo& ti = *tip;
+    if(tip == nullptr)
     {
       return 1;
     }
@@ -544,7 +544,7 @@ int32_t cliCmdEnableTestLib(cli::CommandIo& io)
 {
   int32_t stat = 0;
   io.fmt.automaticNewline = false;
-  io.print("Registering '%s' library...", cliCmdLib_tests.name);
+  io.print("Registering '%s' library... ", cliCmdLib_tests.name);
   if(cli::registerLibrary(cliCmdLib_tests) == Status::success)
   {
     io.fmt.color = AnsiFormatter::Color::brightGreen;

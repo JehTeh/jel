@@ -72,10 +72,10 @@ public:
   enum class MessageType : uint8_t
   {
     hidden = 0,
-    debug = 0x01,
-    info = 0x02,
-    warning = 0x03,
-    error = 0x04,
+    debug = 16,
+    info = 32,
+    warning = 48,
+    error = 64,
     default_ = info
   };
   /** struct MessageFormatting
@@ -106,12 +106,13 @@ public:
     bool useAsyncPrintThread;
     /** The name of the logger. */
     const char* name;
-    /** The default message level. */
-    MessageType defaultMessageType;
+    /** The masking level for messages. Messages with an enum index lower than or equal to this type
+     * will not be displayed. */
+    MessageType maskLevel;
     /** Formatting controls when printing log statements. */
     MessageFormatting fmt;
     Config() : maxPrintQueueLength(10), useAsyncPrintThread(true), name("jel::log"), 
-      defaultMessageType(MessageType::default_) {}
+      maskLevel(MessageType::default_) {}
   };
   Logger(const std::shared_ptr<MtWriter>& output, Config = Config());
   /** Fast print functions
@@ -132,16 +133,16 @@ public:
    *    actually occurs.
    *  @endcode
    * */
-  Status fprint(const MessageType type, const char* cStr) { return fastPrint(type, cStr); }
-  Status fprintInfo(const char* cStr) { return fastPrint(MessageType::info, cStr); }
-  Status fprintDebug(const char* cStr) { return fastPrint(MessageType::debug, cStr); }
-  Status fprintWarning(const char* cStr) { return fastPrint(MessageType::warning, cStr); }
-  Status fprintError(const char* cStr) { return fastPrint(MessageType::error, cStr); }
-  Status fpInf(const char* cStr) { return fastPrint(MessageType::info, cStr); }
-  Status fpDbg(const char* cStr) { return fastPrint(MessageType::debug, cStr); }
-  Status fpWrn(const char* cStr) { return fastPrint(MessageType::warning, cStr); }
-  Status fpErr(const char* cStr) { return fastPrint(MessageType::error, cStr); }
-  Status fp(const MessageType type, const char* cStr) { return fastPrint(type, cStr); }
+  Status fprint(const MessageType type, const char* cStr) noexcept { return fastPrint(type, cStr); }
+  Status fprintInfo(const char* cStr) noexcept { return fastPrint(MessageType::info, cStr); }
+  Status fprintDebug(const char* cStr) noexcept { return fastPrint(MessageType::debug, cStr); }
+  Status fprintWarning(const char* cStr) noexcept { return fastPrint(MessageType::warning, cStr); }
+  Status fprintError(const char* cStr) noexcept { return fastPrint(MessageType::error, cStr); }
+  Status fpInf(const char* cStr) noexcept { return fastPrint(MessageType::info, cStr); }
+  Status fpDbg(const char* cStr) noexcept { return fastPrint(MessageType::debug, cStr); }
+  Status fpWrn(const char* cStr) noexcept { return fastPrint(MessageType::warning, cStr); }
+  Status fpErr(const char* cStr) noexcept { return fastPrint(MessageType::error, cStr); }
+  Status fp(const MessageType type, const char* cStr) noexcept { return fastPrint(type, cStr); }
   /** Regular print functions
    * The regular print functions can be used to output generic messages with printf style
    * formatting. Messages including printf style formatters are limited in length to the underlying
@@ -177,6 +178,9 @@ public:
     { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   Status __attribute__((format(printf, 2, 3))) pErr(const char* format, ...) 
     { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
+  /** Exposes the internal logger configuration settings. Useful for adjusting logger configuration
+   * at runtime. */
+  Config& config() noexcept { return cfg_; }
   /** Returns a reference to the system logging channel integrated into the jel. Useful on targets
    * where instantiating multiple loggers is too expensive. */
   static Logger& sysLogChannel();
@@ -198,7 +202,7 @@ private:
     PrintableMessage& operator=(const PrintableMessage&) = delete;
   };
   using MsgQueue = Queue<PrintableMessage>;
-  Status fastPrint(MessageType type, const char* cStr);
+  Status fastPrint(MessageType type, const char* cStr) noexcept;
   Status  print(MessageType type, const char* format, va_list list);
   PrettyPrinter pp_;
   Config cfg_;

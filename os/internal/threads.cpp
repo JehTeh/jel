@@ -72,7 +72,7 @@ void GenericThread_Base::startThread(Thread* threadObject)
         "Failed to allocate the required memory when constructing a new Thread."};
     }
 #ifdef ENABLE_THREAD_STATISTICS
-    Thread::ireg_->insert({inf->handle_, inf});
+    Thread::ireg_->push_back(inf);
 #endif
     vTaskPrioritySet(inf->handle_, static_cast<uint32_t>(inf->priority_));
   }
@@ -125,7 +125,13 @@ void GenericThread_Base::dispatcher(void* threadInf)
   if(inf->isDetached_)
   {
 #ifdef ENABLE_THREAD_STATISTICS
-    Thread::ireg_->erase(inf->handle_);
+    for(auto it = Thread::ireg_->begin(); it != Thread::ireg_->end(); it++)
+    {
+      if((*it)->handle_ == inf->handle_)
+      {
+        Thread::ireg_->erase(it);
+      }
+    }
 #endif
     delete inf;
   }
@@ -161,7 +167,13 @@ Thread::~Thread() noexcept
   if(inf_ != nullptr)
   {
 #ifdef ENABLE_THREAD_STATISTICS
-    ireg_->erase(inf_->handle_);
+    for(auto it = Thread::ireg_->begin(); it != Thread::ireg_->end(); it++)
+    {
+      if((*it)->handle_ == inf_->handle_)
+      {
+        Thread::ireg_->erase(it);
+      }
+    }
 #endif
     if(inf_->handle_ != nullptr)
     {
@@ -174,30 +186,25 @@ Thread::~Thread() noexcept
 #ifdef ENABLE_THREAD_STATISTICS
 void Thread::schedulerEntry(Handle handle)
 {
-  //(*ireg_)[handle]->lastEntry_ = SteadyClock::now();
-  try
+  for(ThreadInfo* it : *ireg_)
   {
-    ireg_->at(handle)->lastEntry_ = SteadyClock::now();
-  }
-  catch(const std::out_of_range& e)
-  {
-    //Nothing is purposely done here.
-    asm("nop");
+    if(it->handle_ == handle)
+    {
+      it->lastEntry_ = SteadyClock::now();
+      break;
+    }
   }
 }
 
 void Thread::schedulerExit(Handle handle)
 {
-  //ThreadInfo* i = (*ireg_)[handle];
-  try
+  for(ThreadInfo* it : *ireg_)
   {
-    ThreadInfo* i = ireg_->at(handle);
-    i->totalRuntime_ += SteadyClock::now() - i->lastEntry_;
-  }
-  catch(const std::out_of_range& e)
-  {
-    //Nothing is purposely done here.
-    asm("nop");
+    if(it->handle_ == handle)
+    {
+      it->totalRuntime_ += SteadyClock::now() - it->lastEntry_;
+      break;
+    }
   }
 }
 
@@ -207,11 +214,12 @@ void Thread::schedulerThreadCreation(Handle)
 
 void Thread::schedulerAddIdleTask(Handle h, ThreadInfo* inf)
 {
+  (void)h; //Handle no longer used after refactoring from std::map to vector.
   if(ireg_ == nullptr)
   {
     ireg_ = std::make_unique<InfoRegistry>();
   }
-  ireg_->insert({h, inf});
+  ireg_->push_back(inf);
 }
 #endif
 
@@ -240,14 +248,27 @@ void ThisThread::deleteSelf(bool performCompleteErasure) noexcept
 {
   if(performCompleteErasure)
   {
-    Thread::ThreadInfo* iptr = Thread::ireg_->at(xTaskGetCurrentTaskHandle());
-    delete(iptr);
+    for(auto it = Thread::ireg_->begin(); it != Thread::ireg_->end(); it++)
+    {
+      if((*it)->handle_ == xTaskGetCurrentTaskHandle())
+      {
+        delete(*it);
+        Thread::ireg_->erase(it);
+        break;
+      }
+    }
   }
   else
   {
-    Thread::ireg_->at(xTaskGetCurrentTaskHandle())->isDeleted_ = true;
-    Thread::ireg_->at(xTaskGetCurrentTaskHandle())->minStackBeforeDeletion_bytes_ = 
-      uxTaskGetStackHighWaterMark(nullptr) * 4;
+    for(auto&& it : *Thread::ireg_)
+    {
+      if(it->handle_ == xTaskGetCurrentTaskHandle())
+      {
+        it->isDeleted_ = true;
+        it->minStackBeforeDeletion_bytes_ = uxTaskGetStackHighWaterMark(nullptr) * 4;
+        break;
+      }
+    }
   }
   vTaskDelete(nullptr);
 }
@@ -262,4 +283,5 @@ void* ThisThread::handle()
   return xTaskGetCurrentTaskHandle(); 
 }
 
-} /** namespace jel */
+}
+/** namespace jel */
