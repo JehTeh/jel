@@ -44,6 +44,16 @@
 
 namespace jel
 {
+
+/** struct FlushLineTag
+ *  Tag based dispatcher used to indicate when the StreamLoggerHelper should flush lines.
+ * */
+struct FlushLineTag { };
+extern FlushLineTag flush;
+
+//Forward declaration
+class StreamLoggerHelper;
+
 /** @class Logger
  *  @brief Provides formatted, asynchronous logging style output to application threads.
  *
@@ -109,12 +119,22 @@ public:
     /** The masking level for messages. Messages with an enum index lower than or equal to this type
      * will not be displayed. */
     MessageType maskLevel;
+    /** The default level messages are printed at. This only applies to messages printed by the
+     * StreamLoggerHelper (i.e. messages printed using operator<< that do not otherwise specify a
+       * type). */
+    MessageType defaultStreamLevel;
     /** Formatting controls when printing log statements. */
     MessageFormatting fmt;
     Config() : maxPrintQueueLength(10), useAsyncPrintThread(true), name("jel::log"), 
       maskLevel(MessageType::default_) {}
   };
-  Logger(const std::shared_ptr<MtWriter>& output, Config = Config());
+  /** Construct a new Logger instance. 
+   *  A new Logger instance requires an output writer, a Config structure to use for setting default
+   *  paramaters, and a pointer to the memory pool to use when printing buffered, printf style
+   *  messages. If no pool is provided, the internal jel default pool will be used.
+   * */
+  Logger(const std::shared_ptr<MtWriter>& output, Config = Config(), 
+    std::shared_ptr<ObjectPool<String>> pool = nullptr);
   /** Fast print functions
    *  Fast print functions (prefixed with 'fp') are useful for precision logging statements or
    *  printing data from an ISR. There are some limitations with their usage, however:
@@ -164,27 +184,36 @@ public:
   Status __attribute__((format(printf, 2, 3))) printDebug(const char* format, ...) 
     { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   Status __attribute__((format(printf, 2, 3))) printWarning(const char* format, ...) 
-    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::warning); }
   Status __attribute__((format(printf, 2, 3))) printError(const char* format, ...) 
-    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::error); }
   Status __attribute__((format(printf, 3, 4))) 
     print(const MessageType type, const char* format, ...) 
     { LOGGER_PRINT_FOR_TYPE(type); }
   Status __attribute__((format(printf, 2, 3))) pInf(const char* format, ...) 
-    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::info); }
   Status __attribute__((format(printf, 2, 3))) pDbg(const char* format, ...) 
     { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
   Status __attribute__((format(printf, 2, 3))) pWrn(const char* format, ...) 
-    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::warning); }
   Status __attribute__((format(printf, 2, 3))) pErr(const char* format, ...) 
-    { LOGGER_PRINT_FOR_TYPE(MessageType::debug); }
+    { LOGGER_PRINT_FOR_TYPE(MessageType::error); }
   /** Exposes the internal logger configuration settings. Useful for adjusting logger configuration
    * at runtime. */
   Config& config() noexcept { return cfg_; }
+  StreamLoggerHelper operator<<(MessageType type);
+  StreamLoggerHelper operator<<(char c);
+  StreamLoggerHelper operator<<(const char* cString);
+  StreamLoggerHelper operator<<(int64_t int64);
+  StreamLoggerHelper operator<<(uint64_t uint64);
+  StreamLoggerHelper operator<<(double fpDouble);
+  StreamLoggerHelper operator<<(FlushLineTag); 
+  StreamLoggerHelper flush();
   /** Returns a reference to the system logging channel integrated into the jel. Useful on targets
    * where instantiating multiple loggers is too expensive. */
   static Logger& sysLogChannel();
 private:
+  friend StreamLoggerHelper;
   struct PrintableMessage
   {
     Timestamp timestamp;
@@ -203,14 +232,42 @@ private:
   };
   using MsgQueue = Queue<PrintableMessage>;
   Status fastPrint(MessageType type, const char* cStr) noexcept;
-  Status  print(MessageType type, const char* format, va_list list);
+  Status print(MessageType type, const char* format, va_list list);
+  Status messagePrint(PrintableMessage& msg);
   PrettyPrinter pp_;
   Config cfg_;
   std::unique_ptr<Thread> tptr_;
   std::unique_ptr<MsgQueue> mq_;
+  std::shared_ptr<ObjectPool<String>> pool_;
   Status internalPrint(const PrintableMessage& msg);
   void printerThreadImpl();
   static void printerThread(Logger* instance);
+};
+
+class StreamLoggerHelper
+{
+public:
+  ~StreamLoggerHelper() noexcept;
+  StreamLoggerHelper(const StreamLoggerHelper&) = delete;
+  StreamLoggerHelper(StreamLoggerHelper&& other);
+  StreamLoggerHelper& operator=(const StreamLoggerHelper&) = delete;
+  StreamLoggerHelper& operator=(StreamLoggerHelper&& rhs);
+  StreamLoggerHelper& operator<<(Logger::MessageType type);
+  StreamLoggerHelper& operator<<(char c);
+  StreamLoggerHelper& operator<<(const char* cString);
+  StreamLoggerHelper& operator<<(int64_t int64);
+  StreamLoggerHelper& operator<<(uint64_t uint64);
+  StreamLoggerHelper& operator<<(double fpDouble);
+  StreamLoggerHelper& operator<<(FlushLineTag) { return flush(); }
+  StreamLoggerHelper& flush();
+private:
+  friend Logger;
+  bool msgValid_;
+  uint16_t msgLen_;
+  Logger* lgr_;
+  ObjectPool<String>* pool_;
+  Logger::PrintableMessage msg_;
+  StreamLoggerHelper(Logger& logger, ObjectPool<String>& pool);
 };
 
 /** log()

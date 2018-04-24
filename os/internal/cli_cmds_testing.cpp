@@ -77,6 +77,8 @@ int32_t cliCmdTest_Logger(cli::CommandIo& io)
   io.print("Testing CLI logger. This is done by printing multiple log statements. "
     "Each logging event is seperated by a ~%lldms delay.\n", sleepTime.toMilliseconds());
   Logger& log = Logger::sysLogChannel();
+  io.print("Overridding logger mask level to hidden (i.e. display all).\n");
+  log.config().defaultStreamLevel = Logger::MessageType::hidden;
   log.fprintInfo("Test: fprintInfo");
   ThisThread::sleepfor(sleepTime);
   log.fprintDebug("Test: fprintDebug");
@@ -110,6 +112,9 @@ int32_t cliCmdTest_Logger(cli::CommandIo& io)
   log.fpErr("Test: fpErr");
   log.fp(Logger::MessageType::default_, "Test: fp (default_)");
   log.printInfo("Test: Info print call (this should flush the print queue).");
+  ThisThread::sleepfor(sleepTime);
+  log.printInfo("Testing LoggerStreamHelper (operator<< functionality).");
+  log << "This is a test string" << flush;
   return 0;
 }
 

@@ -261,11 +261,10 @@ void bootThread(void*)
   //Initialize GPIO hardware and the serial I/O port
   hw::gpio::GpioController::initializeGpio();
   initializeStandardIo();
-  initializeLogger();
-  jelLogger->fprintDebug("Logger initialized.");
   jelStringPool = std::make_shared<ObjectPool<String>>(config::stringPoolStringCount,
     config::stringPoolStringSize, '\0');
-  jelLogger->printDebug("String pool initialized.");
+  initializeLogger();
+  jelLogger->fprintDebug("Logger initialized.");
   cli::startSystemCli(jelStandardIo);
   jelLogger->printDebug("CLI initialized.");
   cli::registerLibrary(cliCmdLib);

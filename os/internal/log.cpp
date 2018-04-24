@@ -39,8 +39,16 @@
 namespace jel
 {
 
-Logger::Logger(const std::shared_ptr<MtWriter>& output, Config cfg) : pp_(output), cfg_(cfg)
+FlushLineTag flush;
+
+Logger::Logger(const std::shared_ptr<MtWriter>& output, Config cfg, 
+  std::shared_ptr<ObjectPool<String>> pool) : pp_(output), cfg_(cfg)
 {
+  pool_ = pool;
+  if(!pool_)
+  {
+    pool_ = jelStringPool;
+  }
   mq_ = std::make_unique<MsgQueue>(cfg_.maxPrintQueueLength);
   if(cfg_.useAsyncPrintThread)
   {
@@ -48,6 +56,60 @@ Logger::Logger(const std::shared_ptr<MtWriter>& output, Config cfg) : pp_(output
       cfg_.name, config::jelRuntimeConfiguration.loggerThreadStackSize_Bytes, 
       Thread::Priority::low);
   }
+}
+
+StreamLoggerHelper Logger::operator<<(MessageType type)
+{
+  StreamLoggerHelper slh(*this, *pool_);
+  slh = std::move(slh << type);
+  return slh;
+}
+
+StreamLoggerHelper Logger::operator<<(char c)
+{
+  StreamLoggerHelper slh(*this, *pool_);
+  return std::move(slh << c);
+}
+
+StreamLoggerHelper Logger::operator<<(const char* cString)
+{
+  StreamLoggerHelper slh(*this, *pool_);
+  slh = std::move(slh << cString);
+  return slh;
+}
+
+StreamLoggerHelper Logger::operator<<(int64_t int64)
+{
+  StreamLoggerHelper slh(*this, *pool_);
+  return std::move(slh << int64);
+}
+
+StreamLoggerHelper Logger::operator<<(uint64_t uint64)
+{
+  StreamLoggerHelper slh(*this, *pool_);
+  return std::move(slh << uint64);
+}
+
+StreamLoggerHelper Logger::operator<<(double fpDouble)
+{
+  StreamLoggerHelper slh(*this, *pool_);
+  return std::move(slh << fpDouble);
+}
+
+StreamLoggerHelper Logger::operator<<(FlushLineTag)
+{
+  /** The logger instance itself doesn't actually need to do anything except create a new
+   * StreamLoggerHelper and return that. */
+  StreamLoggerHelper slh(*this, *pool_);
+  return slh;
+}
+
+StreamLoggerHelper Logger::flush()
+{
+  /** The logger instance itself doesn't actually need to do anything except create a new
+   * StreamLoggerHelper and return that. */
+  StreamLoggerHelper slh(*this, *pool_);
+  return slh;
 }
 
 Status Logger::fastPrint(const MessageType type, const char* cStr) noexcept
@@ -67,7 +129,7 @@ Status Logger::print(const MessageType type, const char* format, va_list vargs)
     //Masked out messages are always considered successfully 'printed'.
     return Status::success;
   }
-  auto strContainer = jelStringPool->acquire();
+  auto strContainer = pool_->acquire();
   String& string = *strContainer.stored();
   string.assign(" ", string.capacity() - 1);
   int32_t printStat = std::vsnprintf(&string[0], string.length(), format, vargs);
@@ -77,6 +139,11 @@ Status Logger::print(const MessageType type, const char* format, va_list vargs)
   }
   string.resize(printStat);
   PrintableMessage msg(type, std::move(strContainer));
+  return messagePrint(msg);
+}
+
+Status Logger::messagePrint(PrintableMessage& msg)
+{
   if(cfg_.useAsyncPrintThread)
   {
     return mq_->push(std::move(msg));
@@ -269,6 +336,125 @@ Logger::PrintableMessage::~PrintableMessage() noexcept
 Logger& Logger::sysLogChannel() 
 {
   return *jelLogger;
+}
+
+StreamLoggerHelper::StreamLoggerHelper(Logger& logger, ObjectPool<String>& pool) :msgValid_(false),
+  msgLen_(0), lgr_(&logger), pool_(&pool)
+{
+  ObjectPool<String>::ObjectContainer strContainer = pool_->acquire();
+  if(strContainer.stored())
+  {
+    msg_ = Logger::PrintableMessage(lgr_->cfg_.defaultStreamLevel, std::move(strContainer));
+    String& str = *msg_.poolString.stored();
+    str.assign(" ", str.capacity() - 1);
+    str.resize(str.capacity() - 1);
+    msgValid_ = true;
+  }
+}
+
+StreamLoggerHelper::~StreamLoggerHelper() noexcept
+{
+  if(msgLen_ && msgValid_)
+  {
+    lgr_->messagePrint(msg_);
+  }
+}
+
+StreamLoggerHelper::StreamLoggerHelper(StreamLoggerHelper&& other) : msgValid_(other.msgValid_),
+  msgLen_(other.msgLen_), lgr_(other.lgr_), pool_(other.pool_) 
+{
+  other.msgLen_ = 0;
+  other.msgValid_ = false;
+  msg_ = std::move(other.msg_);
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator=(StreamLoggerHelper&& rhs)
+{
+  if(&rhs == this) { return *this; }
+  msgLen_ = rhs.msgLen_;
+  msgValid_ = rhs.msgValid_;
+  rhs.msgLen_ = 0;
+  rhs.msgValid_ = false;
+  lgr_ = rhs.lgr_;
+  pool_ = rhs.pool_;
+  msg_ = std::move(rhs.msg_);
+  return *this;
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(Logger::MessageType type)
+{
+  uint8_t tempType = static_cast<uint8_t>(msg_.type);
+  tempType |= 0x7F & static_cast<uint8_t>(type);
+  msg_.type = static_cast<Logger::MessageType>(tempType);
+  return *this;
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(char c)
+{
+  (void)c;
+  if(msgLen_)
+  {
+    
+  }
+  else
+  {
+
+  }
+  return *this;
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(const char* cString)
+{
+  if(msgValid_)
+  {
+    String& str = *msg_.poolString.stored();
+    char* cp;
+    for(cp = &str[msgLen_]; cp != &str[str.capacity()]; cp++)
+    {
+      *cp = *cString++;
+      msgLen_++;
+      if(!*cString)
+      {
+        str.resize(msgLen_);
+        flush();
+        return *this;
+      }
+    }
+    str.resize(msgLen_);
+  }
+  else
+  {
+
+  }
+  return *this;
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(int64_t int64)
+{
+  (void)int64;
+  return *this;
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(uint64_t uint64)
+{
+  (void)uint64;
+  return *this;
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(double fpDouble)
+{
+  (void)fpDouble;
+  return *this;
+}
+
+StreamLoggerHelper& StreamLoggerHelper::flush()
+{
+  if(msgLen_ && msgValid_)
+  {
+    lgr_->messagePrint(msg_);
+    msgLen_ = false;
+  }
+  return *this;
 }
 
 } /** namespace jel */
