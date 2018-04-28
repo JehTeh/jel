@@ -542,6 +542,7 @@ extern const cli::Library cliCmdLib_tests;
 
 int32_t cliCmdEnableTestLib(cli::CommandIo& io)
 {
+#ifndef __OPTIMIZE__
   int32_t stat = 0;
   io.fmt.automaticNewline = false;
   io.print("Registering '%s' library... ", cliCmdLib_tests.name);
@@ -557,6 +558,11 @@ int32_t cliCmdEnableTestLib(cli::CommandIo& io)
     stat = 1;
   }
   return stat;
+#else
+  io.fmt.color = AnsiFormatter::Color::brightRed;
+  io.print("The '%s' library is available only on debug builds.\n", cliCmdLib_tests.name);
+  return 0;
+#endif
 }
 
 } /** namespace jel */

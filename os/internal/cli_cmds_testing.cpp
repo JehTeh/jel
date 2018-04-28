@@ -78,7 +78,7 @@ int32_t cliCmdTest_Logger(cli::CommandIo& io)
     "Each logging event is seperated by a ~%lldms delay.\n", sleepTime.toMilliseconds());
   Logger& log = Logger::sysLogChannel();
   io.print("Overridding logger mask level to hidden (i.e. display all).\n");
-  log.config().defaultStreamLevel = Logger::MessageType::hidden;
+  log.config().maskLevel = Logger::MessageType::hidden;
   log.fprintInfo("Test: fprintInfo");
   ThisThread::sleepfor(sleepTime);
   log.fprintDebug("Test: fprintDebug");
@@ -111,10 +111,24 @@ int32_t cliCmdTest_Logger(cli::CommandIo& io)
   log.fpWrn("Test: fpWrn");
   log.fpErr("Test: fpErr");
   log.fp(Logger::MessageType::default_, "Test: fp (default_)");
-  log.printInfo("Test: Info print call (this should flush the print queue).");
+  io.print("Test: Info print call (this should flush the print queue).\n");
   ThisThread::sleepfor(sleepTime);
-  log.printInfo("Testing LoggerStreamHelper (operator<< functionality).");
+  io.print("Testing LoggerStreamHelper (operator<< functionality).\n");
   log << "This is a test string" << flush;
+  log << "Printing unsigned integer (systime): " << 
+    Duration(SteadyClock::now().time_since_epoch()).toMicroseconds() << flush;
+  log << "Printing float(123.456): " << 69.69 << flush;
+  log << "Printing float(-9000.1): " << -9000.1 << flush;
+  log << "Printing float(0.0001): " << 0.0001 << flush;
+  log << "Printing float(systime): " << 
+    static_cast<float>(Duration(SteadyClock::now().time_since_epoch()).toMicroseconds()) / 1'000'000
+    << flush;
+  log << "Multiprint (int/float/string): " << -123456789 << " " << 17.777 <<
+    " final string" << flush;
+  log << Logger::MessageType::error << "This message should be an error!" << flush;
+  log << Logger::MessageType::warning << "This message should be a warning!" << flush;
+  log << Logger::MessageType::info << "This message should be informational!" << flush;
+  ThisThread::sleepfor(sleepTime);
   return 0;
 }
 

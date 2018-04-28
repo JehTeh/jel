@@ -26,12 +26,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+//Prevent the cross compiler/linter from complaining.
+#define _CRT_SECURE_NO_WARNINGS
 /** C/C++ Standard Library Headers */
 #include <cassert>
 #include <cstring>
 #include <cstdio>
 #include <cinttypes>
 #include <cstdarg>
+#include <cstring>
 /** jel Library Headers */
 #include "os/api_log.hpp"
 #include "os/internal/indef.hpp"
@@ -58,42 +61,66 @@ Logger::Logger(const std::shared_ptr<MtWriter>& output, Config cfg,
   }
 }
 
-StreamLoggerHelper Logger::operator<<(MessageType type)
+template<typename PrintType>
+StreamLoggerHelper Logger::toStreamHelper(PrintType value)
 {
   StreamLoggerHelper slh(*this, *pool_);
-  slh = std::move(slh << type);
-  return slh;
+  return std::move(slh << value);
+}
+
+StreamLoggerHelper Logger::operator<<(MessageType type)
+{
+  return toStreamHelper(type);
 }
 
 StreamLoggerHelper Logger::operator<<(char c)
 {
-  StreamLoggerHelper slh(*this, *pool_);
-  return std::move(slh << c);
+  return toStreamHelper(c);
 }
 
 StreamLoggerHelper Logger::operator<<(const char* cString)
 {
-  StreamLoggerHelper slh(*this, *pool_);
-  slh = std::move(slh << cString);
-  return slh;
+  return toStreamHelper(cString);
+}
+
+StreamLoggerHelper Logger::operator<<(int16_t int16)
+{
+  return toStreamHelper(int16);
+}
+
+StreamLoggerHelper Logger::operator<<(int int32)
+{
+  return toStreamHelper(int32);
 }
 
 StreamLoggerHelper Logger::operator<<(int64_t int64)
 {
-  StreamLoggerHelper slh(*this, *pool_);
-  return std::move(slh << int64);
+  return toStreamHelper(int64);
+}
+
+StreamLoggerHelper Logger::operator<<(uint8_t uint8)
+{
+  return toStreamHelper(uint8);
+}
+
+StreamLoggerHelper Logger::operator<<(uint16_t uint16)
+{
+  return toStreamHelper(uint16);
+}
+
+StreamLoggerHelper Logger::operator<<(unsigned int uint32)
+{
+  return toStreamHelper(uint32);
 }
 
 StreamLoggerHelper Logger::operator<<(uint64_t uint64)
 {
-  StreamLoggerHelper slh(*this, *pool_);
-  return std::move(slh << uint64);
+  return toStreamHelper(uint64);
 }
 
 StreamLoggerHelper Logger::operator<<(double fpDouble)
 {
-  StreamLoggerHelper slh(*this, *pool_);
-  return std::move(slh << fpDouble);
+  return toStreamHelper(fpDouble);
 }
 
 StreamLoggerHelper Logger::operator<<(FlushLineTag)
@@ -346,8 +373,7 @@ StreamLoggerHelper::StreamLoggerHelper(Logger& logger, ObjectPool<String>& pool)
   {
     msg_ = Logger::PrintableMessage(lgr_->cfg_.defaultStreamLevel, std::move(strContainer));
     String& str = *msg_.poolString.stored();
-    str.assign(" ", str.capacity() - 1);
-    str.resize(str.capacity() - 1);
+    str = "";
     msgValid_ = true;
   }
 }
@@ -363,6 +389,7 @@ StreamLoggerHelper::~StreamLoggerHelper() noexcept
 StreamLoggerHelper::StreamLoggerHelper(StreamLoggerHelper&& other) : msgValid_(other.msgValid_),
   msgLen_(other.msgLen_), lgr_(other.lgr_), pool_(other.pool_) 
 {
+  if(this == &other) { return; }
   other.msgLen_ = 0;
   other.msgValid_ = false;
   msg_ = std::move(other.msg_);
@@ -383,22 +410,32 @@ StreamLoggerHelper& StreamLoggerHelper::operator=(StreamLoggerHelper&& rhs)
 
 StreamLoggerHelper& StreamLoggerHelper::operator<<(Logger::MessageType type)
 {
-  uint8_t tempType = static_cast<uint8_t>(msg_.type);
-  tempType |= 0x7F & static_cast<uint8_t>(type);
+  uint8_t tempType = static_cast<uint8_t>(type);
+  tempType |= 0x80 & static_cast<uint8_t>(msg_.type);
   msg_.type = static_cast<Logger::MessageType>(tempType);
   return *this;
 }
 
 StreamLoggerHelper& StreamLoggerHelper::operator<<(char c)
 {
-  (void)c;
-  if(msgLen_)
+  if(msgValid_)
   {
-    
+    //Temporary to store char when printed.
+    constexpr size_t pBufSize = 8; 
+    char pBuf[pBufSize];
+    String& str = *msg_.poolString.stored();
+    msgLen_ += std::snprintf(pBuf, pBufSize, "%c", c);
+    assert(str.capacity());
+    if((std::strlen(pBuf) + str.length()) >= (str.capacity() - 1))
+    {
+      return *this;
+    }
+    str += pBuf;
+    msgLen_ = str.length();
+    return *this;
   }
   else
   {
-
   }
   return *this;
 }
@@ -408,43 +445,156 @@ StreamLoggerHelper& StreamLoggerHelper::operator<<(const char* cString)
   if(msgValid_)
   {
     String& str = *msg_.poolString.stored();
-    char* cp;
-    for(cp = &str[msgLen_]; cp != &str[str.capacity()]; cp++)
+    assert(str.capacity());
+    if((std::strlen(cString) + str.length()) >= (str.capacity() - 1))
     {
-      *cp = *cString++;
-      msgLen_++;
-      if(!*cString)
-      {
-        str.resize(msgLen_);
-        flush();
-        return *this;
-      }
+      return *this;
     }
-    str.resize(msgLen_);
+    str += cString;
+    msgLen_ = str.length();
   }
   else
   {
-
   }
   return *this;
+}
+
+template<typename PrintType, size_t pBufSize>
+StreamLoggerHelper& StreamLoggerHelper::streamLoggerToString(PrintType value)
+{
+  if(!msgValid_) { return *this; }
+
+  char pBuf[pBufSize];
+  String& str = *msg_.poolString.stored();
+  int printLen = auto_snprintf(pBuf, pBufSize, value);
+  if((printLen > 0) && (printLen < static_cast<int>(pBufSize)))
+  {
+    msgLen_ += printLen;
+  }
+  else
+  {
+    if(printLen < 0)
+    {
+      static constexpr char printErrorString[] = "PRINT_ERROR";
+      std::strncpy(pBuf, printErrorString, pBufSize);
+      msgLen_ += sizeof(printErrorString) / sizeof(char);
+    }
+    else
+    {
+      assert(pBufSize > 5);
+      //Indicate truncation occured using ...
+      msgLen_ += pBufSize - 1;
+      pBuf[pBufSize - 1] = '.';
+      pBuf[pBufSize - 2] = '.';
+      pBuf[pBufSize - 3] = '.';
+    }
+  }
+  assert(str.capacity());
+  if((std::strlen(pBuf) + str.length()) >= (str.capacity() - 1))
+  {
+    return *this;
+  }
+  str += pBuf;
+  return *this;
+}
+
+template<>
+int StreamLoggerHelper::auto_snprintf(char* buffer, size_t bufferLen, int16_t value)
+{
+  return std::snprintf(buffer, bufferLen, "%d", value);
+}
+
+template<>
+int StreamLoggerHelper::auto_snprintf(char* buffer, size_t bufferLen, int value)
+{
+  return std::snprintf(buffer, bufferLen, "%d", value);
+}
+
+template<>
+int StreamLoggerHelper::auto_snprintf(char* buffer, size_t bufferLen, int64_t value)
+{
+  return std::snprintf(buffer, bufferLen, "%lld", value);
+}
+
+template<>
+int StreamLoggerHelper::auto_snprintf(char* buffer, size_t bufferLen, uint8_t value)
+{
+  return std::snprintf(buffer, bufferLen, "%u", value);
+}
+
+template<>
+int StreamLoggerHelper::auto_snprintf(char* buffer, size_t bufferLen, uint16_t value)
+{
+  return std::snprintf(buffer, bufferLen, "%d", value);
+}
+
+template<>
+int StreamLoggerHelper::auto_snprintf(char* buffer, size_t bufferLen, unsigned int value)
+{
+  return std::snprintf(buffer, bufferLen, "%u", value);
+}
+
+template<>
+int StreamLoggerHelper::auto_snprintf(char* buffer, size_t bufferLen, uint64_t value)
+{
+  return std::snprintf(buffer, bufferLen, "%llu", value);
+}
+
+template<>
+int StreamLoggerHelper::auto_snprintf(char* buffer, size_t bufferLen, float value)
+{
+  return std::snprintf(buffer, bufferLen, "%f", value);
+}
+
+template<>
+int StreamLoggerHelper::auto_snprintf(char* buffer, size_t bufferLen, double value)
+{
+  return std::snprintf(buffer, bufferLen, "%f", value);
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(int16_t int16)
+{
+  return (*this).streamLoggerToString<int64_t, 22>(int16);
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(int int32)
+{
+  return (*this).streamLoggerToString<int64_t, 22>(int32);
 }
 
 StreamLoggerHelper& StreamLoggerHelper::operator<<(int64_t int64)
 {
-  (void)int64;
-  return *this;
+  return (*this).streamLoggerToString<int64_t, 22>(int64);
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(uint8_t uint8)
+{
+  return (*this).streamLoggerToString<int64_t, 22>(uint8);
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(uint16_t uint16)
+{
+  return (*this).streamLoggerToString<uint64_t, 22>(uint16);
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(unsigned int uint32)
+{
+  return (*this).streamLoggerToString<uint64_t, 22>(uint32);
 }
 
 StreamLoggerHelper& StreamLoggerHelper::operator<<(uint64_t uint64)
 {
-  (void)uint64;
-  return *this;
+  return (*this).streamLoggerToString<uint64_t, 22>(uint64);
+}
+
+StreamLoggerHelper& StreamLoggerHelper::operator<<(float fpFloat)
+{
+  return (*this).streamLoggerToString<double, 32>(fpFloat);
 }
 
 StreamLoggerHelper& StreamLoggerHelper::operator<<(double fpDouble)
 {
-  (void)fpDouble;
-  return *this;
+  return (*this).streamLoggerToString<double, 32>(fpDouble);
 }
 
 StreamLoggerHelper& StreamLoggerHelper::flush()

@@ -204,8 +204,14 @@ public:
   StreamLoggerHelper operator<<(MessageType type);
   StreamLoggerHelper operator<<(char c);
   StreamLoggerHelper operator<<(const char* cString);
+  StreamLoggerHelper operator<<(int16_t int16);
+  StreamLoggerHelper operator<<(int int32);
   StreamLoggerHelper operator<<(int64_t int64);
+  StreamLoggerHelper operator<<(uint8_t uint8);
+  StreamLoggerHelper operator<<(uint16_t uint16);
+  StreamLoggerHelper operator<<(unsigned int uint32);
   StreamLoggerHelper operator<<(uint64_t uint64);
+  StreamLoggerHelper operator<<(float fpFloat);
   StreamLoggerHelper operator<<(double fpDouble);
   StreamLoggerHelper operator<<(FlushLineTag); 
   StreamLoggerHelper flush();
@@ -241,6 +247,8 @@ private:
   std::shared_ptr<ObjectPool<String>> pool_;
   Status internalPrint(const PrintableMessage& msg);
   void printerThreadImpl();
+  template<typename PrintType>
+  StreamLoggerHelper toStreamHelper(PrintType value);
   static void printerThread(Logger* instance);
 };
 
@@ -255,8 +263,14 @@ public:
   StreamLoggerHelper& operator<<(Logger::MessageType type);
   StreamLoggerHelper& operator<<(char c);
   StreamLoggerHelper& operator<<(const char* cString);
+  StreamLoggerHelper& operator<<(int16_t int16);
+  StreamLoggerHelper& operator<<(int int32);
   StreamLoggerHelper& operator<<(int64_t int64);
+  StreamLoggerHelper& operator<<(uint8_t uint8);
+  StreamLoggerHelper& operator<<(uint16_t uint16);
+  StreamLoggerHelper& operator<<(unsigned uint32);
   StreamLoggerHelper& operator<<(uint64_t uint64);
+  StreamLoggerHelper& operator<<(float fpFloat);
   StreamLoggerHelper& operator<<(double fpDouble);
   StreamLoggerHelper& operator<<(FlushLineTag) { return flush(); }
   StreamLoggerHelper& flush();
@@ -268,6 +282,10 @@ private:
   ObjectPool<String>* pool_;
   Logger::PrintableMessage msg_;
   StreamLoggerHelper(Logger& logger, ObjectPool<String>& pool);
+  template<typename PrintType, size_t pBufSize>
+    StreamLoggerHelper& streamLoggerToString(PrintType value);
+  template<typename PrintType>
+    int auto_snprintf(char* buffer, size_t bufferLen, PrintType value);
 };
 
 /** log()
