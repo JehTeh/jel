@@ -336,6 +336,10 @@ extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef* uart)
   {
     InterruptDispatcher::uartEntry(UartInstance::uart2, InterruptDispatcher::Flags::TX_COMPLETE);
   }
+  else if(uart->Instance == USART3)
+  {
+    InterruptDispatcher::uartEntry(UartInstance::uart3, InterruptDispatcher::Flags::TX_COMPLETE);
+  }
 }
 
 extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef* uart)
@@ -348,5 +352,9 @@ extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef* uart)
   else if(uart->Instance == USART2)
   {
     InterruptDispatcher::uartEntry(UartInstance::uart2, InterruptDispatcher::Flags::RX_COMPLETE);
+  }
+  else if(uart->Instance == USART3)
+  {
+    InterruptDispatcher::uartEntry(UartInstance::uart3, InterruptDispatcher::Flags::RX_COMPLETE);
   }
 }
