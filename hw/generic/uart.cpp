@@ -40,7 +40,7 @@ namespace uart
 {
 
 
-BasicUart_Base::BasicUart_Base(const Config& config) : cfg_{config}
+BasicUart_Base::BasicUart_Base(const Config& config) : rxCbFn_(nullptr), cfg_{config}
 {
 
 }
@@ -83,6 +83,12 @@ size_t BasicUart_Base::read(char* buffer, const size_t bufferLen)
         while(!isRxBufferReady());
         rx_.buffer[rx_.pos++] = readRxBuffer();
       }
+      break;
+    //In isr_rxCallback mode, we simply enable the receive channel interrupts. The user supplied rx callback function
+    //will be responsible for accepting characters. 
+    case BlockingMode::isr_rxCallback:
+      setRxIsrEnable(true); 
+      rx_.pos = 0;
       break;
   }
   return rx_.pos;
@@ -134,6 +140,9 @@ void BasicUart_Base::write(const char* cStr, const size_t length_chars)
         loadTxBuffer(tx_.buffer[tx_.pos++]);
       }
       break;
+    case BlockingMode::isr_rxCallback:
+      assert(!"Transmit channels do not support isr_rxCallback blocking modes.");
+      break;
   }
 }
 
@@ -154,6 +163,16 @@ bool BasicUart_Base::isBusy(const Duration& timeout)
   return true;
 }
 
+void BasicUart_Base::registerRxCallback(RxCallbackFn fn, bool enableIsr)
+{
+  setRxIsrEnable(false); 
+  rxCbFn_ = fn;
+  if(enableIsr && rxCbFn_)
+  {
+    setRxIsrEnable(true);
+  }
+}
+
 void BasicUart_Base::isr_RxBufferFull() noexcept
 {
   auto onExit = ToScopeGuard([&]() { clearRxIsrFlags(); });
@@ -162,14 +181,22 @@ void BasicUart_Base::isr_RxBufferFull() noexcept
     case BlockingMode::isr:
       while(isRxBufferReady())
       {
-        if(rx_.pos >= rx_.totalLen)
+        if(cfg_.rxBlockingMode == BlockingMode::isr_rxCallback)
         {
-          rx_.buffer[rx_.totalLen] = 0;
-          setRxIsrEnable(false);
-          rx_.flag.unlock();
-          return;
+          char temp = readRxBuffer();
+          rxCbFn_(&temp, 1);
         }
-        rx_.buffer[rx_.pos++] = readRxBuffer();
+        else
+        {
+          if(rx_.pos >= rx_.totalLen)
+          {
+            rx_.buffer[rx_.totalLen] = 0;
+            setRxIsrEnable(false);
+            rx_.flag.unlock();
+            return;
+          }
+          rx_.buffer[rx_.pos++] = readRxBuffer();
+        }
       }
       break;
     default:

@@ -37,9 +37,6 @@
 #include "driverlib/uart.h"
 #include "driverlib/gpio.h"
 
-
-void isrEntry_Uart0() noexcept __attribute__((interrupt ("IRQ")));
-
 namespace jel
 {
 namespace hw
@@ -266,6 +263,9 @@ void BasicUart::initializeHardware()
       break;
     case BlockingMode::polling:
       break;
+    case BlockingMode::isr_rxCallback:
+      irq::InterruptController::enableInterrupt(hw_->isrChannelId);
+      break;
   }
   switch(cfg_.txBlockingMode)
   {
@@ -274,6 +274,8 @@ void BasicUart::initializeHardware()
       UARTTxIntModeSet(hw_->base, UART_TXINT_MODE_EOT);
       break;
     case BlockingMode::polling:
+      break;
+    case BlockingMode::isr_rxCallback:
       break;
   }
 };

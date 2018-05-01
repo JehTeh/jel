@@ -38,8 +38,6 @@
 #include "usart.h"
 #pragma GCC diagnostic pop
 
-void isrEntry_Uart1() noexcept __attribute__((interrupt ("IRQ")));
-
 namespace jel
 {
 namespace hw
@@ -127,6 +125,9 @@ size_t BasicUart::read(char* buffer, const size_t bufferLen)
         rx_.buffer[rx_.pos++] = readRxBuffer();
       }
       break;
+    case BlockingMode::isr_rxCallback:
+      rx_.pos = 0;
+      break;
   }
   return rx_.pos;
 
@@ -146,6 +147,9 @@ void BasicUart::write(const char* cStr, const size_t length_chars)
       HAL_UART_Transmit_IT(hw_->haltd, reinterpret_cast<uint8_t*>(const_cast<char*>(cStr)),
         length_chars);
       break;
+    case BlockingMode::isr_rxCallback:
+      assert(!"isr_rxCallback blocking mode is not supported on transmit channels.");
+        break;
   }
 }
 
@@ -176,11 +180,13 @@ size_t BasicUart::waitForChars(const Duration& timeout)
   return std::strlen(const_cast<char*>(rx_.buffer));
 }
 
+
 void BasicUart::reconfigure(const Config& config)
 {
   cfg_ = config;
   initializeHardware();
 }
+
 
 char BasicUart::readRxBuffer()
 {
@@ -275,12 +281,16 @@ void BasicUart::initializeHardware()
       break;
     case BlockingMode::polling:
       break;
+    case BlockingMode::isr_rxCallback:
+      break;
   }
   switch(cfg_.txBlockingMode)
   {
     case BlockingMode::isr:
       break;
     case BlockingMode::polling:
+      break;
+    case BlockingMode::isr_rxCallback:
       break;
   }
   if(HAL_UART_Init(ucfg) != HAL_OK)
@@ -307,15 +317,28 @@ public:
         uart->tx_.flag.unlock();
         break;
       case Flags::RX_COMPLETE:
-        uart->rx_.pos++;
-        if(uart->rx_.pos >= uart->rx_.totalLen)
+        if(uart->cfg_.rxBlockingMode == BlockingMode::isr_rxCallback)
         {
-          uart->rx_.buffer[uart->rx_.totalLen] = 0;
-          uart->rx_.flag.unlock();
-          return;
+          char temp;
+          uint8_t* b = reinterpret_cast<uint8_t*>(const_cast<char*>(&temp));
+          HAL_UART_Receive_IT(uart->hw_->haltd, b, 1);
+          if(uart->rxCbFn_)
+          {
+            uart->rxCbFn_(&temp, 1);
+          }
         }
-        uint8_t* b = reinterpret_cast<uint8_t*>(const_cast<char*>(uart->rx_.buffer));
-        HAL_UART_Receive_IT(uart->hw_->haltd, b, uart->rx_.totalLen);
+        else
+        {
+          uart->rx_.pos++;
+          if(uart->rx_.pos >= uart->rx_.totalLen)
+          {
+            uart->rx_.buffer[uart->rx_.totalLen] = 0;
+            uart->rx_.flag.unlock();
+            return;
+          }
+          uint8_t* b = reinterpret_cast<uint8_t*>(const_cast<char*>(uart->rx_.buffer));
+          HAL_UART_Receive_IT(uart->hw_->haltd, b, uart->rx_.totalLen);
+        }
         break;
     }
   }

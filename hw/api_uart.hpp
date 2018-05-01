@@ -114,6 +114,10 @@ enum class BlockingMode
 {
   polling,
   isr,
+  /** isr_rxCallback is a specalized mode that only applies to receive channels - When a receive channel is operating in
+   * this mode read() calls never produce any meaningful data. Instead, if a callback function has been registered,
+   * it will be called when data is received. */
+  isr_rxCallback,
 };
 
 /** @enum UartInstance
@@ -151,6 +155,9 @@ public:
     BlockingMode rxBlockingMode = BlockingMode::isr;
     BlockingMode txBlockingMode = BlockingMode::isr;
   };
+  /** RxCallbackFn
+   * @brief Function pointer used when operating the receive hardware in isr_rxCallback mode. */
+  using RxCallbackFn = void(*)(const char*, size_t);
   BasicUart_Base(const Config& config);
   virtual ~BasicUart_Base() noexcept {}
   virtual size_t read(char* buffer, const size_t bufferLen) override;
@@ -159,6 +166,7 @@ public:
   virtual bool isBusy(const Duration& timeout) override;
   virtual size_t waitForChars(const Duration& timeout) override;
   virtual void reconfigure(const Config& newConfig) = 0;
+  virtual void registerRxCallback(RxCallbackFn cbFn, bool enableInterrupt);
 protected:
   /**   */
   template<typename BufferType>
@@ -169,6 +177,7 @@ protected:
     volatile BufferType* buffer;
     Semaphore flag;
   };
+  RxCallbackFn rxCbFn_;
   Config cfg_;
   OpState<char> rx_;
   OpState<const char> tx_;
