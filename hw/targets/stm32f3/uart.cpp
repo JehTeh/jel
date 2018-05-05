@@ -210,7 +210,18 @@ bool BasicUart::isTxBufferReady()
 
 void BasicUart::setRxIsrEnable(const bool enableIsr)
 {
-  (void)enableIsr;
+  if(cfg_.rxBlockingMode == BlockingMode::isr_rxCallback)
+  {
+    if(enableIsr)
+    {
+      HAL_UART_Receive_IT(hw_->haltd, const_cast<uint8_t*>(reinterpret_cast<volatile uint8_t*>(rx_.buffer)), 
+        rx_.totalLen);
+    }
+    else
+    {
+      HAL_UART_AbortReceive_IT(hw_->haltd);
+    }
+  }
 }
 
 void BasicUart::setTxIsrEnable(const bool enableIsr)
@@ -282,6 +293,16 @@ void BasicUart::initializeHardware()
     case BlockingMode::polling:
       break;
     case BlockingMode::isr_rxCallback:
+      if(rx_.pos == UINT32_MAX)
+      {
+        delete[] rx_.buffer;
+      }
+      rx_.totalLen = 1;
+      rx_.pos = UINT32_MAX; //This flags the buffer as having been allocated by the configuration function. Only
+      //relevant if reconfigure is called.
+      //TODO: Allow configuring the UART buffer to handle arbitrary number characters before calling user receive
+      //interrupt.
+      rx_.buffer = new char[8];
       break;
   }
   switch(cfg_.txBlockingMode)
@@ -291,6 +312,7 @@ void BasicUart::initializeHardware()
     case BlockingMode::polling:
       break;
     case BlockingMode::isr_rxCallback:
+      assert(false);
       break;
   }
   if(HAL_UART_Init(ucfg) != HAL_OK)
@@ -319,12 +341,11 @@ public:
       case Flags::RX_COMPLETE:
         if(uart->cfg_.rxBlockingMode == BlockingMode::isr_rxCallback)
         {
-          char temp;
-          uint8_t* b = reinterpret_cast<uint8_t*>(const_cast<char*>(&temp));
-          HAL_UART_Receive_IT(uart->hw_->haltd, b, 1);
+          HAL_UART_Receive_IT(uart->hw_->haltd, 
+            const_cast<uint8_t*>(reinterpret_cast<volatile uint8_t*>(uart->rx_.buffer)), uart->rx_.totalLen);
           if(uart->rxCbFn_)
           {
-            uart->rxCbFn_(&temp, 1);
+            uart->rxCbFn_(const_cast<char*>(uart->rx_.buffer), uart->rx_.totalLen);
           }
         }
         else
