@@ -253,6 +253,7 @@ void initializeStandardIo()
 void initializeLogger()
 {
   Logger::Config cfg;
+  cfg.maskLevel = config::jelRuntimeConfiguration.defaultLoggerMaskingType;
   jelLogger = std::make_shared<Logger>(jelStandardIo, cfg);
 };
 

@@ -46,6 +46,7 @@
 /** jel Library Headers */
 #include "hw/api_uart.hpp"
 #include "hw/api_gpio.hpp"
+#include "os/api_log.hpp"
 
 namespace jel
 {
@@ -183,10 +184,13 @@ struct JelRuntimeConfiguration
   /** The total stack size used for the system logging thread. If set to zero, the system logger is
    * configured to run in synchronous mode only. */
   const size_t loggerThreadStackSize_Bytes;
+  /** The default masking level for the logger. Messages equal to or of less importance than this type will not be
+   * printed. */
+  const jel::Logger::MessageType defaultLoggerMaskingType;
   /** Currently unused. Heap size needs to be manually set in the FreeRTOS configuration. */
   const size_t systemHeapSize_Bytes;
   /** The type of serial port to instantiate on startup. */
-  SerialPortType stdioPortType;
+  const SerialPortType stdioPortType;
   /** The serial line configuration parameters to use for the system standard I/O channel. */
   const hw::uart::BasicUart::Config stdioUartConfiguration;
   /** Heartbeat LED pin. */
