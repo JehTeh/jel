@@ -55,7 +55,7 @@ public:
   bool operator!=(const Iterator& rhs) const 
     { if(this->ptr != rhs.ptr) { return true; } return false; }
   T& operator*() { return *ptr; }
-  T& operator->() { return *ptr; }
+  T* operator->() { return ptr; }
 private:
   T* ptr;
 };
@@ -74,7 +74,7 @@ public:
   bool operator!=(const ReverseIterator& rhs) const 
     { if(this->ptr != rhs.ptr) { return true; } return false; }
   T& operator*() { return *ptr; }
-  T& operator->() { return *ptr; }
+  T* operator->() { return ptr; }
 private:
   T* ptr;
 };
@@ -99,7 +99,7 @@ public:
   bool operator!=(const ConstIterator& rhs) const
     { if(this->ptr != rhs.ptr) { return true; } return false; }
   const T& operator*() { return *ptr; }
-  const T& operator->() { return *ptr; }
+  const T* operator->() { return ptr; }
 private:
   const T* ptr;
 };
@@ -119,7 +119,7 @@ public:
   bool operator!=(const ConstReverseIterator& rhs) const
     { if(this->ptr != rhs.ptr) { return true; } return false; }
   const T& operator*() { return *ptr; }
-  const T& operator->() { return *ptr; }
+  const T* operator->() { return ptr; }
 private:
   const T* ptr;
 };
