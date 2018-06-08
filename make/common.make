@@ -35,7 +35,7 @@ COMPILER_FLAGS_DEBUGBUILD = -gdwarf-2 -g -ffunction-sections -fdata-sections -Wl
 #driver level.
 COMPILER_FLAGS_RELEASEBUILD = -fno-delete-null-pointer-checks -ffunction-sections -fdata-sections -Wl,--gc-sections
 #Compiler optimization levels.
-COMPILER_FLAGS_DEBUGBUILD_LEVEL = -O0
+COMPILER_FLAGS_DEBUGBUILD_LEVEL = -Os
 COMPILER_FLAGS_RELEASEBUILD_LEVEL = -O2
 #Final, common compiler flags
 FINAL_COMPILER_COMMON_FLAGS_DEBUGBUILD = $(COMPILER_FLAGS_DEBUGBUILD_LEVEL) $(COMPILER_FLAGS_WARNING) $(COMPILER_FLAGS_DEBUGBUILD) $(COMPILER_FLAGS_INCLUDE_GENERIC)
