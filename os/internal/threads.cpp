@@ -275,6 +275,14 @@ void ThisThread::deleteSelf(bool performCompleteErasure) noexcept
 
 const char* ThisThread::name()
 {
+  if(System::inIsr())
+  {
+    return "ISR";
+  }
+  if(System::cpuExceptionActive())
+  {
+    return "EXCPT";
+  }
   return pcTaskGetName(nullptr);
 }
 
