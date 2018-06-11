@@ -136,7 +136,7 @@ Status Lock::lock(const Duration& timeout) noexcept
       case Type::recursiveMutex:
       default:
         assert(false); //Cannot operate on a mutex in an ISR.
-        break;
+        return Status::failure;
     }
   }
   else
@@ -163,7 +163,7 @@ Status Lock::lock(const Duration& timeout) noexcept
         }
       default:
         assert(false); //Illegal semaphore type.
-        break;
+        return Status::failure;
     }
   }
 }
