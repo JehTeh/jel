@@ -136,12 +136,22 @@ int32_t cliCmdBuildInfo(cli::CommandIo& io)
   io.constPrint("GCC/G++ Version: \r\n\t"); io.fmt.isBold = false;
   io.constPrint(jelCompilerVersionString); io.constPrint("\r\n");
   io.fmt.isBold = true;
-#ifdef __OPTIMIZE__
+#if defined (__OPTIMIZE_SIZE__)
+  io.fmt.color = AnsiFormatter::Color::green;
+  io.constPrint("This build is a size optimized build (-Os).\r\n");
+#elif defined (__OPTIMIZE__)
   io.fmt.color = AnsiFormatter::Color::green;
   io.constPrint("This build is an optimized build (-O1 or greater).\r\n");
 #else
   io.fmt.color = AnsiFormatter::Color::yellow;
   io.constPrint("This build is not an optimized build (-O0).\r\n");
+#endif
+#ifndef NDEBUG
+  io.fmt.color = AnsiFormatter::Color::yellow;
+  io.constPrint("This build is a debug build.\r\n");
+#else
+  io.fmt.color = AnsiFormatter::Color::green;
+  io.constPrint("This build is a release build.\r\n");
 #endif
   io.fmt.isBold = false;
   io.fmt.color = AnsiFormatter::Color::default_;
@@ -542,7 +552,7 @@ extern const cli::Library cliCmdLib_tests;
 
 int32_t cliCmdEnableTestLib(cli::CommandIo& io)
 {
-#ifndef __OPTIMIZE__
+#ifndef NDEBUG 
   int32_t stat = 0;
   io.fmt.automaticNewline = false;
   io.print("Registering '%s' library... ", cliCmdLib_tests.name);
@@ -560,7 +570,7 @@ int32_t cliCmdEnableTestLib(cli::CommandIo& io)
   return stat;
 #else
   io.fmt.color = AnsiFormatter::Color::brightRed;
-  io.print("The '%s' library is available only on debug builds.\n", cliCmdLib_tests.name);
+  io.print("The '%s' library is available only on debug and size optimized builds.\n", cliCmdLib_tests.name);
   return 0;
 #endif
 }
