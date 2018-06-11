@@ -1375,11 +1375,11 @@ int32_t cliCmdHelp(CommandIo& io)
   if(io.args.totalArguments() == 0)
   {
     //Print generic help.
-    io.constPrint("The CLI is used to execute arbitrarily defined commands across different "
-      "system modules. Each module registers a library of commands that can be called "
-      "from the CLI using the format 'cli [library] [command]'. "
-      "Detailed help, including a list of commands in a library, can be seen by calling "
-      "'cli help [library]'. For a full list of commands within a library, use "
+    io.constPrint("The CLI is used to execute predefined commands from different "
+      "software modules. Each module registers a library of commands that can be called "
+      "from the CLI using the format '[library] [command]'.\n"
+      "Detailed help, including a list of commands in a given library, can be seen by running "
+      "'cli help [library]'. To view a full list of commands within a library, use "
       "'cli help [library] [command]'.\r\n");
     bool& bold = io.fmt.isBold;
     bold = true; io.print("Registered Libraries:\r\n"); bold = false;
