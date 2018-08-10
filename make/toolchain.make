@@ -38,7 +38,7 @@ OBJDUMP = arm-none-eabi-objdump
 #Clang-tidy is integrated into the makefile to allow for linting on individual files as needed.
 CLANGTIDY = clang-tidy
 #JLINK related definitions. Only useful if you have a segger jlink probe with J-FLASH license.
-JLINK_EXE = "C:\Program Files (x86)\SEGGER\JLink_V616j\JFlash.exe"
+JLINK_EXE = "C:\Program Files (x86)\SEGGER\JLink_V634a\JFlash.exe"
 #C/C++ stdlib locations (in this case, newlib). Note: If updating to a new version of arm-none-eabi
 #or using a custom compiled newlib, (or have arm-none-eabi installed in a non-standard directory) 
 #ensure you update this path.

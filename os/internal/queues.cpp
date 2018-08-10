@@ -154,4 +154,45 @@ void GenericCopyQueue_Base::genericErase() noexcept
   xQueueReset(handle_);
 }
 
+#ifdef TARGET_SUPPORTS_CPPUTEST
+TEST_GROUP(JEL_TestGroup_Queues_Pod)
+{
+  static constexpr size_t QueueSize_Items = 16;
+  struct PodStruct
+  {
+    int16_t i16;
+    int32_t i32;
+    uint64_t ui64;
+    PodStruct() : i16(0xADAD), i32(0x01234'5678), ui64(0xA5A5'DEAD'BEEF'A5A5) {}
+    bool operator==(const PodStruct& rhs) 
+      { return((i16 == rhs.i16) && (i32 == rhs.i32) && (ui64 == rhs.ui64)); }
+  };
+  std::unique_ptr<Queue<PodStruct>> queuePtr;
+  void setup()
+  {
+    queuePtr = std::make_unique<Queue<PodStruct>>(16);
+  }
+  void teardown()
+  {
+    queuePtr.reset();
+  }
+};
+TEST(JEL_TestGroup_Queues_Pod, PushPop)
+{
+  PodStruct s;
+  for(size_t i = 0; i < QueueSize_Items; i++)
+  {
+    CHECK(queuePtr->push(s) == Status::success);
+    PodStruct defS;
+    CHECK(s == defS);
+  }
+  CHECK(queuePtr->push(s) != Status::success);
+  for(size_t i = 0; i < QueueSize_Items; i++)
+  {
+    CHECK(queuePtr->pop(s) == Status::success);
+  }
+  CHECK(queuePtr->pop(s) != Status::success);
+}
+#endif
+
 } /** namespace jel */

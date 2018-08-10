@@ -26,8 +26,8 @@
 
 #Target specific flags, including -DHW_TARGET_[XXX] flag.
 TM4C1294NCPDT_CPU_FLAGS = $(CPU_TARGET_CORTEX_M4F_FLAGS)
-TM4C1294NCPDT_CUSTOM_FLAGS = -I $(RTOS_INCLUDE_PATH_ARM_M4F) -I "./ThirdParty/tivaware" -DHW_TARGET_TM4C1294NCPDT
-TM4C1294NCPDT_LIBRARY_INCLUDES = "./ThirdParty/tivaware/driverlib/gcc/libdriver.a"
+TM4C1294NCPDT_CUSTOM_FLAGS = -I $(RTOS_INCLUDE_PATH_ARM_M4F) -I "./ThirdParty/tivaware" -DHW_TARGET_TM4C1294NCPDT -I "./ThirdParty/cpputest/include"
+TM4C1294NCPDT_LIBRARY_INCLUDES = "./ThirdParty/tivaware/driverlib/gcc/libdriver.a" "./ThirdParty/cpputest/lib/armgcc_m4/libCppUTest.a"
 
 #Definition of target specific rules found in the ./make/rules.make file.
 #DEBUG BUILD

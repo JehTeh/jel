@@ -30,7 +30,7 @@ INCLUDE_DIRS :=\
   $(CPPUTEST_HOME)/include/Platforms/armgcc \
 
 # armcc system include path
-SYS_INCLUDE_DIRS:= "C:\Program Files (x86)\GNU Tools ARM Embedded\6 2017-q2-update\arm-none-eabi\include"
+SYS_INCLUDE_DIRS:= "C:\Program Files (x86)\GNU Tools ARM Embedded\7 2017-q4-major\arm-none-eabi\include"
 
 SRC_DIRS :=\
   $(CPPUTEST_HOME)/src/$(COMPONENT_NAME)\
@@ -41,7 +41,7 @@ CPPUTEST_USE_MEM_LEAK_DETECTION := N
 CPPUTEST_USE_STD_CPP_LIB := N
 CPPUTEST_USE_VPATH := Y
 CPPUTEST_USE_STD_C_LIB := Y
-CPPUTEST_ENABLE_DEBUG := Y
+CPPUTEST_ENABLE_DEBUG := N
 
 
 # Default dir for temporary files (d, o)
@@ -108,7 +108,7 @@ else
 endif
 
 ifeq ($(CPPUTEST_USE_MEM_LEAK_DETECTION), N)
-	CCFLAGS += -DCPPUTEST_MEM_LEAK_DETECTION_DISABLED 
+	CCFLAGS += -DCPPUTEST_MEM_LEAK_DETECTION_DISABLED -DCPPUTEST_USE_LONG_LONG
 endif
 
 ifeq ($(CPPUTEST_ENABLE_DEBUG), Y)

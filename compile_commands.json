@@ -1,0 +1,1992 @@
+[
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_allocator.hpp",
+    "file": "os//api_allocator.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_allocator.hpp~",
+    "file": "os//api_allocator.hpp~"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_cli.hpp",
+    "file": "os//api_cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_common.hpp",
+    "file": "os//api_common.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_config.hpp",
+    "file": "os//api_config.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_exceptions.hpp",
+    "file": "os//api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_io.hpp",
+    "file": "os//api_io.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_locks.hpp",
+    "file": "os//api_locks.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_log.hpp",
+    "file": "os//api_log.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_queues.hpp",
+    "file": "os//api_queues.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_system.hpp",
+    "file": "os//api_system.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_threads.hpp",
+    "file": "os//api_threads.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os//api_time.hpp",
+    "file": "os//api_time.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_allocator.hpp",
+    "file": "os/internal/api_allocator.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_allocator.hpp~",
+    "file": "os/internal/api_allocator.hpp~"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_cli.hpp",
+    "file": "os/internal/api_cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_common.hpp",
+    "file": "os/internal/api_common.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_config.hpp",
+    "file": "os/internal/api_config.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_exceptions.hpp",
+    "file": "os/internal/api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_io.hpp",
+    "file": "os/internal/api_io.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_locks.hpp",
+    "file": "os/internal/api_locks.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_log.hpp",
+    "file": "os/internal/api_log.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_queues.hpp",
+    "file": "os/internal/api_queues.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_system.hpp",
+    "file": "os/internal/api_system.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_threads.hpp",
+    "file": "os/internal/api_threads.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/api_time.hpp",
+    "file": "os/internal/api_time.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/allocator.cpp",
+    "file": "os/internal/allocator.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/boot.cpp",
+    "file": "os/internal/boot.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/cli.cpp",
+    "file": "os/internal/cli.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/cli_cmds.cpp",
+    "file": "os/internal/cli_cmds.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/cli_cmds_testing.cpp",
+    "file": "os/internal/cli_cmds_testing.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/config.cpp",
+    "file": "os/internal/config.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/freertos_hooks.cpp",
+    "file": "os/internal/freertos_hooks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/io.cpp",
+    "file": "os/internal/io.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/locks.cpp",
+    "file": "os/internal/locks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/log.cpp",
+    "file": "os/internal/log.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/newlib_port.cpp",
+    "file": "os/internal/newlib_port.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/queues.cpp",
+    "file": "os/internal/queues.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/system.cpp",
+    "file": "os/internal/system.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/threads.cpp",
+    "file": "os/internal/threads.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/cli.hpp",
+    "file": "os/internal/cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/internal/indef.hpp",
+    "file": "os/internal/indef.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/FreeRTOSConfig.h",
+    "file": "os/freertos/FreeRTOSConfig.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_allocator.hpp",
+    "file": "os/freertos/api_allocator.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_allocator.hpp~",
+    "file": "os/freertos/api_allocator.hpp~"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_cli.hpp",
+    "file": "os/freertos/api_cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_common.hpp",
+    "file": "os/freertos/api_common.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_config.hpp",
+    "file": "os/freertos/api_config.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_exceptions.hpp",
+    "file": "os/freertos/api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_io.hpp",
+    "file": "os/freertos/api_io.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_locks.hpp",
+    "file": "os/freertos/api_locks.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_log.hpp",
+    "file": "os/freertos/api_log.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_queues.hpp",
+    "file": "os/freertos/api_queues.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_system.hpp",
+    "file": "os/freertos/api_system.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_threads.hpp",
+    "file": "os/freertos/api_threads.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/api_time.hpp",
+    "file": "os/freertos/api_time.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/allocator.cpp",
+    "file": "os/freertos/allocator.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/boot.cpp",
+    "file": "os/freertos/boot.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/cli.cpp",
+    "file": "os/freertos/cli.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/cli_cmds.cpp",
+    "file": "os/freertos/cli_cmds.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/cli_cmds_testing.cpp",
+    "file": "os/freertos/cli_cmds_testing.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/config.cpp",
+    "file": "os/freertos/config.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/freertos_hooks.cpp",
+    "file": "os/freertos/freertos_hooks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/io.cpp",
+    "file": "os/freertos/io.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/locks.cpp",
+    "file": "os/freertos/locks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/log.cpp",
+    "file": "os/freertos/log.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/newlib_port.cpp",
+    "file": "os/freertos/newlib_port.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/queues.cpp",
+    "file": "os/freertos/queues.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/system.cpp",
+    "file": "os/freertos/system.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/threads.cpp",
+    "file": "os/freertos/threads.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/cli.hpp",
+    "file": "os/freertos/cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  os/freertos/indef.hpp",
+    "file": "os/freertos/indef.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//FreeRTOSConfig.h",
+    "file": "hw//FreeRTOSConfig.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_allocator.hpp",
+    "file": "hw//api_allocator.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_allocator.hpp~",
+    "file": "hw//api_allocator.hpp~"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_cli.hpp",
+    "file": "hw//api_cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_common.hpp",
+    "file": "hw//api_common.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_config.hpp",
+    "file": "hw//api_config.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_exceptions.hpp",
+    "file": "hw//api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_io.hpp",
+    "file": "hw//api_io.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_locks.hpp",
+    "file": "hw//api_locks.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_log.hpp",
+    "file": "hw//api_log.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_queues.hpp",
+    "file": "hw//api_queues.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_system.hpp",
+    "file": "hw//api_system.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_threads.hpp",
+    "file": "hw//api_threads.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_time.hpp",
+    "file": "hw//api_time.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//allocator.cpp",
+    "file": "hw//allocator.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//boot.cpp",
+    "file": "hw//boot.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//cli.cpp",
+    "file": "hw//cli.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//cli_cmds.cpp",
+    "file": "hw//cli_cmds.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//cli_cmds_testing.cpp",
+    "file": "hw//cli_cmds_testing.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//config.cpp",
+    "file": "hw//config.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//freertos_hooks.cpp",
+    "file": "hw//freertos_hooks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//io.cpp",
+    "file": "hw//io.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//locks.cpp",
+    "file": "hw//locks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//log.cpp",
+    "file": "hw//log.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//newlib_port.cpp",
+    "file": "hw//newlib_port.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//queues.cpp",
+    "file": "hw//queues.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//system.cpp",
+    "file": "hw//system.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//threads.cpp",
+    "file": "hw//threads.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//cli.hpp",
+    "file": "hw//cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//indef.hpp",
+    "file": "hw//indef.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_exceptions.hpp",
+    "file": "hw//api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_gpio.hpp",
+    "file": "hw//api_gpio.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_irq.hpp",
+    "file": "hw//api_irq.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_startup.hpp",
+    "file": "hw//api_startup.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_sysclock.hpp",
+    "file": "hw//api_sysclock.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_uart.hpp",
+    "file": "hw//api_uart.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw//api_wdt.hpp",
+    "file": "hw//api_wdt.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//FreeRTOSConfig.h",
+    "file": "hw/generic//FreeRTOSConfig.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_allocator.hpp",
+    "file": "hw/generic//api_allocator.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_allocator.hpp~",
+    "file": "hw/generic//api_allocator.hpp~"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_cli.hpp",
+    "file": "hw/generic//api_cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_common.hpp",
+    "file": "hw/generic//api_common.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_config.hpp",
+    "file": "hw/generic//api_config.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_exceptions.hpp",
+    "file": "hw/generic//api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_io.hpp",
+    "file": "hw/generic//api_io.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_locks.hpp",
+    "file": "hw/generic//api_locks.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_log.hpp",
+    "file": "hw/generic//api_log.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_queues.hpp",
+    "file": "hw/generic//api_queues.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_system.hpp",
+    "file": "hw/generic//api_system.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_threads.hpp",
+    "file": "hw/generic//api_threads.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_time.hpp",
+    "file": "hw/generic//api_time.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//allocator.cpp",
+    "file": "hw/generic//allocator.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//boot.cpp",
+    "file": "hw/generic//boot.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//cli.cpp",
+    "file": "hw/generic//cli.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//cli_cmds.cpp",
+    "file": "hw/generic//cli_cmds.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//cli_cmds_testing.cpp",
+    "file": "hw/generic//cli_cmds_testing.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//config.cpp",
+    "file": "hw/generic//config.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//freertos_hooks.cpp",
+    "file": "hw/generic//freertos_hooks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//io.cpp",
+    "file": "hw/generic//io.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//locks.cpp",
+    "file": "hw/generic//locks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//log.cpp",
+    "file": "hw/generic//log.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//newlib_port.cpp",
+    "file": "hw/generic//newlib_port.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//queues.cpp",
+    "file": "hw/generic//queues.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//system.cpp",
+    "file": "hw/generic//system.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//threads.cpp",
+    "file": "hw/generic//threads.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//cli.hpp",
+    "file": "hw/generic//cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//indef.hpp",
+    "file": "hw/generic//indef.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_exceptions.hpp",
+    "file": "hw/generic//api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_gpio.hpp",
+    "file": "hw/generic//api_gpio.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_irq.hpp",
+    "file": "hw/generic//api_irq.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_startup.hpp",
+    "file": "hw/generic//api_startup.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_sysclock.hpp",
+    "file": "hw/generic//api_sysclock.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_uart.hpp",
+    "file": "hw/generic//api_uart.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//api_wdt.hpp",
+    "file": "hw/generic//api_wdt.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//gpio.cpp",
+    "file": "hw/generic//gpio.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//startup.cpp",
+    "file": "hw/generic//startup.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//uart.cpp",
+    "file": "hw/generic//uart.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/generic//wdt.cpp",
+    "file": "hw/generic//wdt.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/FreeRTOSConfig.h",
+    "file": "hw/targets/tm4c/FreeRTOSConfig.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_allocator.hpp",
+    "file": "hw/targets/tm4c/api_allocator.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_allocator.hpp~",
+    "file": "hw/targets/tm4c/api_allocator.hpp~"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_cli.hpp",
+    "file": "hw/targets/tm4c/api_cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_common.hpp",
+    "file": "hw/targets/tm4c/api_common.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_config.hpp",
+    "file": "hw/targets/tm4c/api_config.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_exceptions.hpp",
+    "file": "hw/targets/tm4c/api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_io.hpp",
+    "file": "hw/targets/tm4c/api_io.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_locks.hpp",
+    "file": "hw/targets/tm4c/api_locks.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_log.hpp",
+    "file": "hw/targets/tm4c/api_log.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_queues.hpp",
+    "file": "hw/targets/tm4c/api_queues.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_system.hpp",
+    "file": "hw/targets/tm4c/api_system.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_threads.hpp",
+    "file": "hw/targets/tm4c/api_threads.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_time.hpp",
+    "file": "hw/targets/tm4c/api_time.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/allocator.cpp",
+    "file": "hw/targets/tm4c/allocator.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/boot.cpp",
+    "file": "hw/targets/tm4c/boot.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/cli.cpp",
+    "file": "hw/targets/tm4c/cli.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/cli_cmds.cpp",
+    "file": "hw/targets/tm4c/cli_cmds.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/cli_cmds_testing.cpp",
+    "file": "hw/targets/tm4c/cli_cmds_testing.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/config.cpp",
+    "file": "hw/targets/tm4c/config.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/freertos_hooks.cpp",
+    "file": "hw/targets/tm4c/freertos_hooks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/io.cpp",
+    "file": "hw/targets/tm4c/io.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/locks.cpp",
+    "file": "hw/targets/tm4c/locks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/log.cpp",
+    "file": "hw/targets/tm4c/log.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/newlib_port.cpp",
+    "file": "hw/targets/tm4c/newlib_port.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/queues.cpp",
+    "file": "hw/targets/tm4c/queues.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/system.cpp",
+    "file": "hw/targets/tm4c/system.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/threads.cpp",
+    "file": "hw/targets/tm4c/threads.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/cli.hpp",
+    "file": "hw/targets/tm4c/cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/indef.hpp",
+    "file": "hw/targets/tm4c/indef.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_exceptions.hpp",
+    "file": "hw/targets/tm4c/api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_gpio.hpp",
+    "file": "hw/targets/tm4c/api_gpio.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_irq.hpp",
+    "file": "hw/targets/tm4c/api_irq.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_startup.hpp",
+    "file": "hw/targets/tm4c/api_startup.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_sysclock.hpp",
+    "file": "hw/targets/tm4c/api_sysclock.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_uart.hpp",
+    "file": "hw/targets/tm4c/api_uart.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/api_wdt.hpp",
+    "file": "hw/targets/tm4c/api_wdt.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/gpio.cpp",
+    "file": "hw/targets/tm4c/gpio.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/startup.cpp",
+    "file": "hw/targets/tm4c/startup.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/uart.cpp",
+    "file": "hw/targets/tm4c/uart.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/wdt.cpp",
+    "file": "hw/targets/tm4c/wdt.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/gpio.cpp",
+    "file": "hw/targets/tm4c/gpio.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/irq.cpp",
+    "file": "hw/targets/tm4c/irq.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/startup.cpp",
+    "file": "hw/targets/tm4c/startup.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/sysclock.cpp",
+    "file": "hw/targets/tm4c/sysclock.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/uart.cpp",
+    "file": "hw/targets/tm4c/uart.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/wdt.cpp",
+    "file": "hw/targets/tm4c/wdt.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/tiva_shared.hpp",
+    "file": "hw/targets/tm4c/tiva_shared.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/vectorTable_tm4c123gh6pm.hpp",
+    "file": "hw/targets/tm4c/vectorTable_tm4c123gh6pm.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  hw/targets/tm4c/vectorTable_tm4c1294ncpdt.hpp",
+    "file": "hw/targets/tm4c/vectorTable_tm4c1294ncpdt.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//FreeRTOSConfig.h",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//FreeRTOSConfig.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//event_groups.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//event_groups.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//list.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//list.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//queue.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//queue.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//stream_buffer.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//stream_buffer.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//tasks.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//tasks.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//timers.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//timers.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_allocator.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_allocator.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_allocator.hpp~",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_allocator.hpp~"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_cli.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_common.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_common.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_config.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_config.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_exceptions.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_io.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_io.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_locks.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_locks.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_log.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_log.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_queues.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_queues.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_system.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_system.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_threads.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_threads.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_time.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_time.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//allocator.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//allocator.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//boot.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//boot.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//cli.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//cli.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//cli_cmds.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//cli_cmds.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//cli_cmds_testing.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//cli_cmds_testing.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//config.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//config.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//freertos_hooks.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//freertos_hooks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//io.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//io.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//locks.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//locks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//log.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//log.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//newlib_port.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//newlib_port.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//queues.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//queues.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//system.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//system.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//threads.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//threads.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//cli.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//indef.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//indef.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_exceptions.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_gpio.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_gpio.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_irq.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_irq.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_startup.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_startup.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_sysclock.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_sysclock.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_uart.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_uart.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//api_wdt.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//api_wdt.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//gpio.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//gpio.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//startup.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//startup.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//uart.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//uart.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//wdt.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//wdt.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//gpio.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//gpio.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//irq.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//irq.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//startup.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//startup.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//sysclock.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//sysclock.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//uart.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//uart.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//wdt.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//wdt.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//tiva_shared.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//tiva_shared.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//vectorTable_tm4c123gh6pm.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//vectorTable_tm4c123gh6pm.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS//vectorTable_tm4c1294ncpdt.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS//vectorTable_tm4c1294ncpdt.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/FreeRTOSConfig.h",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/FreeRTOSConfig.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/event_groups.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/event_groups.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/list.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/list.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/queue.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/queue.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/stream_buffer.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/stream_buffer.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/tasks.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/tasks.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/timers.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/timers.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/portmacro.h",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/portmacro.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_allocator.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_allocator.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_allocator.hpp~",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_allocator.hpp~"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_cli.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_common.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_common.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_config.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_config.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_exceptions.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_io.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_io.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_locks.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_locks.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_log.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_log.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_queues.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_queues.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_system.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_system.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_threads.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_threads.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_time.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_time.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/allocator.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/allocator.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/boot.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/boot.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/cli.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/cli.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/cli_cmds.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/cli_cmds.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/cli_cmds_testing.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/cli_cmds_testing.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/config.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/config.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/freertos_hooks.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/freertos_hooks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/io.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/io.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/locks.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/locks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/log.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/log.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/newlib_port.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/newlib_port.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/queues.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/queues.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/system.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/system.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/threads.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/threads.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/cli.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/indef.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/indef.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_exceptions.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_gpio.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_gpio.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_irq.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_irq.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_startup.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_startup.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_sysclock.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_sysclock.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_uart.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_uart.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_wdt.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/api_wdt.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/gpio.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/gpio.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/startup.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/startup.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/uart.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/uart.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/wdt.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/wdt.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/gpio.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/gpio.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/irq.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/irq.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/startup.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/startup.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/sysclock.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/sysclock.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/uart.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/uart.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/wdt.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/wdt.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/tiva_shared.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/tiva_shared.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/vectorTable_tm4c123gh6pm.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/vectorTable_tm4c123gh6pm.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/vectorTable_tm4c1294ncpdt.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/vectorTable_tm4c1294ncpdt.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/FreeRTOSConfig.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/FreeRTOSConfig.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/event_groups.c",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/event_groups.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/list.c",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/list.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/queue.c",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/queue.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/stream_buffer.c",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/stream_buffer.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/tasks.c",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/tasks.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/timers.c",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/timers.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/port.c",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/port.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/portmacro.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/portmacro.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_greengrass_lib_private.c",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_greengrass_lib_private.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_lib_private.c",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_lib_private.c"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_bufferpool.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_bufferpool.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_default_root_certificates.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_default_root_certificates.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_doubly_linked_list.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_doubly_linked_list.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_ggd_config_defaults.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_ggd_config_defaults.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_greengrass_lib_private.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_greengrass_lib_private.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_helper_secure_connect.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_helper_secure_connect.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_lib_init.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_lib_init.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_agent_config_defaults.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_agent_config_defaults.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_buffer.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_buffer.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_config_defaults.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_config_defaults.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_lib_private.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_mqtt_lib_private.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_ota_cbor.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_ota_cbor.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_ota_pal.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_ota_pal.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_ota_types.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_ota_types.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_rsprintf.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_rsprintf.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_secure_sockets_config_defaults.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_secure_sockets_config_defaults.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_shadow_config_defaults.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_shadow_config_defaults.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/aws_shadow_json.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/aws_shadow_json.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/deprecated_definitions.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/deprecated_definitions.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/list.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/list.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/mpu_wrappers.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/mpu_wrappers.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/portable.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/portable.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/projdefs.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/projdefs.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/stack_macros.h",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/stack_macros.h"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_allocator.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_allocator.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_allocator.hpp~",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_allocator.hpp~"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_cli.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_common.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_common.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_config.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_config.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_exceptions.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_io.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_io.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_locks.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_locks.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_log.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_log.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_queues.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_queues.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_system.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_system.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_threads.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_threads.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_time.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_time.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/allocator.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/allocator.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/boot.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/boot.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/cli.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/cli.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/cli_cmds.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/cli_cmds.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/cli_cmds_testing.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/cli_cmds_testing.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/config.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/config.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/freertos_hooks.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/freertos_hooks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/io.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/io.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/locks.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/locks.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/log.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/log.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/newlib_port.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/newlib_port.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/queues.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/queues.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/system.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/system.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/threads.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/threads.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/cli.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/cli.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/indef.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/indef.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_exceptions.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_exceptions.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_gpio.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_gpio.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_irq.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_irq.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_startup.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_startup.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_sysclock.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_sysclock.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_uart.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_uart.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/api_wdt.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/api_wdt.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/gpio.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/gpio.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/startup.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/startup.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/uart.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/uart.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/wdt.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/wdt.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/gpio.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/gpio.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/irq.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/irq.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/startup.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/startup.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/sysclock.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/sysclock.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/uart.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/uart.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/wdt.cpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/wdt.cpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/tiva_shared.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/tiva_shared.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/vectorTable_tm4c123gh6pm.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/vectorTable_tm4c123gh6pm.hpp"
+  },
+  {
+    "directory": "C:/Users/jostt/git/jel/",
+    "command": "arm-none-eabigcc -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -Wno-unused-parameter -I.  ThirdParty/amazon-freertos/lib/include/private/vectorTable_tm4c1294ncpdt.hpp",
+    "file": "ThirdParty/amazon-freertos/lib/include/private/vectorTable_tm4c1294ncpdt.hpp"
+  }
+]

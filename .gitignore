@@ -44,6 +44,7 @@ build_*
 !*/
 build_hal*
 *_mapfile.map
+tmp/*
 
 #Include certain precompiled libraries
 !ThirdParty/tivaware/driverlib/gcc/libdriver.a
