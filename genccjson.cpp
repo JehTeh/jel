@@ -92,15 +92,16 @@ int main(int argc, char** argv)
         return;
     };
     std::ofstream jsonOut("./compile_commands.json");
+    std::vector<std::string> jsonOut_vec;
     if(!jsonOut.is_open())
     {
         std::cout << "Failed to create/overwrite compile_commands.json" << std::endl;
         return 1;
     }
-    jsonOut << "[\n";
+    jsonOut_vec.push_back("[\n");
     for(auto&& subdir : dirs)
     {
-        auto printJsonBlocks = [&](std::ofstream& jsFStream, const std::vector<std::string>& fileNames, const std::string& flags)
+        auto printJsonBlocks = [&](std::vector<std::string>& outLines, const std::vector<std::string>& fileNames, const std::string& flags)
         {
             for(auto& fn : fileNames)
             {
@@ -115,7 +116,7 @@ int main(int argc, char** argv)
                 {
                     lbuf.replace(lbuf.find("\\"), 1, "/");
                 }
-                jsFStream<< lbuf;
+                outLines.push_back(lbuf);
             }
             return;
         };
@@ -124,10 +125,17 @@ int main(int argc, char** argv)
         addFilesWithSuffixToList(rootdir + subdir, "\\*.h", cfileNames);
         addFilesWithSuffixToList(rootdir + subdir, "\\*.cpp", cppfileNames);
         addFilesWithSuffixToList(rootdir + subdir, "\\*.hpp", cppfileNames);
-        printJsonBlocks(jsonOut, cfileNames, cflags);
-        printJsonBlocks(jsonOut, cppfileNames, cppflags);
+        printJsonBlocks(jsonOut_vec, cfileNames, cflags);
+        printJsonBlocks(jsonOut_vec, cppfileNames, cppflags);
     }
-    jsonOut << "]";
-    std::cout << "compile_commands.json generated. TODO: REMOVE TRAILING ','!" << std::endl;
+    jsonOut_vec.push_back("]");
+    //Remove trailing ',' character so JSON is valid
+    std::string& secondLastLine = jsonOut_vec[jsonOut_vec.size() - 2];
+    secondLastLine.replace(secondLastLine.rfind("},"), 2, "}");
+    for(auto&& line : jsonOut_vec)
+    {
+        jsonOut << line;
+    }
+    std::cout << "compile_commands.json generated." << std::endl;
     return 0;
 }
