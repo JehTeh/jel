@@ -55,16 +55,20 @@ currently offered by the JEL:
 
 ## Supported Targets
 Currently, the following targets have 'out of the box' support:
+
     * ST Micros STM32F3 MCUs, tested on the STM32F302RCT6.
     * TI's Tiva series, tested on the TM4C123GH6PM and TM4C1294NCPDT.
+
 Generally speaking, porting to other micros in these families should be a fairly trivial task. 
 
 Additionally, I am currently looking into supporting the following MCUs, as I am familiar with them:
+
     * TI's RM57L843.
     * NXP's LPC4357.
 
 ### Notes on target requirements
 'Minimum' MCU requirements:
+
     * ARM M4 CPU (FPU preferred but not required).
     * [Pending] ARM R5F CPU.
     * 128kB Flash/ROM (Minimal JEL build currently requires ~80kB ROM).
@@ -81,6 +85,7 @@ ever be able to support such features.
 The JEL provides only a minimal set of hardware wrappers. This is because there is a significant breadth of differences
 in various peripheral implementations, and at its core the JEL does not need to implement a wide array of peripherals.
 However, certain peripherals are required for the JEL to function, including:
+
     * GPIO interface for heartbeat functionality.
     * Device specific hardware startup routines.
     * Device specific interrupt controller interfacing.
