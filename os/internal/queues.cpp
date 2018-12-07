@@ -182,16 +182,16 @@ TEST(JEL_TestGroup_Queues_Pod, PushPop)
   PodStruct s;
   for(size_t i = 0; i < QueueSize_Items; i++)
   {
-    CHECK(queuePtr->push(s) == Status::success);
+    CHECK(queuePtr->push(s, jel::Duration::zero()) == Status::success);
     PodStruct defS;
     CHECK(s == defS);
   }
-  CHECK(queuePtr->push(s) != Status::success);
+  CHECK(queuePtr->push(s, jel::Duration::zero()) != Status::success);
   for(size_t i = 0; i < QueueSize_Items; i++)
   {
-    CHECK(queuePtr->pop(s) == Status::success);
+    CHECK(queuePtr->pop(s, jel::Duration::zero()) == Status::success);
   }
-  CHECK(queuePtr->pop(s) != Status::success);
+  CHECK(queuePtr->pop(s, jel::Duration::zero()) != Status::success);
 }
 #endif
 

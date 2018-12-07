@@ -104,7 +104,7 @@ int32_t cliCmdTest_CppuTest(cli::CommandIo& io)
 #else
   size_t totalArgs = 3;
   const char* argString[] = { "exe", "-v", "-c" };
-  io.print("Executing CppUTest runner...");
+  io.print("Executing CppUTest runner...\n");
   if(io.args.totalArguments() != 0)
   {
     io.print("TODO: Custom arg handling");
