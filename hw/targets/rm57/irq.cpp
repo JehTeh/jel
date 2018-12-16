@@ -1,0 +1,77 @@
+/** @file hw/targets/rm57/irq.cpp
+ *  @brief RM57 IRQ controller and vector table implementation.
+ *
+ *  @detail
+ *
+ *  @author Jonathan Thomson 
+ */
+/**
+ * MIT License
+ * 
+ * Copyright 2018, Jonathan Thomson 
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/** C/C++ Standard Library Headers */
+#include <cstdint>
+#include <cassert>
+/** jel Library Headers */
+#include "hw/api_irq.hpp"
+/** Vector Table Include */
+#ifdef HW_TARGET_RM57L843
+#include "hw/targets/rm57/vectorTable_rm57l843.hpp"
+#endif
+
+namespace jel
+{
+namespace hw
+{
+namespace irq 
+{
+
+void phantomIsr() __attribute__((naked));
+void faultIsr() __attribute__((naked));
+
+void InterruptController::enableGlobalInterrupts()
+{
+}
+
+void InterruptController::disableGlobalInterrupts()
+{
+}
+
+void InterruptController::enableInterrupt(const Index channel, const IrqType)
+{
+}
+
+void InterruptController::disableInterrupt(const Index channel, const IrqType)
+{
+}
+
+void phantomIsr()
+{
+  /** Do nothing. */
+}
+
+
+void faultIsr()
+{
+}
+
+}
+}
+}

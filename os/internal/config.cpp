@@ -87,6 +87,20 @@ const JelRuntimeConfiguration jelRuntimeConfiguration_stm32f302rct6=
 
 extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
   jelRuntimeConfiguration_stm32f302rct6;
+#elif defined(HW_TARGET_RM57L843)
+const JelRuntimeConfiguration jelRuntimeConfiguration_rm57l843 =
+{
+  "rm57l843_default", 1536, 1536, debugMaskLevel, 25000, SerialPortType::uart0,
+  {
+    hw::uart::UartInstance::uart0, defaultBaud, hw::uart::Parity::none,
+    hw::uart::StopBits::one, hw::uart::WordLength::eight, hw::uart::BlockingMode::isr, 
+    hw::uart::BlockingMode::polling,
+  },
+  hw::gpio::PortName::nullPort, hw::gpio::PinNumber::pin0
+};
+
+extern const JelRuntimeConfiguration __attribute__((weak)) jelRuntimeConfiguration = 
+  jelRuntimeConfiguration_rm57l843;
 #else
 const JelRuntimeConfiguration jelRuntimeConfiguration_nocfg =
 {

@@ -3,7 +3,7 @@ NODEPS  := clean debug
 
 # CPU architecture. Passing to armcc.exe. For list: armcc --cpu list
 ifndef CPU
-	CPU = cortex-m4 
+	CPU = cortex-m4
 endif
 
 # ARM/THUMB mode. Passing to armcc.exe. May be 'thumb' or 'arm'
@@ -80,7 +80,7 @@ DEPFLAGS =$(CPUFLAGS) -M $(INCLUDES) -Wno-system-headers
 OPTFLAGS =-O1
 CCFLAGS =$(CPUFLAGS) $(OPTFLAGS) -c $(INCLUDES)\
   -D__CLK_TCK=1000\
-	-DCPPUTEST_HAVE_LONG_LONG_INT
+	-DCPPUTEST_HAVE_LONG_LONG_INT\
 
 
 # If we're using VPATH
@@ -120,7 +120,6 @@ ifeq ($(CPPUTEST_USE_STD_CPP_LIB), N)
 	CCFLAGS += -DCPPUTEST_STD_CPP_LIB_DISABLED
 endif
 
-
 OBJS_DIRS :=$(sort $(dir $(STUFF_TO_CLEAN)))
 
 $(OBJS_DIRS) $(CPPUTEST_LIB_DIR):
@@ -151,7 +150,6 @@ $(CPPUTEST_OBJS_DIR)/%.o: %.c $(CPPUTEST_OBJS_DIR)/%.d Makefile
 $(TARGET_LIB): $(OBJ) | $(CPPUTEST_LIB_DIR)
 	@echo Archiving to $@
 	$(AR) -rvs --target=elf32-littlearm $@ $^
-
 
 .PHONY: all
 

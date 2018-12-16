@@ -28,9 +28,6 @@
 #ifndef CPPUTESTCONFIG_H_
 #define CPPUTESTCONFIG_H_
 
-#define CPPUTEST_MEM_LEAK_DETECTION_DISABLED
-#define CPPUTEST_USE_LONG_LONG
-
 #ifndef CPPUTEST_USE_OWN_CONFIGURATION
 #include "CppUTestGeneratedConfig.h"
 #endif

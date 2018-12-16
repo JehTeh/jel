@@ -47,6 +47,15 @@ TM4C123GH6PM_CSOURCE += $(addprefix hw\targets\tm4c\,\
  		\
 		)
 
+RM57L843_CXXSOURCE += $(addprefix hw\targets\rm57\,\
+		startup.cpp \
+		irq.cpp \
+		gpio.cpp \
+		sysclock.cpp \
+		uart.cpp \
+		wdt.cpp \
+		)
+
 TM4C123GH6PM_CXXSOURCE += $(addprefix hw\targets\tm4c\,\
 		startup.cpp \
 		irq.cpp \

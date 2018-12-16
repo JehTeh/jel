@@ -214,8 +214,35 @@ void SystemAllocator::deallocateException(void* except) noexcept
   }
 }
 
-
+#ifdef TARGET_SUPPORTS_CPPUTEST
+TEST_GROUP(JEL_TestGroup_Allocators)
+{
+  void setup()
+  {
+  }
+  void teardown()
+  {
+  }
+};
+TEST(JEL_TestGroup_Allocators, SystemAllocator)
+{
+  size_t start_allocs = SystemAllocator::systemAllocator()->totalAllocations();
+  size_t start_deallocs = SystemAllocator::systemAllocator()->totalDeallocations();
+  size_t alloc_size_bytes = 32;
+  size_t before_free = SystemAllocator::systemAllocator()->freeSpace_Bytes();
+  int* arr = static_cast<int*>(SystemAllocator::systemAllocator()->allocate(alloc_size_bytes));
+  CHECK(arr);
+  size_t after_alloc = SystemAllocator::systemAllocator()->freeSpace_Bytes();
+  CHECK(before_free > (after_alloc));
+  SystemAllocator::systemAllocator()->deallocate(arr);
+  size_t after_free = SystemAllocator::systemAllocator()->freeSpace_Bytes();
+  CHECK(before_free == after_free);
+  CHECK(start_allocs < SystemAllocator::systemAllocator()->totalAllocations());
+  CHECK(start_deallocs < SystemAllocator::systemAllocator()->totalDeallocations());
+}
+#endif
 } /** namespace jel */
+
 /**
  *  TEMPORARILY DISABLED
  *

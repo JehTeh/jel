@@ -8,5 +8,5 @@ hw\generic\
 ThirdParty\amazon-freertos\lib\FreeRTOS\
 ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F
 ThirdParty\amazon-freertos\lib\include\private
-hw\targets\stm32f3
-ThirdParty\STM-Cube-MX\jel_base\Drivers\STM32F3xx_HAL_Driver\Inc
+hw\targets\tm4c
+ThirdParty\tivaware\driverlib

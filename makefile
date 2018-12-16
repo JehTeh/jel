@@ -61,6 +61,7 @@ default : all
 include ./make/targets/tm4c123gh6pm.make
 include ./make/targets/tm4c1294ncpdt.make
 include ./make/targets/stm32f302rct6.make
+#include ./make/targets/rm57l843.make
 
 all : $(GLOBAL_TARGET_LIST)
 

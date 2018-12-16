@@ -187,12 +187,13 @@ TEST(JEL_TestGroup_Queues_Pod, PushPop)
     CHECK(s == defS);
   }
   CHECK(queuePtr->push(s, jel::Duration::zero()) != Status::success);
+  CHECK(queuePtr->push(s, jel::Duration::milliseconds(5)) != Status::success);
   for(size_t i = 0; i < QueueSize_Items; i++)
   {
     CHECK(queuePtr->pop(s, jel::Duration::zero()) == Status::success);
   }
   CHECK(queuePtr->pop(s, jel::Duration::zero()) != Status::success);
+  CHECK(queuePtr->pop(s, jel::Duration::milliseconds(5)) != Status::success);
 }
 #endif
-
 } /** namespace jel */

@@ -39,11 +39,7 @@ namespace jel
 bool System::cpuExceptionActive() noexcept
 {
 #if defined(HW_TARGET_RM57L843)
-  uint32_t cpsr = _getCPSRValue_() & 0x1F;
-  if((cpsrMbits == 0x11) || (cpsrMbits == 0x12))
-  {
-    return true;
-  }
+  return false; /**< TODO */
 #elif defined(HW_TARGET_TM4C123GH6PM) 
   uint32_t* scb_icsr = reinterpret_cast<uint32_t*>(0xE000ED04);
   if((*scb_icsr & 0x1FF) != 0)
@@ -73,11 +69,7 @@ bool System::cpuExceptionActive() noexcept
 bool System::inIsr() noexcept
 {
 #if defined(HW_TARGET_RM57L843)
-  uint32_t cpsr = _getCPSRValue_() & 0x1F;
-  if((cpsrMbits == 0x12))
-  {
-    return true;
-  }
+  return true; /**< TODO */
 #elif defined(HW_TARGET_TM4C123GH6PM) || defined(HW_TARGET_TM4C129XNCZAD)
   uint32_t* scb_icsr = reinterpret_cast<uint32_t*>(0xE000ED04);
   if((*scb_icsr & 0x1FF) != 0)

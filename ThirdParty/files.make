@@ -44,6 +44,15 @@ CXXSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
 		)
 
 #FreeRTOS files - Target specific porting files
+RM57L843_ASOURCE += $(addprefix ThirdParty\halcogen\rm57\jel_hcg\freertos\,\
+   	portasm.s \
+		)
+
+RM57L843_CSOURCE += $(addprefix ThirdParty\halcogen\rm57\jel_hcg\freertos\,\
+   	port.c \
+   	mpu_wrappers.c \
+		)
+
 TM4C123GH6PM_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\
    	port.c \
 		)
@@ -55,6 +64,51 @@ TM4C1294NCPDT_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\por
 STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\
    	port.c \
 		)
+#TI RM57 HAL source files
+RM57L843_HAL_ASOURCE += $(addprefix ThirdParty\halcogen\rm57\jel_hcg\source\,\
+    HL_sys_core.s \
+    HL_sys_intvecs.s \
+    HL_sys_mpu.s \
+    HL_sys_pmu.s \
+		)
+
+RM57L843_HAL_CSOURCE += $(addprefix ThirdParty\halcogen\rm57\jel_hcg\source\,\
+    HL_adc.c \
+    HL_can.c \
+    HL_crc.c \
+    HL_dcc.c \
+    HL_ecap.c \
+    HL_emac.c \
+    HL_emif.c \
+    HL_epc.c \
+    HL_eqep.c \
+    HL_errata.c \
+    HL_esm.c \
+    HL_etpwm.c \
+    HL_gio.c \
+    HL_het.c \
+    HL_i2c.c \
+    HL_lin.c \
+    HL_mdio.c \
+    HL_mibspi.c \
+    HL_nmpu.c \
+    HL_notification.c \
+    HL_phy_dp83640.c \
+    HL_phy_tlk111.c \
+    HL_pinmux.c \
+    HL_pom.c \
+    HL_rti.c \
+    HL_sci.c \
+    HL_sys_dma.c \
+    HL_sys_main.c \
+    HL_sys_pcr.c \
+    HL_sys_phantom.c \
+    HL_sys_pmm.c \
+    HL_sys_startup.c \
+    HL_sys_vim.c \
+    HL_system.c \
+		)
+
 #STM HAL source files
 STM32F302RCT6_HAL_CSOURCE += $(addprefix ThirdParty\STM-Cube-MX\jel_base\,\
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c \
