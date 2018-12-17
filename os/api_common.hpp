@@ -36,11 +36,11 @@
  * least 64kB heap space is required. CppUTest integration is enabled by default only on debug builds. */
 #if defined (HW_TARGET_TM4C1294NCPDT) || defined (HW_TARGET_RM57L843)
 #ifndef NDEBUG
-//#define TARGET_SUPPORTS_CPPUTEST
+#define TARGET_SUPPORTS_CPPUTEST
 ////#define CPPUTEST_USE_OWN_CONFIGURATION
-//#define CPPUTEST_MEM_LEAK_DETECTION_DISABLED
-//#define CPPUTEST_LONG_LONG_DISABLED
-//#include "CppUTest/TestHarness.h"
+#define CPPUTEST_MEM_LEAK_DETECTION_DISABLED
+#define CPPUTEST_LONG_LONG_DISABLED
+#include "CppUTest/TestHarness.h"
 #endif
 #endif
 
