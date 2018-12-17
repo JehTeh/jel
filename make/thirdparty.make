@@ -29,7 +29,7 @@
 RTOS_CONFIGURATION_INCLUDE_PATH_BASE = "./os/freertos"
 RTOS_INCLUDE_PATH_BASE = ".\ThirdParty\amazon-freertos\lib\include"
 RTOS_PRIVATE_INCLUDE_PATH_BASE = ".\ThirdParty\amazon-freertos\lib\include\private"
-RTOS_INCLUDE_PATH_ARM_R5F = ".\ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CR5"
+RTOS_INCLUDE_PATH_ARM_R5F = ".\ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CRx_No_GIC"
 RTOS_INCLUDE_PATH_ARM_M4F = ".\ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F"
 #Cpputest include directory. Note: cpputest is not built by the master project makefile. It must be
 #manually built to a cpputest\lib\[TARGET_CPU].a file.

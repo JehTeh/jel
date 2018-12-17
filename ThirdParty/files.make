@@ -44,13 +44,12 @@ CXXSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
 		)
 
 #FreeRTOS files - Target specific porting files
-RM57L843_ASOURCE += $(addprefix ThirdParty\halcogen\rm57\jel_hcg\freertos\,\
-   	portasm.s \
+RM57L843_ASOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CRx_No_GIC\,\
+    portASM.S \
 		)
 
-RM57L843_CSOURCE += $(addprefix ThirdParty\halcogen\rm57\jel_hcg\freertos\,\
-   	port.c \
-   	mpu_wrappers.c \
+RM57L843_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CRx_No_GIC\,\
+    port.c \
 		)
 
 TM4C123GH6PM_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\

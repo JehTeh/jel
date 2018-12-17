@@ -25,8 +25,8 @@
 #
 
 #Target specific flags, including -DHW_TARGET_[XXX] flag.
-RM57L843_CPU_FLAGS = $(CPU_TARGET_CORTEX_R5F_FLAGS)
-RM57L843_CUSTOM_FLAGS = -I "./ThirdParty/halcogen/rm57/jel_hcg/freertos" \
+RM57L843_CPU_FLAGS = $(CPU_TARGET_CORTEX_R5F_FLAGS) -I $(RTOS_INCLUDE_PATH_ARM_R5F) 
+RM57L843_CUSTOM_FLAGS = \
 -I "./ThirdParty/cpputest/include" \
 -I "./ThirdParty/halcogen/rm57/jel_hcg/include" \
 -DHW_TARGET_RM57L843

@@ -93,19 +93,18 @@ extern void jel_threadCreate(volatile void*);
 // RM57L843 Target
 //
 #elif defined(HW_TARGET_RM57L843)
+extern void rtos_configSETUP_TICK_INTERRUPT(void);
+extern void rtos_configCLEAR_TICK_INTERRUPT(void);
+
 #define configCPU_CLOCK_HZ                          ((uint32_t)110000000) //Use RTI timer clock
 #define configTOTAL_HEAP_SIZE                       ((size_t)(262143))
 #define configMINIMAL_STACK_SIZE                    ((unsigned short)512)
 #define configUSE_FPU                               1
-#ifdef __NVIC_PRIO_BITS
-#define configPRIO_BITS         __NVIC_PRIO_BITS
-#else
-#define configPRIO_BITS         4
-#endif
-#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY   15
-#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY 5
-#define configKERNEL_INTERRUPT_PRIORITY 		( configLIBRARY_LOWEST_INTERRUPT_PRIORITY << (8 - configPRIO_BITS) )
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY 	( configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY << (8 - configPRIO_BITS) )
+#define configFPU_D32                               0
+#define configINTERRUPT_VECTOR_ADDRESS              0x0
+#define configEOI_ADDRESS                           0x0
+#define configSETUP_TICK_INTERRUPT rtos_configSETUP_TICK_INTERRUPT
+#define configCLEAR_TICK_INTERRUPT rtos_configCLEAR_TICK_INTERRUPT
 //
 // No target defined.
 //
