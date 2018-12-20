@@ -36,12 +36,13 @@ currently offered by the JEL:
   * RTOS and newlib initialization is performed in a controlled manner before C++ constructors are called. This allows
     for 'application level' static C++ objects that make use of RTOS functionality.
   * Various useful object types, including some specialized allocator schemes, scope guard templates, etc.
+  * Support for cross compilation from Windows or from the Windows Subsystem for Linux (WSL). This allows for the build
+    to play nicely with tools written for linux, such as the library I use to generate the compile_commands.json file 
+    (https://github.com/nickdiego/compiledb), among others.
 
 ## Roadmap
-
-  * [Under test on M4 Targets] CppUTest - Some targets, specifically those with larger memory capacities, support builds
-    that integrate CppUTest into the JEL CLI. This allows for on-target unit testing with relative ease via a popular
-    framework. 
+  
+  * [Currently Ongoing] TI RM57L843 basic jel support.
   * fatfs - Used to provide filesystem functionality. This is hidden behind the standard library calls, so
     fatfs does not need to be interacted with directly, only via portable calls to \<stdio.h\> / \<fstream\> functions.
   * Better exception support - Currently exceptions are required and add a significant amount of 'bloat' to the binary
@@ -52,6 +53,12 @@ currently offered by the JEL:
     freeRTOS based queues.
   * Additional CppuTest integration to validate all JEL functionality on-target.
   * Additional documentation, specifically use-case examples for each type.
+  * [COMPLETE] Support for cross compilation from both linux and windows (i.e. cross-platform makefile). Tested soley
+    under WSL up to this point, hardcoded arm-none-eabi library paths may need to be changed to run under a native linux
+    os.
+  * [COMPLETE] CppUTest - Some targets, specifically those with larger memory capacities, support builds
+    that integrate CppUTest into the JEL CLI. This allows for on-target unit testing with relative ease via a popular
+    framework. 
 
 ## Supported Targets
 Currently, the following targets have 'out of the box' support:
