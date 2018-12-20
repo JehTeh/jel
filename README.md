@@ -327,7 +327,7 @@ recommended that including <iostream> directly be avoided in favor of the standa
 flash footprint of the C++ standard I/O library, but either option is suitable.
 
 #### Logging
-Specalized thread-aware traditional and real-time friendly high-speed logging primitives are provided by the JEL in the
+Specialized thread-aware traditional and real-time friendly high-speed logging primitives are provided by the JEL in the
 os/api\_log.hpp header file. Logging in the JEL is generally done via the async-safe system logging channel, exposed by
 the jel::log() function. The system logging channel is a full Logger class instance configured to capture and display
 origin thread, timestamp and the message type/level automatically as a prefix when logging functions are called. 
@@ -346,12 +346,53 @@ A StreamLoggerHelper class is implemented to allow an iostreams-like interface t
 custom StreamLogger was built to avoid the significant overhead of the standard \<iostreams\> library. 
 
 #### Exceptions
-
-Documentation Upcoming
+The JEL currently implements all exceptions from a common Exception\_Base class. This supports a minimal footprint
+implementation without any toString functionality, or toString functionality for a more descriptive/human readable
+error.
 
 #### Command Line Interface (CLI)
+The CLI provides a comprehensive command line interface running on the target. The CLI is primarily intended for use by
+human operators or optionally scripts running on an external target. The CLI allows the execution of arbitrary commands
+that have been defined by the application or the JEL; some of these commands include functionality like displaying
+system resource consumption and restarting the system. The CppuTest command runner is also executed via the CLI.
 
-Documentation Upcoming
+For use with human operators, input is passed through a specialized terminal class that performs all text manipulation
+on target. This allows for supporting things like highlighting selections, Home/Insert/End keys and arrow key navigation
+even with a bare-bones terminal emulator. Furthermore, command entry history is available and can by default be accessed
+using the up and down arrow keys.
+
+For use with automated equipment, the specialized terminal parser can be disabled, which significantly reduces CPU
+loading and directly passes the input to the CLI command parser.
+
+CLI commands are organized into groups called 'libraries'. Each library must be explicitly registered through the CLI
+API at some point during the system runtime. Once registered, all commands in that library become available, and are
+accessed using the form '[library] [command] \<arguments\>'.
+
+Commands must be defined in the system binary, and include an ASCII command name, help string, accepted arguments,
+permission level and command execution function. The command execution function will only be called if the CLI parser
+successfully parses an entered command and all required arguments.
+
+This allows for extremely simple command implementations, particularly since they can avoid redundant and input
+validation and error handling. They can perform all required I/O through the cli::CommandIo& object reference provided,
+including print formatting and specialized character control. Once the command execution has completed, the default I/O
+configuration is re-instated automatically by the CLI.
+
+For an example of CLI command implementations, see os/internal/cli\_commands.cpp and os/internal/cli\_cmds\_testing.cpp.
+
+It is generally recommended that the CLI be used for development, testing and debug or final product configuration, but
+for simple embedded applications it may also provide an adequate general user interface. Due to the parsing logic
+involved, it is not recommended that large amounts of I/O (for example, for a complicated automated test) be piped
+directly through the CLI. Instead, perform setup and initialization using the CLI and pipe raw data via the either the
+base JEL asynchronous I/O primitives or a separate I/O port.
+
+#### Configuration
+At a high level, some runtime/boot time configuration of the JEL is supported in the os/api\_config.hpp header. This
+configuration includes settings for things like total available string pool memory and CLI argument and history
+tracking support. Targets with minimal RAM can take advantage of some of these fields to reduce the memory footprint of
+the JEL.
+
+In addition, the UART used for standard communication, logger memory limitations, default logging type, system heap
+sizes and the I/O to use for the heartbeat LED are all assignable.
 
 #### Common Utilities
 Some common utility classes are provided in the os/api\_common.hpp header. These include basic iterator wrappers and a
