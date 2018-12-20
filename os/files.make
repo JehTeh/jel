@@ -24,28 +24,28 @@
 ####################################################################################################
 #
 
-ASOURCE += $(addprefix os\,\
+ASOURCE += $(addprefix os/,\
 		\
 		)
 
-CSOURCE += $(addprefix os\,\
+CSOURCE += $(addprefix os/,\
    	\
 		)
 
-CXXSOURCE += $(addprefix os\,\
-		internal\boot.cpp \
-		internal\locks.cpp \
-		internal\queues.cpp \
-		internal\threads.cpp \
-		internal\allocator.cpp \
-		internal\newlib_port.cpp \
-		internal\freertos_hooks.cpp \
-		internal\system.cpp \
-		internal\io.cpp \
-		internal\cli.cpp \
-		internal\cli_cmds.cpp \
-		internal\cli_cmds_testing.cpp \
-		internal\config.cpp \
-		internal\log.cpp \
+CXXSOURCE += $(addprefix os/,\
+		internal/boot.cpp \
+		internal/locks.cpp \
+		internal/queues.cpp \
+		internal/threads.cpp \
+		internal/allocator.cpp \
+		internal/newlib_port.cpp \
+		internal/freertos_hooks.cpp \
+		internal/system.cpp \
+		internal/io.cpp \
+		internal/cli.cpp \
+		internal/cli_cmds.cpp \
+		internal/cli_cmds_testing.cpp \
+		internal/config.cpp \
+		internal/log.cpp \
 		)
 

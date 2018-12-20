@@ -23,6 +23,12 @@
 # OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ####################################################################################################
 #
+ifeq ($(OS), Windows_NT)
+  PLATFORM_PATH_SEP=\\
+else
+  PLATFORM_PATH_SEP=/
+endif
+
 
 #Compiler and linker. jel only supports the ARM GCC bare metal toolchain.
 CC = arm-none-eabi-gcc

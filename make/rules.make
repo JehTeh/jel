@@ -106,7 +106,11 @@ endef
 #
 define TEMPLRECIPE_BINARY
 $(OUTPUT_BINARY_FILE) : $(OUTPUT_LIBRARY_FILE) $(CUSTOM_BINARY_DEPS)
+ifeq ($(OS), Windows_NT)
 		@if not exist "$(OUTPUT_DIRECTORY_INFO)" mkdir "$(OUTPUT_DIRECTORY_INFO)"
+else
+		@mkdir -p "$(OUTPUT_DIRECTORY_INFO)"
+endif
 		@echo "Linking elf..."
 		@$$(LD) -o $(OUTPUT_ELF_FILE) -L$(OUTPUT_DIRECTORY_EXEC) $(ALL_OBJECT_FILES) -T $(LINKER_SCRIPT) $(LDFLAGS) -Wl,-Map,$(OUTPUT_DIRECTORY_INFO)\$(TARGET_NAME)_mapfile$(FILEEXTENSION_MAP)
 		@echo "elf linked. Creating flashable binary from elf..."
@@ -122,8 +126,13 @@ endef
 define TEMPLRECIPE_LIB_ARCHIVE_FILE
 $(OUTPUT_LIBRARY_FILE) : $(ALL_OBJECT_FILES)
 		@echo "Archiving files to library..."
+ifeq ($(OS), Windows_NT)
 		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
 		@if not exist "$(OUTPUT_DIRECTORY_EXEC)" mkdir "$(OUTPUT_DIRECTORY_EXEC)"
+else
+		@mkdir -p "$(OUTPUT_DIRECTORY_BASE)"
+		@mkdir -p "$(OUTPUT_DIRECTORY_EXEC)"
+endif
 		@$$(AR) -r --target=elf32-littlearm $$@ $(ALL_OBJECT_FILES) 
 		@echo "Archiving complete."
 endef
@@ -132,11 +141,17 @@ endef
 # Recipe template used for assembling assembly files.
 #
 define TEMPLRECIPE_AFILE
-$(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.s
+$(OUTPUT_DIRECTORY_OBJECTS)$(PLATFORM_PATH_SEP)%.o : %.s
 		@echo "Assembling:      $$<"
+ifeq ($(OS), Windows_NT)
 		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
 		@if not exist "$(OUTPUT_DIRECTORY_OBJECTS)" mkdir "$(OUTPUT_DIRECTORY_OBJECTS)"
 		@if not exist "$$(dir $$@)" mkdir "$$(dir $$@)"
+else
+		@mkdir -p "$(OUTPUT_DIRECTORY_BASE)"
+		@mkdir -p "$(OUTPUT_DIRECTORY_OBJECTS)"
+		@mkdir -p "$$(dir $$@)"
+endif
 		@$$(CC) $(AFLAGS) -o $$@ $$<
 endef
 
@@ -144,11 +159,17 @@ endef
 # Recipe template used for compiling C files.
 #
 define TEMPLRECIPE_CFILE
-$(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.c
+$(OUTPUT_DIRECTORY_OBJECTS)$(PLATFORM_PATH_SEP)%.o : %.c
 		@echo "Compiling (C):   $$<"
+ifeq ($(OS), Windows_NT)
 		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
 		@if not exist "$(OUTPUT_DIRECTORY_OBJECTS)" mkdir "$(OUTPUT_DIRECTORY_OBJECTS)"
 		@if not exist "$$(dir $$@)" mkdir "$$(dir $$@)"
+else
+		@mkdir -p "$(OUTPUT_DIRECTORY_BASE)"
+		@mkdir -p "$(OUTPUT_DIRECTORY_OBJECTS)"
+		@mkdir -p "$$(dir $$@)"
+endif
 		@$$(CC) $(CFLAGS) -o $$@ $$<
 endef
 
@@ -156,11 +177,17 @@ endef
 # Recipe template used for compiling c++ files.
 #
 define TEMPLRECIPE_CXXFILE
-$(OUTPUT_DIRECTORY_OBJECTS)\\%.o : %.cpp
+$(OUTPUT_DIRECTORY_OBJECTS)$(PLATFORM_PATH_SEP)%.o : %.cpp
 		@echo "Compiling (C++): $$<"
+ifeq ($(OS), Windows_NT)
 		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
 		@if not exist "$(OUTPUT_DIRECTORY_OBJECTS)" mkdir "$(OUTPUT_DIRECTORY_OBJECTS)"
 		@if not exist "$$(dir $$@)" mkdir "$$(dir $$@)"
+else
+		@mkdir -p "$(OUTPUT_DIRECTORY_BASE)"
+		@mkdir -p "$(OUTPUT_DIRECTORY_OBJECTS)"
+		@mkdir -p "$$(dir $$@)"
+endif
 		@$$(CXX) $(CXXFLAGS) -o $$@ $$<
 endef
 
@@ -169,11 +196,15 @@ endef
 #
 define TEMPLRECIPE_CLEAN
 clean_$(TARGET_NAME) : 
-	@del /S /Q $(OUTPUT_DIRECTORY_BASE)
+ifeq ($(OS), Windows_NT)
+		@del /S /Q $(OUTPUT_DIRECTORY_BASE)
+else
+		@rm -f -R $(OUTPUT_DIRECTORY_BASE)
+endif
 endef
 
 define TEMPLRECIPE_GDB
 gdb_$(TARGET_NAME): $(OUTPUT_ELF_FILE)
-	@echo "Starting GDB remote..."
-	arm-none-eabi-gdb -q -iex "set auto-load safe-path /" $(OUTPUT_ELF_FILE)
+		@echo "Starting GDB remote..."
+		arm-none-eabi-gdb -q -iex "set auto-load safe-path /" $(OUTPUT_ELF_FILE)
 endef

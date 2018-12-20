@@ -1,4 +1,4 @@
-CREATE build_tm4c123gh6pm_rel\bin\tm4c123gh6pm_rel_fullarchive.a
-ADDLIB build_tm4c123gh6pm_rel\bin\tm4c123gh6pm_rel.a
+CREATE build_tm4c123gh6pm_rel/bin/tm4c123gh6pm_rel_fullarchive.a
+ADDLIB build_tm4c123gh6pm_rel/bin/tm4c123gh6pm_rel.a
 SAVE
 END

@@ -25,53 +25,53 @@
 #
 
 #FreeRTOS files
-ASOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
+ASOURCE += $(addprefix ThirdParty/amazon-freertos/lib/FreeRTOS/,\
 		\
 		)
 
-CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
+CSOURCE += $(addprefix ThirdParty/amazon-freertos/lib/FreeRTOS/,\
    	event_groups.c \
    	list.c \
    	queue.c \
    	stream_buffer.c \
    	tasks.c \
    	timers.c \
-    portable\MemMang\heap_4.c \
+    portable/MemMang/heap_4.c \
 		)
 
-CXXSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\,\
+CXXSOURCE += $(addprefix ThirdParty/amazon-freertos/lib/FreeRTOS/,\
 		\
 		)
 
 #FreeRTOS files - Target specific porting files
-RM57L843_ASOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CRx_No_GIC\,\
+RM57L843_ASOURCE += $(addprefix ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CRx_No_GIC/,\
     portASM.S \
 		)
 
-RM57L843_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CRx_No_GIC\,\
+RM57L843_CSOURCE += $(addprefix ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CRx_No_GIC/,\
     port.c \
 		)
 
-TM4C123GH6PM_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\
+TM4C123GH6PM_CSOURCE += $(addprefix ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/,\
    	port.c \
 		)
 
-TM4C1294NCPDT_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\
+TM4C1294NCPDT_CSOURCE += $(addprefix ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/,\
    	port.c \
 		)
 
-STM32F302RCT6_CSOURCE += $(addprefix ThirdParty\amazon-freertos\lib\FreeRTOS\portable\GCC\ARM_CM4F\,\
+STM32F302RCT6_CSOURCE += $(addprefix ThirdParty/amazon-freertos/lib/FreeRTOS/portable/GCC/ARM_CM4F/,\
    	port.c \
 		)
 #TI RM57 HAL source files
-RM57L843_HAL_ASOURCE += $(addprefix ThirdParty\halcogen\rm57\jel_hcg\source\,\
+RM57L843_HAL_ASOURCE += $(addprefix ThirdParty/halcogen/rm57/jel_hcg/source/,\
     HL_sys_core.s \
     HL_sys_intvecs.s \
     HL_sys_mpu.s \
     HL_sys_pmu.s \
 		)
 
-RM57L843_HAL_CSOURCE += $(addprefix ThirdParty\halcogen\rm57\jel_hcg\source\,\
+RM57L843_HAL_CSOURCE += $(addprefix ThirdParty/halcogen/rm57/jel_hcg/source/,\
     HL_adc.c \
     HL_can.c \
     HL_crc.c \
@@ -103,13 +103,13 @@ RM57L843_HAL_CSOURCE += $(addprefix ThirdParty\halcogen\rm57\jel_hcg\source\,\
     HL_sys_pcr.c \
     HL_sys_phantom.c \
     HL_sys_pmm.c \
-    HL_sys_startup.c \
     HL_sys_vim.c \
     HL_system.c \
 		)
+#HL_sys_startup.c  -  Do not link TI's startup code
 
 #STM HAL source files
-STM32F302RCT6_HAL_CSOURCE += $(addprefix ThirdParty\STM-Cube-MX\jel_base\,\
+STM32F302RCT6_HAL_CSOURCE += $(addprefix ThirdParty/STM-Cube-MX/jel_base/,\
     Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_rcc.c \
     Src/tim.c \
     Src/stm32f3xx_hal_timebase_TIM.c \

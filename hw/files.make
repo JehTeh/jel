@@ -24,30 +24,30 @@
 ####################################################################################################
 #
 
-ASOURCE += $(addprefix hw\,\
+ASOURCE += $(addprefix hw/,\
 		\
 		)
 
-CSOURCE += $(addprefix hw\,\
+CSOURCE += $(addprefix hw/,\
  		\
 		)
 
-CXXSOURCE += $(addprefix hw\,\
-		generic\startup.cpp \
-		generic\uart.cpp \
-		generic\wdt.cpp \
-		generic\gpio.cpp \
+CXXSOURCE += $(addprefix hw/,\
+		generic/startup.cpp \
+		generic/uart.cpp \
+		generic/wdt.cpp \
+		generic/gpio.cpp \
 		)
 
-TM4C123GH6PM_ASOURCE += $(addprefix hw\targets\tm4c\,\
+TM4C123GH6PM_ASOURCE += $(addprefix hw/targets/tm4c/,\
 		\
 		)
 
-TM4C123GH6PM_CSOURCE += $(addprefix hw\targets\tm4c\,\
+TM4C123GH6PM_CSOURCE += $(addprefix hw/targets/tm4c/,\
  		\
 		)
 
-RM57L843_CXXSOURCE += $(addprefix hw\targets\rm57\,\
+RM57L843_CXXSOURCE += $(addprefix hw/targets/rm57/,\
 		startup.cpp \
 		irq.cpp \
 		gpio.cpp \
@@ -56,7 +56,7 @@ RM57L843_CXXSOURCE += $(addprefix hw\targets\rm57\,\
 		wdt.cpp \
 		)
 
-TM4C123GH6PM_CXXSOURCE += $(addprefix hw\targets\tm4c\,\
+TM4C123GH6PM_CXXSOURCE += $(addprefix hw/targets/tm4c/,\
 		startup.cpp \
 		irq.cpp \
 		gpio.cpp \
@@ -65,7 +65,7 @@ TM4C123GH6PM_CXXSOURCE += $(addprefix hw\targets\tm4c\,\
 		wdt.cpp \
 		)
 
-TM4C1294NCPDT_CXXSOURCE += $(addprefix hw\targets\tm4c\,\
+TM4C1294NCPDT_CXXSOURCE += $(addprefix hw/targets/tm4c/,\
 		startup.cpp \
 		irq.cpp \
 		gpio.cpp \
@@ -74,7 +74,7 @@ TM4C1294NCPDT_CXXSOURCE += $(addprefix hw\targets\tm4c\,\
 		wdt.cpp \
 		)
 
-STM32F302RCT6_CXXSOURCE += $(addprefix hw\targets\stm32f3\,\
+STM32F302RCT6_CXXSOURCE += $(addprefix hw/targets/stm32f3/,\
 		startup.cpp \
 		irq.cpp \
 		gpio.cpp \
