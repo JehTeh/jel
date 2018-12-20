@@ -43,6 +43,23 @@
 #include "task.h"
 #include "queue.h"
 
+#ifdef HW_TARGET_RM57L843
+extern "C" 
+{
+  extern volatile uint32_t ulPortYieldRequired;	
+}
+#ifdef portEND_SWITCHING_ISR
+#undef portEND_SWITCHING_ISR
+#define portEND_SWITCHING_ISR( xSwitchRequired )\
+{												\
+	if( xSwitchRequired != pdFALSE )			\
+	{											\
+		::ulPortYieldRequired = pdTRUE;			\
+	}											\
+}
+#endif
+#endif
+
 namespace jel
 {
 
