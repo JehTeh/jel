@@ -48,4 +48,6 @@ tmp/*
 
 #Include certain precompiled libraries
 !ThirdParty/tivaware/driverlib/gcc/libdriver.a
+!ThirdParty/cpputest/lib/armgcc_m4/libCppUTest.a
+!ThirdParty/cpputest/lib/armgcc_r5/libCppUTest.a
 !ThirdParty/misc/enum_flags.h
