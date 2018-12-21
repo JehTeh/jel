@@ -77,3 +77,6 @@ gdb:
 	arm-none-eabi-gdb -q -iex "set auto-load safe-path /" ./build_tm4c123gh6pm_dbg/bin/tm4c123gh6pm_dbg.elf
 
 force :
+
+rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+-include $(call rwildcard, dep/, *.d)

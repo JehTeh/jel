@@ -50,6 +50,8 @@ OUTPUT_DIRECTORY_OBJECTS =
 OUTPUT_DIRECTORY_EXEC =
 OUTPUT_DIRECTORY_INFO =
 
+OUTPUT_DIRECTORY_GLOBAL_DEP = dep
+
 ############ TEMPLATE RECIPES ############
 # The template recipes are instantiated by each individual target as it is added to the build
 # process. Each template recipe requires that a target define the template recipe variables
@@ -163,14 +165,18 @@ $(OUTPUT_DIRECTORY_OBJECTS)$(PLATFORM_PATH_SEP)%.o : %.c
 		@echo "Compiling (C):   $$<"
 ifeq ($(OS), Windows_NT)
 		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
+		@if not exist "$(OUTPUT_DIRECTORY_GLOBAL_DEP)" mkdir "$(OUTPUT_DIRECTORY_GLOBAL_DEP)"
 		@if not exist "$(OUTPUT_DIRECTORY_OBJECTS)" mkdir "$(OUTPUT_DIRECTORY_OBJECTS)"
 		@if not exist "$$(dir $$@)" mkdir "$$(dir $$@)"
+		@if not exist "$(OUTPUT_DIRECTORY_GLOBAL_DEP)/$$(dir $$@)" mkdir "$(OUTPUT_DIRECTORY_GLOBAL_DEP)/$$(dir $$@)"
 else
 		@mkdir -p "$(OUTPUT_DIRECTORY_BASE)"
+		@mkdir -p "$(OUTPUT_DIRECTORY_GLOBAL_DEP)"
 		@mkdir -p "$(OUTPUT_DIRECTORY_OBJECTS)"
 		@mkdir -p "$$(dir $$@)"
+		@mkdir -p "$(OUTPUT_DIRECTORY_GLOBAL_DEP)/$$(dir $$@)"
 endif
-		@$$(CC) $(CFLAGS) -o $$@ $$<
+		@$$(CC) $(CFLAGS) $(COMPILER_FLAGS_DEP_BASE) $(OUTPUT_DIRECTORY_GLOBAL_DEP)/$$@.d -o $$@ $$<
 endef
 
 # TEMPLRECIPE_CXXFILE
@@ -181,14 +187,18 @@ $(OUTPUT_DIRECTORY_OBJECTS)$(PLATFORM_PATH_SEP)%.o : %.cpp
 		@echo "Compiling (C++): $$<"
 ifeq ($(OS), Windows_NT)
 		@if not exist "$(OUTPUT_DIRECTORY_BASE)" mkdir "$(OUTPUT_DIRECTORY_BASE)"
+		@if not exist "$(OUTPUT_DIRECTORY_GLOBAL_DEP)" mkdir "$(OUTPUT_DIRECTORY_GLOBAL_DEP)"
 		@if not exist "$(OUTPUT_DIRECTORY_OBJECTS)" mkdir "$(OUTPUT_DIRECTORY_OBJECTS)"
 		@if not exist "$$(dir $$@)" mkdir "$$(dir $$@)"
+		@if not exist "$(OUTPUT_DIRECTORY_GLOBAL_DEP)/$$(dir $$@)" mkdir "$(OUTPUT_DIRECTORY_GLOBAL_DEP)/$$(dir $$@)"
 else
 		@mkdir -p "$(OUTPUT_DIRECTORY_BASE)"
+		@mkdir -p "$(OUTPUT_DIRECTORY_GLOBAL_DEP)"
 		@mkdir -p "$(OUTPUT_DIRECTORY_OBJECTS)"
 		@mkdir -p "$$(dir $$@)"
+		@mkdir -p "$(OUTPUT_DIRECTORY_GLOBAL_DEP)/$$(dir $$@)"
 endif
-		@$$(CXX) $(CXXFLAGS) -o $$@ $$<
+		@$$(CXX) $(CXXFLAGS) $(COMPILER_FLAGS_DEP_BASE) $(OUTPUT_DIRECTORY_GLOBAL_DEP)/$$@.d -o $$@ $$<
 endef
 
 # TEMPLRECIPE_CLEAN
