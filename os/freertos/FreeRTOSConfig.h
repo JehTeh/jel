@@ -133,7 +133,10 @@ extern void rtos_configCLEAR_TICK_INTERRUPT(void);
 #define INCLUDE_xSemaphoreGetMutexHolder            1
 #define configUSE_COUNTING_SEMAPHORES               1
 #define INCLUDE_xTaskGetCurrentTaskHandle           1
+//Avoid issues with generic clang tooling that doesn't use newlib.
+#ifndef __clang__
 #define configUSE_NEWLIB_REENTRANT                  1
+#endif
 #define configUSE_16_BIT_TICKS                      0
 #define configUSE_CO_ROUTINES                       0
 #define configGENERATE_RUN_TIME_STATS               0

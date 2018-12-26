@@ -76,9 +76,11 @@ flags = [
 './os/freertos',
 '-I',
 './../',
-'-DHW_TARGET_TM4C1294NCPDT',
+'-DHW_TARGET_RM57L843',
 '-I',
 './ThirdParty/cpputest/include',
+'-I',
+'./ThirdParty/halcogen/rm57/jel_hcg/include',
 ]
 #
 #'-DHW_TARGET_TM4C1294NCPDT',

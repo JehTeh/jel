@@ -43,11 +43,41 @@ namespace hw
 {
 namespace startup
 {
-  void defaultInitializeClocks();
-  void enableFpu();
-  void enableMpu();
-  void customDispatcher() noexcept;
-  void customDispatcherPostDataInit() noexcept;
+
+
+void defaultInitializeClocks();
+void enableFpu();
+void enableMpu();
+void customDispatcher() noexcept;
+void customDispatcherPostDataInit() noexcept;
+namespace reset
+{
+//RM57 specific Reset source enumeration
+#ifdef HW_TARGET_RM57L843
+enum class ResetSourceType
+{
+  powerOnReset,
+  debugReset,
+  externalReset,
+  cpu0Reset,
+  softwareReset,
+  oscillatorFailureReset,
+  watchdogReset,
+  watchdog2Reset,
+  unknown /**< There is not enough information available to determine the cause of the reset. */
+};
+//Generic Reset source enumeration
+#else
+enum class ResetSourceType
+{
+  unknown /**< There is not enough information available to determine the cause of the reset. */
+};
+#endif
+/** Returns the cause of the last system reset. */
+ResetSourceType getResetSource() noexcept;
+/** Converts a reset source enumeration to a null terminated string pointer. */
+const char* resetSourceToString(const ResetSourceType source) noexcept;
+} /** namespace reset */
 } /** namespace startup */
 } /** namespace hw */
 } /** namespace jel */

@@ -77,6 +77,27 @@ namespace startup
   {
     /** Nothing can be done here in the generic function. */
   }
+namespace reset
+{
+  ResetSourceType getResetSource() noexcept __attribute__((weak));
+  const char* resetSourceToString(const ResetSourceType source) noexcept __attribute__((weak));
+  ResetSourceType lastResetSource;
+
+  ResetSourceType getResetSource() noexcept
+  {
+    return lastResetSource;
+  }
+
+  const char* resetSourceToString(const ResetSourceType source) noexcept
+  {
+    switch(source)
+    {
+      case ResetSourceType::unknown: return "Unknown";
+      default: return "Invalid Reset Source";
+    }
+  }
+
+}
 } /** namespace startup */
 } /** namespace hw */
 } /** namespace jel */
