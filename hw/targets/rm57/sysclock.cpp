@@ -32,6 +32,9 @@
 #include "hw/api_sysclock.hpp"
 #include "hw/api_irq.hpp"
 #include "os/api_system.hpp"
+/** TI Halcogen Headers */
+#include "HL_system.h"
+#include "HL_rti.h"
 
 namespace jel
 {
@@ -41,12 +44,25 @@ namespace sysclock
 {
 void SystemSteadyClockSource::startClock()
 {
-  /** TODO: Use second RTI counter as 64b clock */
+  void rtiInit(void);
+  /** Configure the Compare Up Counter to overflow and increment the FRC when at the full 32b count. This should result
+   * in an FRC value of RTI_FREQ*(2^32)+1. */
+  rtiREG1->CNT->CPUCx = 0xFFFF'FFFF;
+  rtiStartCounter(rtiREG1, rtiCOUNTER_BLOCK1);
 }
 
 uint64_t SystemSteadyClockSource::readClock() noexcept
 {
-
+  uint64_t count;
+  {
+    jel::CriticalSection cs;
+    /** Note: The read of the Free Running Counter (FRC) triggers a capture in hardware of the current Up Counter value.
+     * By setting the COMPARE register to 0xFFFFFFFF we effectively get a 64b wide counter at the RTI clock frequency.
+     * The FRC ends up store the upper 32b of the counter, and the UC stores the lower 32b. */
+    count = rtiREG1->CNT[rtiCOUNTER_BLOCK1].FRCx << 31;
+    count |= rtiREG1->CNT[rtiCOUNTER_BLOCK1].UCx;
+  }
+  return count;
 }
 
 } /** namespace sysclock */

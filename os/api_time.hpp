@@ -62,7 +62,12 @@ namespace jel
 struct SteadyClock
 {
 public:
+#ifdef HW_TARGET_RM57L843
+  /** Note: This must match the RTI frequency of the RM57. The second RTI counter is dedicated to the SteadyClock. */
+  static constexpr uint64_t SteadyClockFreq_Hz = 110'000'000;
+#else
   static constexpr uint64_t SteadyClockFreq_Hz = 1'000'000;
+#endif
   typedef std::chrono::duration<int64_t, std::ratio<1, SteadyClockFreq_Hz>> duration;
   typedef duration::rep rep; //Note: rep is a signed 64b type on arm-none-eabi-gcc.
   typedef duration::period period;
