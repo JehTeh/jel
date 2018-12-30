@@ -173,6 +173,16 @@ private:
   PortName port_;
 };
 
+/** On hardware targets that support GPIO loopback, a pin or port can be wrapped in an IoLoopbackWrapper that enables
+ * the hardware loopback mode on that pin or port. */
+class IoLoopbackWrapper
+{
+public:
+  IoLoopbackWrapper(Pin& pin, bool internalLoopbackOnly = true);
+  IoLoopbackWrapper(Port& port, bool internalLoopbackOnly = true);
+  ~IoLoopbackWrapper() noexcept;
+};
+
 } /** namespace gpio */
 } /** namespace hw */
 } /** namespace jel */

@@ -32,6 +32,8 @@
 /** jel Library Headers */
 #include "hw/api_gpio.hpp"
 #include "hw/api_exceptions.hpp"
+/** TI Halcogen Library Headers */
+#include "HL_gio.h"
 
 namespace jel
 {
@@ -39,6 +41,72 @@ namespace hw
 {
 namespace gpio
 {
+
+constexpr PortName portNameToGpioPortPointer(PortName port)
+{
+  switch(port)
+  {
+    case PortName::gpioPortA: return static_cast<PortName>(reinterpret_cast<intptr_t>(const_cast<gioPort*>(gioPORTA)));
+    case PortName::gpioPortB: return static_cast<PortName>(reinterpret_cast<intptr_t>(const_cast<gioPort*>(gioPORTB)));
+    default: return (PortName)(0);
+  }
+};
+
+void GpioController::initializeGpio()
+{
+  gioInit();
+}
+
+Pin::Pin(PortName port, PinNumber pin) : port_(portNameToGpioPortPointer(port)), pin_(pin)
+{
+  if(static_cast<intptr_t>(port_) == 0)
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This port is not available on this processor.");
+  }
+}
+
+void Pin::set()
+{
+  const_cast<gioPORT_t*>(reinterpret_cast<gioPort*>(static_cast<intptr_t>(port_)))->DSET = static_cast<uint32_t>(pin_);
+}
+
+void Pin::reset()
+{
+  const_cast<gioPORT_t*>(reinterpret_cast<gioPort*>(static_cast<intptr_t>(port_)))->DCLR = static_cast<uint32_t>(pin_);
+}
+
+bool Pin::read() const
+{
+  return (const_cast<gioPORT_t*>(reinterpret_cast<gioPort*>(static_cast<intptr_t>(port_)))->DIN & 
+      static_cast<uint32_t>(pin_)) != 0 ? true : false;
+}
+
+Port::Port(const PortName port) : port_(portNameToGpioPortPointer(port))
+{
+  if(static_cast<intptr_t>(port_) == 0)
+  {
+    throw Exception(ExceptionCode::driverFeatureNotSupported, 
+      "This port is not available on this processor.");
+  }
+}
+
+void Port::write(const PinNumber pins)
+{
+  const_cast<gioPORT_t*>(reinterpret_cast<gioPort*>(static_cast<intptr_t>(port_)))->DSET = static_cast<uint32_t>(pins);
+}
+
+void Port::write(const PinNumber pins, const PinNumber mask)
+{
+  const_cast<gioPORT_t*>(reinterpret_cast<gioPort*>(static_cast<intptr_t>(port_)))->DSET = static_cast<uint32_t>(pins) &
+    static_cast<uint32_t>(mask);
+}
+
+PinNumber Port::read(const PinNumber mask) const
+{
+  return static_cast<PinNumber>(const_cast<gioPORT_t*>(reinterpret_cast<gioPort*>(static_cast<intptr_t>(port_)))->DIN & 
+      static_cast<uint32_t>(mask));
+}
 
 } /** namespace gpio */
 } /** namespace hw */
