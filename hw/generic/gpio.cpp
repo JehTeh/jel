@@ -112,6 +112,9 @@ TEST_GROUP(JEL_TestGroup_HW_GPIO_Pin)
     try
     {
       Pin pin(gioTestPort, pinNum);
+      #ifdef HW_TARGET_RM57L843
+      IoLoopbackWrapper lpbk(pin);
+      #endif
       pin.set();
       CHECK(pin.read());
     }
@@ -132,6 +135,9 @@ TEST_GROUP(JEL_TestGroup_HW_GPIO_Pin)
     try
     {
       Pin pin(gioTestPort, pinNum);
+      #ifdef HW_TARGET_RM57L843
+      IoLoopbackWrapper lpbk(pin);
+      #endif
       pin.reset();
       CHECK(!pin.read());
     }
@@ -152,6 +158,9 @@ TEST_GROUP(JEL_TestGroup_HW_GPIO_Pin)
     try
     {
       Pin pin(gioTestPort, pinNum);
+      #ifdef HW_TARGET_RM57L843
+      IoLoopbackWrapper lpbk(pin);
+      #endif
       auto first_read = pin.read();
       pin.toggle();
       CHECK(pin.read() != first_read);
