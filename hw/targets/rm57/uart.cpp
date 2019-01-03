@@ -32,6 +32,8 @@
 #include "hw/api_uart.hpp"
 #include "hw/api_exceptions.hpp"
 #include "hw/api_irq.hpp"
+/** TI Halcogen Libraries */
+#include "HL_sci.h"
 
 namespace jel
 {
@@ -40,6 +42,65 @@ namespace hw
 namespace uart 
 {
 
+BasicUart::BasicUart(const BasicUart_Base::Config& config) : BasicUart_Base{config}, hw_{nullptr}
+{
+  
+}
+
+BasicUart::~BasicUart() noexcept
+{
+
+}
+
+void BasicUart::reconfigure(const Config& config)
+{
+
+}
+
+char BasicUart::readRxBuffer()
+{
+
+}
+
+void BasicUart::loadTxBuffer(const char c)
+{
+
+}
+
+bool BasicUart::isRxBufferReady()
+{
+
+}
+
+bool BasicUart::isTxBufferReady()
+{
+
+}
+
+void BasicUart::setRxIsrEnable(const bool enableIsr)
+{
+  
+}
+
+void BasicUart::setTxIsrEnable(const bool enableIsr)
+{
+
+}
+
+void BasicUart::clearRxIsrFlags()
+{
+
+}
+
+void BasicUart::clearTxIsrFlags()
+{
+
+}
+
+void BasicUart::initializeHardware()
+{
+
+};
 
 } /** namespace uart */
 } /** namespace hw */
