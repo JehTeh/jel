@@ -66,6 +66,7 @@ namespace reset
 
   void customDispatcher() noexcept
   {
+    _memInit_();
     _coreInitRegisters_();
     _coreInitStackPointer_();
     switch(getResetSource())
@@ -73,7 +74,6 @@ namespace reset
       case POWERON_RESET:
       case DEBUG_RESET:
       case EXT_RESET:
-        _memInit_();
         _coreEnableEventBusExport_();
         if ((esmREG->SR1[2]) != 0U)
         {
@@ -85,9 +85,17 @@ namespace reset
         esmInit();
         break;
       case CPU0_RESET:
-        _coreEnableEventBusExport_();
-        break;
       case SW_RESET:
+        _coreEnableEventBusExport_();
+        if ((esmREG->SR1[2]) != 0U)
+        {
+          esmGroup3Notification(esmREG,esmREG->SR1[2]);               
+        }
+        systemInit();
+        _coreEnableIrqVicOffset_();
+	      vimInit();
+        esmInit();
+        break;
       case OSC_FAILURE_RESET:
       case WATCHDOG_RESET:
       case WATCHDOG2_RESET:

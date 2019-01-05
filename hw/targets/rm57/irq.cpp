@@ -29,8 +29,12 @@
 /** C/C++ Standard Library Headers */
 #include <cstdint>
 #include <cassert>
+#include <type_traits>
 /** jel Library Headers */
 #include "hw/api_irq.hpp"
+/** TI Halcogen Headers */
+#include "HL_sys_core.h"
+#include "HL_sys_vim.h"
 /** Vector Table Include */
 #ifdef HW_TARGET_RM57L843
 #include "hw/targets/rm57/vectorTable_rm57l843.hpp"
@@ -43,33 +47,67 @@ namespace hw
 namespace irq 
 {
 
-void phantomIsr() __attribute__((naked));
-void faultIsr() __attribute__((naked));
+void phantomIsr();
+void faultIsr();
 
 void InterruptController::enableGlobalInterrupts()
 {
+  _enable_interrupt_();
 }
 
 void InterruptController::disableGlobalInterrupts()
 {
+  _disable_IRQ_interrupt_();
 }
 
-void InterruptController::enableInterrupt(const Index channel, const IrqType)
+void InterruptController::enableInterrupt(const Index channel, const IrqType type)
 {
+  assert((static_cast<uint32_t>(channel) > 2) && "Illegal attempt to enable hardwired IRQ channel on the RM57");
+  assert((static_cast<uint32_t>(channel) < 127) && "Illegal attempt to enable out of bounds IRQ channel on the RM57");
+  volatile uint32_t* setreg = &vimREG->REQMASKSET0 + (static_cast<size_t>(channel) % 32);
+  volatile uint32_t* fiqreg = &vimREG->FIRQPR0 + (static_cast<size_t>(channel) % 32);
+  *setreg |= 1 << static_cast<size_t>(channel);
+  switch(type)
+  {
+    case IrqType::irq:
+      *fiqreg &= ~(1 << static_cast<size_t>(channel));
+      break;
+    case IrqType::fiq:
+      *fiqreg &= ~(1 << static_cast<size_t>(channel));
+  }
 }
 
-void InterruptController::disableInterrupt(const Index channel, const IrqType)
-{
+void InterruptController::disableInterrupt(const Index channel, const IrqType type)
+{ 
+  assert((static_cast<uint32_t>(channel) > 2) && "Illegal attempt to disable hardwired IRQ channel on the RM57");
+  assert((static_cast<uint32_t>(channel) < 127) && "Illegal attempt to disable out of bounds IRQ channel on the RM57");
+  volatile uint32_t* clrreg = &vimREG->REQMASKCLR0 + (static_cast<size_t>(channel) % 32);
+  volatile uint32_t* fiqreg = &vimREG->FIRQPR0 + (static_cast<size_t>(channel) % 32);
+  *clrreg |= 1 << static_cast<size_t>(channel);
+  switch(type)
+  {
+    case IrqType::irq:
+      *fiqreg &= ~(1 << static_cast<size_t>(channel));
+      break;
+    case IrqType::fiq:
+      *fiqreg &= ~(1 << static_cast<size_t>(channel));
+      break;
+  }
 }
 
 void phantomIsr()
 {
+  assert(!"PHANTOM ISR TRIGGERED");
   /** Do nothing. */
+  while(true);
 }
 
 
 void faultIsr()
 {
+  /** Do nothing. */
+  assert(!"FAULT ISR TRIGGERED");
+  while(true);
 }
 
 }
